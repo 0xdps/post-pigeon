@@ -1,0 +1,75 @@
+railway.json
+  69c713fec2763a6e 1-3,6-12
+package.json
+  69c713fec2763a6e 8-9,11-12
+web/postcss.config.js
+  69c713fec2763a6e 3-6
+src/index.js
+  69c713fec2763a6e 1-24
+web/package.json
+  69c713fec2763a6e 20-24
+.env.example
+  69c713fec2763a6e 7-8,10-11,16-18,22,26
+web/index.html
+  69c713fec2763a6e 1-18
+web/src/index.css
+  69c713fec2763a6e 6-38
+web/src/pages/Posted.jsx
+  69c713fec2763a6e 9-74
+web/src/App.jsx
+  69c713fec2763a6e 5-26
+src/routes/auth.js
+  69c713fec2763a6e 1-38
+web/src/api.js
+  69c713fec2763a6e 1-38
+src/state-store.js
+  69c713fec2763a6e 1,6-8,10-13,18-23,25,27,32-35,37-39,41,44-45,49,56-69
+src/scheduler.js
+  69c713fec2763a6e 1-5,7-24
+src/server.js
+  69c713fec2763a6e 10-12
+src/poster.js
+  69c713fec2763a6e 197
+src/middleware/auth.js
+  69c713fec2763a6e 4-52
+web/tailwind.config.js
+  69c713fec2763a6e 7-13
+web/src/main.jsx
+  69c713fec2763a6e 8-10
+web/src/pages/Bank.jsx
+  69c713fec2763a6e 4-120
+web/src/pages/Login.jsx
+  69c713fec2763a6e 15-88
+web/src/pages/Queue.jsx
+  69c713fec2763a6e 3-115
+web/src/pages/Dashboard.jsx
+  69c713fec2763a6e 12-203
+web/src/pages/Settings.jsx
+  69c713fec2763a6e 1-132
+web/src/components/Layout.jsx
+  69c713fec2763a6e 18-73
+web/vite.config.js
+  69c713fec2763a6e 9-12
+src/db.js
+  69c713fec2763a6e 1-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "7207ce13214215063a80fc4955984492da90b619",
+  "prompts": {
+    "69c713fec2763a6e": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "7ad87f68-c70e-4fe5-9558-30371e82ffe7",
+        "model": "copilot/claude-sonnet-4.6"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 2030,
+      "total_deletions": 49,
+      "accepted_lines": 1148,
+      "overriden_lines": 21
+    }
+  }
+}
