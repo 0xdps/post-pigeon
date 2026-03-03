@@ -1,0 +1,29 @@
+dashboard/src/pages/Bank.jsx
+  8f54da0230a7a24f 15-31
+start.sh
+  8f54da0230a7a24f 63-67
+Dockerfile
+  8f54da0230a7a24f 40-42
+service/server.js
+  8f54da0230a7a24f 43,46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "b9de864000afbd6608aa49baf3ca3f6ca975c15d",
+  "prompts": {
+    "8f54da0230a7a24f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "d8d38c4e-31d9-4f9c-bbd5-ce041455367d",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 28,
+      "total_deletions": 19,
+      "accepted_lines": 28,
+      "overriden_lines": 0
+    }
+  }
+}
