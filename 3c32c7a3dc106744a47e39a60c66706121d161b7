@@ -1,0 +1,23 @@
+start.sh
+  8f54da0230a7a24f 4-5,7-8,11-12,16,19,22,28,50,55,60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "3c32c7a3dc106744a47e39a60c66706121d161b7",
+  "prompts": {
+    "8f54da0230a7a24f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "d8d38c4e-31d9-4f9c-bbd5-ce041455367d",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 15,
+      "total_deletions": 12,
+      "accepted_lines": 15,
+      "overriden_lines": 0
+    }
+  }
+}
