@@ -1,0 +1,33 @@
+.dockerignore
+  8f54da0230a7a24f 1-10
+Dockerfile
+  8f54da0230a7a24f 12-19,22,25-33,36,39-44,46-47
+docker-compose.yml
+  8f54da0230a7a24f 1-30
+README.md
+  8f54da0230a7a24f 89-139
+start.sh
+  8f54da0230a7a24f 1-24
+Caddyfile
+  8f54da0230a7a24f 10-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "7987ad6edf9e610b69b00e2d92d9da456e94b549",
+  "prompts": {
+    "8f54da0230a7a24f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "d8d38c4e-31d9-4f9c-bbd5-ce041455367d",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 269,
+      "total_deletions": 51,
+      "accepted_lines": 214,
+      "overriden_lines": 8
+    }
+  }
+}
