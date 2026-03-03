@@ -1,0 +1,31 @@
+dashboard/src/pages/Posted.jsx
+  8f54da0230a7a24f 2,7,10,13-27,29,31,60-67,69-72,81-86,89-92,97-123,125-126
+docker-compose.yml
+  8f54da0230a7a24f 7,12-13,31-33,37
+start.sh
+  8f54da0230a7a24f 41-56,79-85
+dashboard/src/pages/Queue.jsx
+  8f54da0230a7a24f 2,13,17-32,34,109,111-114,125-160
+dashboard/src/pages/Bank.jsx
+  8f54da0230a7a24f 20-22,148
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "b03b7b8a4a6c16a3e635825c51137c307fe4e7d4",
+  "prompts": {
+    "8f54da0230a7a24f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "d8d38c4e-31d9-4f9c-bbd5-ce041455367d",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 190,
+      "total_deletions": 64,
+      "accepted_lines": 166,
+      "overriden_lines": 0
+    }
+  }
+}
