@@ -1,0 +1,31 @@
+dashboard/src/api.js
+  8f54da0230a7a24f 39-43
+service/server.js
+  8f54da0230a7a24f 11-19,224-274
+service/scheduler.js
+  8f54da0230a7a24f 5-8,11-66,92-98,109-112
+service/db.js
+  8f54da0230a7a24f 57-72
+service/scheduled-posts.js
+  8f54da0230a7a24f 1-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "11ab2b12021c676f718bd34625af20d6687cbe2a",
+  "prompts": {
+    "8f54da0230a7a24f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "d8d38c4e-31d9-4f9c-bbd5-ce041455367d",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 232,
+      "total_deletions": 0,
+      "accepted_lines": 233,
+      "overriden_lines": 0
+    }
+  }
+}
