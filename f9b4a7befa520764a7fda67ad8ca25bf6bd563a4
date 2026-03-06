@@ -1,0 +1,48 @@
+dashboard/src/hooks/useFileUrl.js
+  2fa06b8fff125246 38-70
+service/posting/post-utils.js
+  2fa06b8fff125246 41,46-56
+dashboard/vite.config.js
+  2fa06b8fff125246 11-13
+dashboard/src/pages/PostEditor.jsx
+  2fa06b8fff125246 8,41-56
+service/store/db-posts.js
+  2fa06b8fff125246 7-12,14,18,200,204-205,219-221,223-224,226-227
+dashboard/src/pages/Posts.jsx
+  2fa06b8fff125246 2,4,228-267,283-285,290,310-312,360-389
+dashboard/src/pages/Dashboard.jsx
+  0a00f20e38610e18 1,6,22,24,28,35,43,60-61,111-113,115-158,434-438,447-451,458-460,464-465,467,470,472
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "f9b4a7befa520764a7fda67ad8ca25bf6bd563a4",
+  "prompts": {
+    "0a00f20e38610e18": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "852afeca-8e16-42e7-8dac-7849d85e0b7f",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 74,
+      "total_deletions": 15,
+      "accepted_lines": 74,
+      "overriden_lines": 0
+    },
+    "2fa06b8fff125246": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "3952b600-914d-4f5e-b241-e4f16a353860",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 213,
+      "total_deletions": 30,
+      "accepted_lines": 164,
+      "overriden_lines": 0
+    }
+  }
+}
