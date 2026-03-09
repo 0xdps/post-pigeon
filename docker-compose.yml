@@ -1,0 +1,146 @@
+services:
+  # BACKEND - Dev mode (hot reload with nodemon)
+  backend:
+    container_name: autoposter-backend
+    profiles: ["dev"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    expose:
+      - "3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "sqlite-hub.localhost:host-gateway"
+    volumes:
+      - ./service:/app/service
+      - ./content:/app/content
+      - /app/node_modules
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # FRONTEND - Dev only (hot reload)
+  # Exclude from production (--profile prod)
+  frontend:
+    container_name: autoposter-dashboard
+    profiles: ["dev"]
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile.dev
+    # No direct port exposure - access via Caddy only
+    expose:
+      - "5173"
+    volumes:
+      - ./dashboard/src:/app/src
+      - ./dashboard/public:/app/public
+      - ./dashboard/package.json:/app/package.json:ro
+      - ./dashboard/vite.config.js:/app/vite.config.js:ro
+      - ./dashboard/tailwind.config.js:/app/tailwind.config.js:ro
+      - ./dashboard/postcss.config.js:/app/postcss.config.js:ro
+      - /app/node_modules
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # CADDY - Reverse proxy (dev mode)
+  caddy:
+    container_name: autoposter-caddy
+    profiles: ["dev"]
+    image: caddy:2-alpine
+    # Keep dev Caddy config dynamic (no repo-level Caddyfile mount).
+    # This keeps dev closer to production where start.sh also generates config at runtime.
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        cat > /tmp/Caddyfile <<EOF
+        :$$PORT {
+          handle /api/* {
+            reverse_proxy backend:3000
+          }
+
+          handle /health {
+            reverse_proxy backend:3000
+          }
+
+          handle {
+            reverse_proxy frontend:5173 {
+              header_up Connection {>Connection}
+              header_up Upgrade {>Upgrade}
+            }
+          }
+
+          log {
+            output stdout
+            format console
+          }
+        }
+        EOF
+        caddy fmt --overwrite /tmp/Caddyfile
+        exec caddy run --config /tmp/Caddyfile
+    ports:
+      - "${CADDY_INTERNAL_PORT:-8080}"
+    environment:
+      - PORT=${CADDY_INTERNAL_PORT:-8080}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:$$PORT/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # PRODUCTION APP - Unified build (Caddy + Node)
+  app:
+    container_name: autoposter
+    profiles: ["prod"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - "${APP_INTERNAL_PORT:-8080}"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=${APP_INTERNAL_PORT:-8080}
+      - API_KEY=${API_KEY}
+      - API_KEY_SECRET=${API_KEY_SECRET}
+      - ACCESS_TOKEN=${ACCESS_TOKEN}
+      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
+      - SQLITE_HUB_URL=${SQLITE_HUB_URL}
+      - SQLITE_HUB_SERVICE_SECRET=${SQLITE_HUB_SERVICE_SECRET}
+      - SQLITE_HUB_DB=${SQLITE_HUB_DB:-posthub}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - CRON_ENABLED=${CRON_ENABLED:-true}
+      - DRY_RUN=${DRY_RUN:-false}
+    volumes:
+      - ./content:/app/content
+      - ./content/texts:/usr/share/caddy/content/texts
+      - ./content/media:/usr/share/caddy/content/media
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${APP_INTERNAL_PORT:-8080}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

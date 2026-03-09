@@ -1,0 +1,10 @@
+node_modules
+dashboard/node_modules
+dashboard/dist
+.git
+.env
+.DS_Store
+*.log
+npm-debug.log*
+.vscode
+.idea
