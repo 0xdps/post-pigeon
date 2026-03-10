@@ -1,6 +1,6 @@
-# posthub
+# postpigeon
 
-posthub posts content to X with scheduling, queue controls, and a React dashboard.
+postpigeon posts content to social platforms with scheduling, queue controls, and a React dashboard.
 
 This repository uses a V1 runtime model:
 - single compose file: docker-compose.yml
@@ -42,7 +42,7 @@ Set required values in .env:
 
 ### File Storage & Access
 
-PostHub uses **sqlite-hub** for file storage with secure header-based authentication:
+PostPigeon uses **sqlite-hub** for file storage with secure header-based authentication:
 
 ### Architecture
 

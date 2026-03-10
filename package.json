@@ -1,5 +1,5 @@
 {
-	"name": "posthub",
+	"name": "postpigeon",
 	"version": "1.0.0",
 	"description": "A lightweight automation tool for posting developer-focused content to X (Twitter). Supports scheduled posts, media uploads, and random posting intervals.",
 	"type": "module",
@@ -36,9 +36,9 @@
 	"author": "Devendra Pratap <dps.manit@gmail.com>",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/0xdps/posthub/issues"
+		"url": "https://github.com/0xdps/postpigeon/issues"
 	},
-	"homepage": "https://github.com/0xdps/posthub#readme",
+	"homepage": "https://github.com/0xdps/postpigeon#readme",
 	"engines": {
 		"node": ">=22.0.0"
 	},

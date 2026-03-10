@@ -1,4 +1,4 @@
-# PostHub Development & Production Task Runner
+# PostPigeon Development & Production Task Runner
 
 # Variables
 PORTLESS_ALIAS := "autoposter"
@@ -64,7 +64,7 @@ dev:
             COMPOSE="docker compose"
         fi
 
-    echo "🚀 Starting PostHub Development Environment"
+    echo "🚀 Starting PostPigeon Development Environment"
     echo ""
         echo "Starting containers (Docker will assign a random port)..."
         $COMPOSE --profile dev up -d --build --force-recreate {{DEV_CADDY_SERVICE}}
@@ -179,7 +179,7 @@ reset:
 # Start production environment
 prod:
     #!/usr/bin/env bash
-    echo "🚀 Starting PostHub Production"
+    echo "🚀 Starting PostPigeon Production"
     echo ""
     echo "Starting containers (Docker will assign a random port)..."
     docker-compose --profile prod up --build -d

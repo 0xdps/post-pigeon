@@ -43,7 +43,7 @@ export default function Layout() {
 				{/* Logo */}
 				<div className="h-14 flex items-center gap-2.5 px-5 border-b border-[#1e1e1e]">
 					<img src="/favicon.svg" alt="Logo" className="w-[28px] h-[28px]" />
-					<span className="font-semibold text-sm tracking-tight">PostHub</span>
+					<span className="font-semibold text-sm tracking-tight">PostPigeon</span>
 				</div>
 
 				{/* Nav */}

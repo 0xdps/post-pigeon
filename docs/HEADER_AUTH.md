@@ -26,7 +26,7 @@ The service provides a session token endpoint:
 **File:** `service/http/routes/images.js`
 ```javascript
 POST /api/posts/files/session
-→ Returns: { session: "token", db: "posthub", base_url: "http://..." }
+→ Returns: { session: "token", db: "postpigeon", base_url: "http://..." }
 ```
 
 **File:** `service/posting/sqlite-hub-upload.js`

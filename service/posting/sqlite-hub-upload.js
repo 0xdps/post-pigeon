@@ -62,7 +62,7 @@ export async function uploadFileToHub(
 			filename: uniqueName,
 			folderPath: normalizedPath,
 			conflictMode: "replace",
-			metadata: { original_filename: filename, source: "posthub" },
+			metadata: { original_filename: filename, source: "postpigeon" },
 		});
 
 		let signed = null;
@@ -192,7 +192,7 @@ export async function createFileReadSessionToken(expiresInSeconds = 30 * 24 * 60
 	const result = await files.createFileAccessToken({
 		scope: "files:read",
 		expiresIn: expiresInSeconds,
-		description: "posthub-dashboard",
+		description: "postpigeon-dashboard",
 	});
 	return result.token;
 }

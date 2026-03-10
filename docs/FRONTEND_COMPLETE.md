@@ -2,7 +2,7 @@
 
 ## Summary
 
-Successfully implemented secure header-based file authentication for the posthub dashboard, enabling direct access to sqlite-hub files with automatic fallback to proxy.
+Successfully implemented secure header-based file authentication for the postpigeon dashboard, enabling direct access to sqlite-hub files with automatic fallback to proxy.
 
 ## What Was Implemented
 
@@ -252,7 +252,7 @@ Already configured in `.env`:
 ```bash
 SQLITE_HUB_URL=http://sqlite-hub.localhost:1355
 SQLITE_HUB_SERVICE_SECRET=shs_...
-SQLITE_HUB_DB=posthub
+SQLITE_HUB_DB=postpigeon
 ```
 
 ## Testing Checklist

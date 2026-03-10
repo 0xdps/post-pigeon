@@ -1,8 +1,300 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-	<rect width="100" height="100" fill="#fbbf24" rx="20"/>
-	<path d="M 55 20 L 35 52 L 48 52 L 43 80 L 68 42 L 54 42 L 55 20 Z" 
-	      fill="#18181b" 
-	      stroke="#18181b" 
-	      stroke-width="1" 
-	      stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <!-- === GRADIENTS === -->
+
+    <!-- Background -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <radialGradient id="bgGlow" cx="55%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Pigeon body -->
+    <linearGradient id="bodyMain" x1="30%" y1="0%" x2="70%" y2="100%">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="45%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+
+    <!-- Wing -->
+    <linearGradient id="wingMain" x1="0%" y1="20%" x2="100%" y2="80%">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="50%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <linearGradient id="wingTip" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+
+    <!-- Iridescent neck -->
+    <linearGradient id="neckShimmer" x1="0%" y1="0%" x2="100%" y2="80%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="30%" stop-color="#34d399"/>
+      <stop offset="60%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#2dd4bf"/>
+    </linearGradient>
+
+    <!-- Beak -->
+    <linearGradient id="beakGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+
+    <!-- Eye -->
+    <radialGradient id="irisGrad" cx="42%" cy="38%" r="50%">
+      <stop offset="0%" stop-color="#fb923c"/>
+      <stop offset="70%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#9a3412"/>
+    </radialGradient>
+
+    <!-- Envelope -->
+    <linearGradient id="envGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="envFlap" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fcd34d"/>
+    </linearGradient>
+
+    <!-- Seal -->
+    <radialGradient id="sealGrad" cx="40%" cy="35%" r="50%">
+      <stop offset="0%" stop-color="#f87171"/>
+      <stop offset="100%" stop-color="#991b1b"/>
+    </radialGradient>
+
+    <!-- Tail -->
+    <linearGradient id="tailGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+
+    <!-- Feet -->
+    <linearGradient id="feetGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fda4af"/>
+      <stop offset="100%" stop-color="#e11d48"/>
+    </linearGradient>
+
+    <!-- === FILTERS === -->
+    <filter id="drop" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="softDrop" x="-8%" y="-8%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8"/>
+    </filter>
+
+    <!-- Clip -->
+    <clipPath id="card">
+      <rect width="512" height="512" rx="112"/>
+    </clipPath>
+  </defs>
+
+  <!-- ===================== BACKGROUND ===================== -->
+  <g clip-path="url(#card)">
+    <rect width="512" height="512" fill="url(#bgGrad)"/>
+    <rect width="512" height="512" fill="url(#bgGlow)"/>
+
+    <!-- Subtle bokeh circles -->
+    <circle cx="80" cy="100" r="40" fill="#818cf8" opacity="0.04"/>
+    <circle cx="420" cy="80" r="55" fill="#a78bfa" opacity="0.035"/>
+    <circle cx="440" cy="400" r="45" fill="#6366f1" opacity="0.03"/>
+    <circle cx="60" cy="430" r="35" fill="#818cf8" opacity="0.025"/>
+
+    <!-- ===================== ENVELOPE ===================== -->
+    <g transform="translate(256, 336) rotate(-10)" filter="url(#drop)">
+      <!-- Body -->
+      <rect x="-100" y="-60" width="200" height="130" rx="8" fill="url(#envGrad)"/>
+
+      <!-- Back fold lines -->
+      <line x1="-100" y1="70" x2="0" y2="15" stroke="#b45309" stroke-width="1.5" opacity="0.2"/>
+      <line x1="100" y1="70" x2="0" y2="15" stroke="#b45309" stroke-width="1.5" opacity="0.2"/>
+
+      <!-- Open flap -->
+      <path d="M -100 -60 L 0 -4 L 100 -60 Z" fill="url(#envFlap)"/>
+      <line x1="-100" y1="-60" x2="0" y2="-4" stroke="#b45309" stroke-width="1" opacity="0.15"/>
+      <line x1="100" y1="-60" x2="0" y2="-4" stroke="#b45309" stroke-width="1" opacity="0.15"/>
+
+      <!-- Letter peeking out -->
+      <rect x="-70" y="-80" width="140" height="30" rx="4" fill="#fffbeb" opacity="0.95"/>
+      <line x1="-52" y1="-72" x2="52" y2="-72" stroke="#d97706" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+      <line x1="-52" y1="-62" x2="32" y2="-62" stroke="#d97706" stroke-width="2" stroke-linecap="round" opacity="0.25"/>
+
+      <!-- Address lines -->
+      <line x1="-30" y1="8" x2="70" y2="8" stroke="#92400e" stroke-width="1.5" stroke-linecap="round" opacity="0.18"/>
+      <line x1="-30" y1="20" x2="58" y2="20" stroke="#92400e" stroke-width="1.5" stroke-linecap="round" opacity="0.14"/>
+      <line x1="-30" y1="32" x2="42" y2="32" stroke="#92400e" stroke-width="1.5" stroke-linecap="round" opacity="0.1"/>
+
+      <!-- Wax seal -->
+      <circle cx="-60" cy="36" r="18" fill="url(#sealGrad)" filter="url(#softDrop)"/>
+      <circle cx="-60" cy="36" r="12" fill="none" stroke="#fecaca" stroke-width="0.8" opacity="0.4"/>
+      <text x="-60" y="41" text-anchor="middle" font-size="15" font-family="Georgia, serif" fill="#fef2f2" font-weight="bold" opacity="0.85">P</text>
+    </g>
+
+    <!-- ===================== PIGEON ===================== -->
+
+    <!-- == Tail feathers == -->
+    <g opacity="0.9">
+      <path d="M 178 280 C 158 290, 130 316, 118 348 L 126 340 C 138 322, 158 300, 180 288 Z" fill="url(#tailGrad)"/>
+      <path d="M 190 278 C 172 292, 148 320, 140 354 L 148 344 C 160 324, 176 302, 194 288 Z" fill="#7c8da3"/>
+      <path d="M 202 276 C 188 294, 168 326, 164 360 L 172 348 C 180 326, 196 302, 208 288 Z" fill="url(#tailGrad)"/>
+      <!-- Dark band -->
+      <path d="M 130 330 C 142 318, 158 304, 178 290" fill="none" stroke="#334155" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
+    </g>
+
+    <!-- == Body == -->
+    <g filter="url(#drop)">
+      <!-- Main body - smooth plump shape -->
+      <path d="
+        M 340 188
+        C 366 200, 380 228, 374 258
+        C 368 288, 340 306, 306 310
+        C 270 314, 230 304, 204 284
+        C 182 268, 176 246, 182 228
+        C 188 210, 208 198, 238 192
+        C 268 186, 316 180, 340 188 Z"
+        fill="url(#bodyMain)"/>
+
+      <!-- Subtle belly shadow -->
+      <path d="
+        M 340 230
+        C 360 245, 372 268, 366 290
+        C 350 302, 320 310, 290 312
+        C 256 314, 224 302, 204 284
+        C 218 296, 258 306, 296 304
+        C 336 300, 358 280, 350 248 Z"
+        fill="#64748b" opacity="0.2"/>
+
+      <!-- Back highlight -->
+      <path d="M 248 194 C 280 190, 318 188, 340 196" fill="none" stroke="#fff" stroke-width="2" opacity="0.12" stroke-linecap="round"/>
+    </g>
+
+    <!-- == Wing (raised, mid-flight) == -->
+    <g filter="url(#drop)">
+      <!-- Coverts (inner wing, lighter) -->
+      <path d="
+        M 250 210
+        C 236 200, 214 192, 192 188
+        C 172 184, 156 186, 146 192
+        C 162 190, 184 194, 208 204
+        C 228 212, 244 222, 252 230 Z"
+        fill="url(#wingMain)"/>
+
+      <!-- Primary feathers - bold, clean shapes -->
+      <path d="M 190 188 C 162 172, 118 152, 76 140 C 80 146, 100 158, 126 170 C 150 180, 174 190, 190 196 Z" fill="url(#wingTip)"/>
+      <path d="M 178 184 C 148 166, 108 146, 68 132 C 72 138, 94 152, 118 164 C 142 176, 164 186, 178 192 Z" fill="url(#wingTip)" opacity="0.95"/>
+      <path d="M 166 180 C 136 162, 96 142, 60 126 C 64 132, 86 148, 110 160 C 134 172, 154 184, 168 188 Z" fill="url(#wingTip)" opacity="0.9"/>
+
+      <!-- Feather shafts (minimal, clean) -->
+      <path d="M 188 190 L 82 142" fill="none" stroke="#475569" stroke-width="1" opacity="0.3"/>
+      <path d="M 176 186 L 74 134" fill="none" stroke="#475569" stroke-width="0.8" opacity="0.25"/>
+      <path d="M 164 182 L 66 128" fill="none" stroke="#475569" stroke-width="0.7" opacity="0.2"/>
+
+      <!-- Wing bars (two dark stripes - pigeon signature) -->
+      <path d="M 244 218 C 224 208, 198 198, 172 192" fill="none" stroke="#334155" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+      <path d="M 248 226 C 230 216, 206 208, 182 202" fill="none" stroke="#334155" stroke-width="4" stroke-linecap="round" opacity="0.25"/>
+
+      <!-- Wing edge highlight -->
+      <path d="M 188 188 C 158 172, 116 152, 78 140" fill="none" stroke="#fff" stroke-width="1" opacity="0.1"/>
+    </g>
+
+    <!-- == Neck == -->
+    <g>
+      <!-- Base shape -->
+      <path d="
+        M 338 200
+        C 350 192, 362 178, 366 162
+        C 370 148, 366 136, 356 130
+        C 346 138, 332 154, 326 170
+        C 320 186, 324 200, 334 204 Z"
+        fill="#b0bec5"/>
+
+      <!-- Iridescent overlay -->
+      <path d="
+        M 338 200
+        C 350 192, 362 178, 366 162
+        C 370 148, 366 136, 356 130
+        C 346 138, 332 154, 326 170
+        C 320 186, 324 200, 334 204 Z"
+        fill="url(#neckShimmer)" opacity="0.6"/>
+
+      <!-- White neck ring (collar) -->
+      <path d="M 330 202 C 336 198, 344 190, 348 184" fill="none" stroke="#fff" stroke-width="2.5" opacity="0.15" stroke-linecap="round"/>
+    </g>
+
+    <!-- == Head == -->
+    <g filter="url(#softDrop)">
+      <ellipse cx="368" cy="134" rx="32" ry="30" fill="#d1d5e8"/>
+      <!-- Subtle forehead highlight -->
+      <ellipse cx="362" cy="124" rx="16" ry="10" fill="#fff" opacity="0.08"/>
+    </g>
+
+    <!-- == Eye == -->
+    <g>
+      <!-- Orbital ring -->
+      <circle cx="382" cy="128" r="12" fill="#c8cad8" opacity="0.6"/>
+      <!-- Sclera -->
+      <circle cx="382" cy="128" r="9" fill="#f8fafc"/>
+      <!-- Iris -->
+      <circle cx="382" cy="128" r="6.5" fill="url(#irisGrad)"/>
+      <!-- Pupil -->
+      <circle cx="382" cy="128" r="3.2" fill="#0f172a"/>
+      <!-- Specular highlight -->
+      <circle cx="385" cy="125" r="2.2" fill="#fff" opacity="0.9"/>
+      <circle cx="379" cy="131" r="1" fill="#fff" opacity="0.3"/>
+    </g>
+
+    <!-- == Beak (holding envelope edge) == -->
+    <g filter="url(#softDrop)">
+      <!-- Cere -->
+      <ellipse cx="397" cy="132" rx="8" ry="5" fill="#c8cad8"/>
+
+      <!-- Upper mandible -->
+      <path d="M 402 129 C 414 126, 426 128, 434 132 C 436 133, 435 135, 432 136 C 422 137, 412 137, 402 135 Z" fill="url(#beakGrad)"/>
+      <!-- Lower mandible -->
+      <path d="M 402 135 C 412 137, 422 137, 430 136 C 432 137, 432 139, 430 140 C 420 142, 412 142, 402 140 Z" fill="#64748b"/>
+      <!-- Seam -->
+      <path d="M 402 135 C 416 136, 428 135, 434 133" fill="none" stroke="#1e293b" stroke-width="0.6" opacity="0.4"/>
+    </g>
+
+    <!-- == Feet / talons gripping envelope == -->
+    <g>
+      <!-- Left leg -->
+      <path d="M 258 298 C 254 318, 250 334, 248 348" fill="none" stroke="url(#feetGrad)" stroke-width="5" stroke-linecap="round"/>
+      <!-- Left toes -->
+      <path d="M 248 348 C 236 354, 226 350, 222 344" fill="none" stroke="url(#feetGrad)" stroke-width="4" stroke-linecap="round"/>
+      <path d="M 248 348 C 244 358, 240 364, 238 368" fill="none" stroke="url(#feetGrad)" stroke-width="4" stroke-linecap="round"/>
+      <path d="M 248 348 C 254 356, 260 360, 264 362" fill="none" stroke="url(#feetGrad)" stroke-width="4" stroke-linecap="round"/>
+
+      <!-- Right leg -->
+      <path d="M 286 300 C 284 320, 282 336, 282 350" fill="none" stroke="url(#feetGrad)" stroke-width="5" stroke-linecap="round"/>
+      <!-- Right toes -->
+      <path d="M 282 350 C 270 356, 260 354, 256 348" fill="none" stroke="url(#feetGrad)" stroke-width="4" stroke-linecap="round"/>
+      <path d="M 282 350 C 280 360, 278 366, 276 370" fill="none" stroke="url(#feetGrad)" stroke-width="4" stroke-linecap="round"/>
+      <path d="M 282 350 C 290 358, 296 362, 302 364" fill="none" stroke="url(#feetGrad)" stroke-width="4" stroke-linecap="round"/>
+    </g>
+
+    <!-- ===================== MOTION EFFECTS ===================== -->
+    <!-- Speed lines -->
+    <g opacity="0.4">
+      <line x1="44" y1="172" x2="92" y2="172" stroke="#a5b4fc" stroke-width="4" stroke-linecap="round"/>
+      <line x1="32" y1="192" x2="84" y2="192" stroke="#a5b4fc" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+      <line x1="40" y1="212" x2="76" y2="212" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+      <line x1="50" y1="230" x2="72" y2="230" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round" opacity="0.25"/>
+    </g>
+
+    <!-- Sparkle/glow behind bird -->
+    <circle cx="280" cy="230" r="100" fill="#818cf8" opacity="0.04" filter="url(#glow)"/>
+
+    <!-- Small sparkle dots -->
+    <circle cx="100" cy="180" r="2" fill="#c7d2fe" opacity="0.3"/>
+    <circle cx="86" cy="204" r="1.5" fill="#c7d2fe" opacity="0.2"/>
+    <circle cx="112" cy="222" r="1.8" fill="#c7d2fe" opacity="0.15"/>
+  </g>
 </svg>

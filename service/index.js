@@ -8,7 +8,7 @@ import { seedPlatformsIfMissing, syncPlatformCredentialsFromEnv } from "./store/
 const PORT = Number(process.env.PORT) || 3000;
 
 async function main() {
-	console.log("Starting posthub...");
+	console.log("Starting postpigeon...");
 	console.log(`  SQLITE_HUB_URL:  ${process.env.SQLITE_HUB_URL ?? "(not set)"}`);
 	console.log(`  SQLITE_HUB_DB:   ${process.env.SQLITE_HUB_DB ?? "(not set)"}`);
 	console.log(`  CRON_ENABLED:    ${process.env.CRON_ENABLED ?? "true (default)"}`);

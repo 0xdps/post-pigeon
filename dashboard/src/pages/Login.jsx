@@ -37,7 +37,7 @@ export default function Login() {
 					<div className="w-12 h-12 bg-amber-400 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-amber-400/20">
 						<Zap size={22} className="text-black" />
 					</div>
-					<h1 className="text-lg font-semibold">PostHub</h1>
+					<h1 className="text-lg font-semibold">PostPigeon</h1>
 					<p className="text-zinc-500 text-sm mt-0.5">Admin Dashboard</p>
 				</div>
 
