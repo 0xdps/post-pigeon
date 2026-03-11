@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Zap, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { api } from "../api.js";
 
 export default function Login() {
@@ -34,9 +34,7 @@ export default function Login() {
 			<div className="relative w-full max-w-sm mx-4">
 				{/* Logo mark */}
 				<div className="flex flex-col items-center mb-10">
-					<div className="w-12 h-12 bg-amber-400 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-amber-400/20">
-						<Zap size={22} className="text-black" />
-					</div>
+					<img src="/logo-128.png" alt="PostPigeon" className="w-16 h-16 object-contain mb-4" />
 					<h1 className="text-lg font-semibold">PostPigeon</h1>
 					<p className="text-zinc-500 text-sm mt-0.5">Admin Dashboard</p>
 				</div>

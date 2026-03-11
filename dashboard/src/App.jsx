@@ -15,7 +15,7 @@ export default function App() {
 				<Route path="/login" element={<Login />} />
 				<Route path="/" element={<Layout />}>
 					<Route index element={<Dashboard />} />
-				<Route path="scheduled" element={<Scheduled />} />
+				<Route path="queue" element={<Scheduled />} />
 				<Route path="platforms" element={<Platforms />} />
 					<Route path="settings" element={<Settings />} />
 					<Route path="posts" element={<Posts />} />

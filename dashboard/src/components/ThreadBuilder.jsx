@@ -5,29 +5,22 @@ export default function ThreadBuilder({ content, onUpdate }) {
 	const [dragging, setDragging] = useState(null);
 
 	const addTweet = () => {
-		const newContent = [...content];
-		newContent.push({
-			id: `content-${Date.now()}`,
-			text: "",
-			media_ids: [],
-			sequence: content.length + 1,
-		});
-		onUpdate(newContent);
+		onUpdate([
+			...content,
+			{ id: `content-${Date.now()}`, text: "", media_ids: [], sequence: content.length + 1 },
+		]);
 	};
 
 	const updateTweet = (index, updates) => {
-		const newContent = [...content];
-		newContent[index] = { ...newContent[index], ...updates };
-		onUpdate(newContent);
+		const next = [...content];
+		next[index] = { ...next[index], ...updates };
+		onUpdate(next);
 	};
 
 	const removeTweet = (index) => {
-		const newContent = content.filter((_, i) => i !== index);
-		// Update sequences
-		newContent.forEach((tweet, i) => {
-			tweet.sequence = i + 1;
-		});
-		onUpdate(newContent);
+		const next = content.filter((_, i) => i !== index);
+		next.forEach((t, i) => { t.sequence = i + 1; });
+		onUpdate(next);
 	};
 
 	const handleDragStart = (e, index) => {
@@ -43,108 +36,92 @@ export default function ThreadBuilder({ content, onUpdate }) {
 	const handleDrop = (e, targetIndex) => {
 		e.preventDefault();
 		if (dragging === null) return;
-
-		const newContent = [...content];
-		const draggedItem = newContent[dragging];
-		newContent.splice(dragging, 1);
-		newContent.splice(targetIndex, 0, draggedItem);
-		
-		// Update sequences
-		newContent.forEach((tweet, i) => {
-			tweet.sequence = i + 1;
-		});
-		
-		onUpdate(newContent);
+		const next = [...content];
+		const [item] = next.splice(dragging, 1);
+		next.splice(targetIndex, 0, item);
+		next.forEach((t, i) => { t.sequence = i + 1; });
+		onUpdate(next);
 		setDragging(null);
 	};
 
 	return (
-		<div className="space-y-4">
-			<div className="flex items-center justify-between">
-				<p className="text-sm font-medium text-zinc-300">
-					Thread Tweets ({content.length})
-				</p>
-				<button
-					type="button"
-					onClick={addTweet}
-					className="btn-primary h-8 px-3"
-				>
-					<Plus size={14} />
-					Add Tweet
-				</button>
-			</div>
+		<div className="space-y-0">
+			{content.map((tweet, index) => (
+				<div key={tweet.id} className="flex gap-3">
+					{/* Left connector column */}
+					<div className="flex flex-col items-center w-7 shrink-0 pt-3">
+						<div className="w-7 h-7 rounded-full bg-[#252525] flex items-center justify-center text-[10px] text-zinc-400 font-medium shrink-0">
+							{index === 0 ? "you" : index + 1}
+						</div>
+						{index < content.length - 1 && (
+							<div className="w-px flex-1 bg-[#2a2a2a] my-1" />
+						)}
+					</div>
 
-			<div className="space-y-3 max-h-[600px] overflow-y-auto">
-				{content.map((tweet, index) => (
+					{/* Card */}
 					<div
-						key={tweet.id}
 						draggable
 						onDragStart={(e) => handleDragStart(e, index)}
 						onDragOver={handleDragOver}
 						onDrop={(e) => handleDrop(e, index)}
-						className={`p-4 rounded-lg transition-colors card ${
+						className={`group flex-1 mb-3 rounded-xl border transition-colors focus-within:border-zinc-600 ${
 							dragging === index
-								? "bg-amber-400/10 border-amber-400/30 opacity-70"
-								: "hover:border-zinc-700"
+								? "border-amber-400/30 bg-amber-400/5 opacity-70"
+								: "border-[#252525] bg-[#1c1c1c]"
 						}`}
 					>
-						<div className="flex gap-3">
-							{/* Drag handle */}
-							<div className="flex items-start pt-2">
-								<GripVertical size={16} className="text-zinc-500 cursor-grab active:cursor-grabbing" />
+						<div className="flex items-start gap-2 px-3 pt-3 pb-1">
+							{/* Drag handle — hover-only */}
+							<div className="opacity-0 group-hover:opacity-100 transition-opacity pt-0.5 cursor-grab active:cursor-grabbing">
+								<GripVertical size={14} className="text-zinc-600" />
 							</div>
 
-							<div className="flex-1 space-y-2">
-								{/* Tweet number */}
-								<div className="flex items-center gap-2">
-									<span className="inline-flex items-center justify-center w-6 h-6 bg-[#252525] rounded-full text-xs font-medium text-zinc-200">
-										{index + 1}
-									</span>
-									<span className="text-xs text-zinc-500">
-										Tweet {index + 1} of {content.length}
-									</span>
-								</div>
+							<textarea
+								value={tweet.text}
+								onChange={(e) => updateTweet(index, { text: e.target.value })}
+								placeholder={index === 0 ? "What's happening?" : "Continue the thread…"}
+								rows={3}
+								maxLength={280}
+								className="flex-1 bg-transparent resize-none text-sm text-zinc-200 placeholder-zinc-600 outline-none"
+							/>
 
-								{/* Text input */}
-								<textarea
-									value={tweet.text}
-									onChange={(e) => updateTweet(index, { text: e.target.value })}
-									placeholder={`Write tweet ${index + 1}...`}
-									rows={4}
-									maxLength={280}
-									className="input-field font-mono text-sm"
-								/>
+							{/* Delete — hover-only */}
+							{content.length > 1 && (
+								<button
+									type="button"
+									onClick={() => removeTweet(index)}
+									className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-zinc-600 hover:text-red-400 hover:bg-red-500/10"
+								>
+									<Trash2 size={13} />
+								</button>
+							)}
+						</div>
 
-								{/* Character count */}
-								<div className="flex items-center justify-between text-xs">
-									<span className={tweet.text.length > 270 ? "text-yellow-500" : "text-zinc-500"}>
-										{tweet.text.length} / 280
-									</span>
-									{tweet.media_ids && tweet.media_ids.length > 0 && (
-										<span className="text-zinc-500">
-											{tweet.media_ids.length} image(s)
-										</span>
-									)}
-								</div>
-							</div>
-
-							{/* Delete button */}
-							<button
-								type="button"
-								onClick={() => removeTweet(index)}
-								className="p-2 rounded-md text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-								title="Delete this tweet"
-							>
-								<Trash2 size={16} />
-							</button>
+						<div className="px-3 pb-2 flex justify-end">
+							<span className={`text-[10px] ${tweet.text.length > 270 ? "text-yellow-500" : "text-zinc-600"}`}>
+								{tweet.text.length} / 280
+							</span>
 						</div>
 					</div>
-				))}
-			</div>
+				</div>
+			))}
 
-			<div className="p-3 rounded-lg border border-blue-500/20 bg-blue-500/5 text-blue-300 text-sm">
-				Tip: Drag tweets to reorder the thread posting sequence.
+			{/* Add to thread */}
+			<div className="flex gap-3">
+				<div className="w-7 shrink-0 flex justify-center pt-2">
+					<div className="w-7 h-7 rounded-full border border-dashed border-zinc-700 flex items-center justify-center">
+						<Plus size={12} className="text-zinc-600" />
+					</div>
+				</div>
+				<button
+					type="button"
+					onClick={addTweet}
+					className="flex-1 text-left text-sm text-zinc-600 hover:text-zinc-400 py-2 transition-colors"
+				>
+					+ Add to thread
+				</button>
 			</div>
 		</div>
 	);
 }
+

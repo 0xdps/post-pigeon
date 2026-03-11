@@ -48,6 +48,7 @@ export default function PostEditor() {
 	const [scheduledAt, setScheduledAt]   = useState("");
 	const [windowStart, setWindowStart]   = useState("09:00");
 	const [windowEnd, setWindowEnd]       = useState("21:00");
+	const [replyParsed, setReplyParsed]   = useState(null);
 
 	// Notes collapse
 	const [showNotes, setShowNotes] = useState(false);
@@ -233,7 +234,7 @@ export default function PostEditor() {
 					});
 				}
 			}
-			navigate(`/posts/${newId}/edit`);
+			navigate(`/posts/${newId}`);
 		} catch (err) {
 			alert("Failed to duplicate: " + err.message);
 		} finally {
@@ -276,7 +277,7 @@ export default function PostEditor() {
 						className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
 					>
 						<ArrowLeft size={14} />
-						Posts
+						Library
 					</button>
 					<span className="text-zinc-700 text-xs">/</span>
 					<span className="text-sm text-zinc-600">{postId ? "Edit" : "New post"}</span>
@@ -294,7 +295,7 @@ export default function PostEditor() {
 						type="text"
 						value={post.title}
 						onChange={(e) => set("title", e.target.value)}
-						placeholder="Post title…"
+						placeholder="Label (internal, not posted)"
 						className="w-full bg-transparent text-xl font-medium text-zinc-100
 						           placeholder:text-zinc-700 outline-none border-none mb-6"
 					/>
@@ -312,8 +313,16 @@ export default function PostEditor() {
 							           focus:border-amber-400/30 focus:ring-1 focus:ring-amber-400/15 transition-all"
 							/>
 							<div className="flex items-center gap-3 mt-3 pt-3 border-t border-[#1e1e1e] text-xs">
-								<span className="text-zinc-600">{charCount} chars</span>
-								<span className={`ml-auto ${charCls}`}>Twitter {charCount}/280</span>
+								<span className="text-zinc-600">{charCount} chars</span>							<button
+								type="button"
+								onClick={() => {
+									set("type", "thread");
+									set("content", [...(post.content || []), { id: `content-${Date.now()}`, text: "", media_ids: [], sequence: (post.content?.length || 1) + 1 }]);
+								}}
+								className="text-zinc-600 hover:text-amber-400 transition-colors"
+							>
+								+ Continue as thread
+							</button>								<span className={`ml-auto ${charCls}`}>Twitter {charCount}/280</span>
 							</div>
 						</>
 					)}
@@ -330,14 +339,27 @@ export default function PostEditor() {
 					{post.type === "reply" && (
 						<div className="space-y-5">
 							<div>
-								<p className="text-[11px] uppercase tracking-wider text-zinc-600 mb-2">Replying to tweet ID</p>
-								<input
-									type="text"
-									value={post.content?.[0]?.reply_to_tweet_id || ""}
-									onChange={(e) => updateContent(0, { reply_to_tweet_id: e.target.value })}
-									placeholder="e.g. 1234567890123456789"
-									className="input-field font-mono text-sm"
-								/>
+							<p className="text-[11px] uppercase tracking-wider text-zinc-600 mb-2">Reply to tweet</p>
+							<input
+								type="text"
+								value={post.content?.[0]?.reply_to_tweet_id || ""}
+								onChange={(e) => {
+									const val = e.target.value;
+									const match = val.match(/(?:twitter\.com|x\.com)\/([^/]+)\/status\/(\d+)/);
+									if (match) {
+										updateContent(0, { reply_to_tweet_id: match[2] });
+										setReplyParsed({ id: match[2], username: match[1] });
+									} else {
+										updateContent(0, { reply_to_tweet_id: val });
+										setReplyParsed(null);
+									}
+								}}
+								placeholder="Paste tweet URL or ID"
+								className="input-field text-sm"
+							/>
+							{replyParsed && (
+								<p className="text-xs text-emerald-400 mt-1.5">Replying to @{replyParsed.username}</p>
+							)}
 							</div>
 							<textarea
 								value={post.content?.[0]?.text || ""}
@@ -453,7 +475,7 @@ export default function PostEditor() {
 								{ id: "draft",  label: "Save as draft" },
 								{ id: "now",    label: "Publish now" },
 								{ id: "fixed",  label: "Exact time" },
-								{ id: "random", label: "Random window" },
+								{ id: "random", label: "Within active hours" },
 							].map((opt) => (
 								<label
 									key={opt.id}
@@ -554,7 +576,7 @@ export default function PostEditor() {
 								onClick={() => navigate("/posts")}
 								className="btn-ghost w-full justify-center border border-[#252525]"
 							>
-								Back to Posts
+								Back to Library
 							</button>
 						</>
 					) : (

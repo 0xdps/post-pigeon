@@ -1,20 +1,20 @@
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { LayoutDashboard, Clock, Settings, LogOut, FileText, Layers3 } from "lucide-react";
+import { LayoutDashboard, Clock, Settings, LogOut, FileText, Layers3, Plus } from "lucide-react";
 import { api, initializeFileAccess } from "../api.js";
 
 const NAV = [
-	{ to: "/",          icon: LayoutDashboard, label: "Dashboard", end: true, section: "main"    },
-	{ to: "/posts",     icon: FileText,        label: "Posts",            section: "content"  },
-	{ to: "/scheduled", icon: Clock,           label: "Scheduled",        section: "content"  },
-	{ to: "/platforms", icon: Layers3,         label: "Platforms",        section: "content"  },
-	{ to: "/settings",  icon: Settings,        label: "Settings",         section: "ops"      },
+	{ to: "/",          icon: LayoutDashboard, label: "Overview",   end: true, section: "main"    },
+	{ to: "/posts",     icon: FileText,        label: "Library",              section: "publish"  },
+	{ to: "/queue",     icon: Clock,           label: "Queue",                section: "publish"  },
+	{ to: "/platforms", icon: Layers3,         label: "Platforms",            section: "manage"   },
+	{ to: "/settings",  icon: Settings,        label: "Settings",             section: "manage"   },
 ];
 
 const SECTION_LABELS = {
-	main: "Overview",
-	content: "Content",
-	ops: "Operations",
+	main:    null,
+	publish: "Publish",
+	manage:  "Manage",
 };
 
 export default function Layout() {
@@ -42,8 +42,18 @@ export default function Layout() {
 			<aside className="w-56 flex-shrink-0 flex flex-col bg-[#111111] border-r border-[#1e1e1e]">
 				{/* Logo */}
 				<div className="h-14 flex items-center gap-2.5 px-5 border-b border-[#1e1e1e]">
-					<img src="/favicon.svg" alt="Logo" className="w-[28px] h-[28px]" />
+					<img src="/logo-32.png" alt="PostPigeon" className="w-7 h-7 object-contain" />
 					<span className="font-semibold text-sm tracking-tight">PostPigeon</span>
+				</div>
+
+				{/* Compose */}
+				<div className="px-2 py-2 border-b border-[#1e1e1e]">
+					<Link
+						to="/posts/new"
+						className="flex items-center justify-center gap-2 px-3 py-2 w-full rounded-lg text-sm font-medium bg-amber-400 text-black hover:bg-amber-300 transition-colors"
+					>
+						<Plus size={14} /> Compose
+					</Link>
 				</div>
 
 				{/* Nav */}
@@ -53,9 +63,11 @@ export default function Layout() {
 						if (!entries.length) return null;
 						return (
 							<div key={section} className="mb-3">
+							{SECTION_LABELS[section] && (
 								<p className="px-3 py-1 text-[11px] uppercase tracking-wider text-zinc-700 font-medium">
 									{SECTION_LABELS[section]}
 								</p>
+							)}
 								<div className="space-y-0.5">
 									{entries.map(({ to, icon: Icon, label, end }) => (
 										<NavLink

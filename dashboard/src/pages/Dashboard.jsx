@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Clock, AlertCircle, Plus, RefreshCw, Layers3 } from "lucide-react";
+import { CheckCircle2, Clock, Plus, RefreshCw } from "lucide-react";
 import { api } from "../api.js";
 
 const STATUS_STYLE = {
@@ -30,21 +30,27 @@ function fmt(ts) {
 }
 
 export default function Dashboard() {
-	const [jobs, setJobs]           = useState([]);
-	const [stats, setStats]         = useState({});
-	const [platforms, setPlatforms] = useState([]);
-	const [loading, setLoading]     = useState(true);
+	const [jobs, setJobs]             = useState([]);
+	const [stats, setStats]           = useState({});
+	const [postTitles, setPostTitles] = useState({});
+	const [todays, setTodays]         = useState({ count: 0, limit: 10 });
+	const [loading, setLoading]       = useState(true);
 
 	const load = useCallback(async () => {
 		try {
-			const [jobsRes, statsRes, platRes] = await Promise.all([
-api.listPublishJobs({ limit: 100 }),
-api.getPostStats(),
-				api.getPlatforms(),
+			const [jobsRes, statsRes, postsRes, stateRes, settingsRes] = await Promise.all([
+				api.listPublishJobs({ limit: 100 }),
+				api.getPostStats(),
+				api.listPosts({ limit: 500 }),
+				api.getState(),
+				api.getSettings(),
 			]);
 			setJobs(jobsRes?.jobs || []);
 			setStats(statsRes?.stats || {});
-			setPlatforms(platRes?.platforms || []);
+			const map = {};
+			for (const p of postsRes?.posts || []) map[p.id] = p.title || p.id;
+			setPostTitles(map);
+			setTodays({ count: stateRes?.posts_today || 0, limit: settingsRes?.daily_limit || 10 });
 		} catch (err) {
 			console.error("Dashboard load failed:", err);
 		} finally {
@@ -104,10 +110,10 @@ api.getPostStats(),
 			{/* Stats */}
 			<div className="grid grid-cols-4 gap-4 mb-8">
 				{[
-					{ label: "Draft",     value: stats.draft  || 0, tone: "text-zinc-400"    },
-					{ label: "Upcoming",  value: upcoming.length,   tone: "text-amber-400"   },
-					{ label: "Posted",    value: stats.posted || 0, tone: "text-emerald-400" },
-					{ label: "Failed",    value: failedCount,       tone: failedCount > 0 ? "text-red-400" : "text-zinc-600" },
+				{ label: "Draft",  value: stats.draft  || 0, tone: "text-zinc-400"    },
+				{ label: "Today",  value: `${todays.count}/${todays.limit}`, tone: todays.count >= todays.limit ? "text-red-400" : todays.count > 0 ? "text-amber-400" : "text-emerald-400" },
+				{ label: "Posted", value: stats.posted || 0, tone: "text-emerald-400" },
+				{ label: "Failed", value: failedCount,       tone: failedCount > 0 ? "text-red-400" : "text-zinc-600" },
 				].map((s) => (
 <div key={s.label} className="card rounded-xl p-4">
 						<p className="text-zinc-600 text-[11px] uppercase tracking-wider mb-1">{s.label}</p>
@@ -123,7 +129,7 @@ api.getPostStats(),
 						<h2 className="text-xs font-medium text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
 							<Clock size={12} /> Upcoming
 						</h2>
-						<Link to="/scheduled" className="text-xs text-zinc-600 hover:text-amber-400 transition-colors">
+					<Link to="/queue" className="text-xs text-zinc-600 hover:text-amber-400 transition-colors">
 							See all →
 						</Link>
 					</div>
@@ -137,7 +143,7 @@ api.getPostStats(),
 					) : (
 <div className="space-y-1.5">
 							{upcoming.map((job) => (
-<JobRow key={job.job_id} job={job} />
+<JobRow key={job.id} job={job} postTitles={postTitles} />
 							))}
 						</div>
 					)}
@@ -149,7 +155,7 @@ api.getPostStats(),
 						<h2 className="text-xs font-medium text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
 							<CheckCircle2 size={12} /> Recent
 						</h2>
-						<Link to="/scheduled" className="text-xs text-zinc-600 hover:text-emerald-400 transition-colors">
+					<Link to="/queue" className="text-xs text-zinc-600 hover:text-emerald-400 transition-colors">
 							See all →
 						</Link>
 					</div>
@@ -160,57 +166,31 @@ api.getPostStats(),
 					) : (
 <div className="space-y-1.5">
 							{recent.map((job) => (
-<JobRow key={job.job_id} job={job} showPostedAt />
+<JobRow key={job.id} job={job} showPostedAt postTitles={postTitles} />
 							))}
 						</div>
 					)}
 				</div>
 			</div>
 
-			{/* Platform status */}
-			{platforms.length > 0 && (
-				<div className="mt-8">
-					<h2 className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-						<Layers3 size={12} /> Platforms
-					</h2>
-					<div className="grid grid-cols-3 gap-2">
-						{platforms.map((p) => (
-<div key={p.key} className="card rounded-lg px-3 py-2.5 flex items-center justify-between">
-								<span className={`text-xs font-medium ${PLATFORM_COLOR[p.key] || "text-zinc-300"}`}>
-									{p.name}
-								</span>
-								<span className={`text-[10px] px-2 py-0.5 rounded-full border ${
-p.enabled
-? "text-emerald-300 bg-emerald-400/10 border-emerald-400/20"
-: "text-zinc-600 bg-zinc-700/20 border-zinc-700/30"
-}`}>
-									{p.enabled ? "on" : "off"}
-								</span>
-							</div>
-						))}
-					</div>
-				</div>
-			)}
-		</div>
+</div>
 	);
 }
 
-function JobRow({ job, showPostedAt = false }) {
+function JobRow({ job, showPostedAt = false, postTitles = {} }) {
 	const s = STATUS_STYLE[job.status] || STATUS_STYLE.cancelled;
 	const color = PLATFORM_COLOR[job.platform_key] || "text-zinc-400";
 	const ts = showPostedAt ? job.posted_at : job.scheduled_at;
+	const title = postTitles[job.post_id] || job.post_id;
 
 	return (
 <div className="card rounded-lg px-3 py-2 flex items-center gap-3">
 			<span className={`text-xs font-medium ${color} w-16 flex-shrink-0 truncate`}>
 				{job.platform_key}
 			</span>
-			<Link
-				to={`/posts/${job.post_id}`}
-				className="flex-1 text-xs text-zinc-400 hover:text-zinc-200 truncate transition-colors"
-			>
-				{job.post_id}
-			</Link>
+			<span className="flex-1 text-xs text-zinc-400 truncate" title={title}>
+				{title}
+			</span>
 			<span className={`text-[10px] px-1.5 py-0.5 rounded border flex-shrink-0 ${s.bg} ${s.text} ${s.border}`}>
 				{job.status}
 			</span>
