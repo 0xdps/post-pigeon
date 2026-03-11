@@ -1,7 +1,7 @@
 # PostPigeon Development & Production Task Runner
 
 # Variables
-PORTLESS_ALIAS := "autoposter"
+PORTLESS_ALIAS := "postpigeon"
 PORTLESS_PROXY_PORT := "1355"
 COMPOSE_FILE := "docker-compose.yml"
 APP_INTERNAL_PORT := "8080"
@@ -66,6 +66,18 @@ dev:
 
     echo "🚀 Starting PostPigeon Development Environment"
     echo ""
+        echo "Starting Portless proxy (required for sqlite-hub)..."
+        npx portless proxy start >/dev/null 2>&1 || true
+
+        echo "Checking sqlite-hub connectivity..."
+        HUB_URL="${SQLITE_HUB_URL:-http://sqlite-hub.localhost:1355/}"
+        if ! curl -sf "$HUB_URL" >/dev/null 2>&1; then
+            echo "❌ sqlite-hub not reachable at $HUB_URL"
+            echo "   Start sqlite-hub locally, then run: portless list  to verify the alias."
+            exit 1
+        fi
+        echo "✅ sqlite-hub is reachable"
+
         echo "Starting containers (Docker will assign a random port)..."
         $COMPOSE --profile dev up -d --build --force-recreate {{DEV_CADDY_SERVICE}}
 
@@ -93,7 +105,6 @@ dev:
     echo "Direct access:"
     echo "  → http://localhost:$PORT"
     echo ""
-        npx portless proxy start >/dev/null 2>&1 || true
         npx portless alias {{PORTLESS_ALIAS}} $PORT >/dev/null 2>&1 || true
         echo "✅ Portless alias ready:"
         echo "  → http://{{PORTLESS_ALIAS}}.localhost:{{PORTLESS_PROXY_PORT}}"
@@ -186,7 +197,7 @@ prod:
     sleep 3
     
     APP_PORT=${APP_INTERNAL_PORT:-8080}
-    PORT=$(docker port autoposter $APP_PORT 2>/dev/null | cut -d: -f2)
+    PORT=$(docker port postpigeon $APP_PORT 2>/dev/null | cut -d: -f2)
     
     if [ -z "$PORT" ]; then
         echo "❌ Could not detect production port. Check container status:"
@@ -307,7 +318,7 @@ setup-portless:
     
     # Detect the dynamic port Docker assigned
     CADDY_PORT=${CADDY_INTERNAL_PORT:-{{CADDY_INTERNAL_PORT}}}
-    PORT=$(docker port autoposter-caddy $CADDY_PORT 2>/dev/null | cut -d: -f2)
+    PORT=$(docker port postpigeon-caddy $CADDY_PORT 2>/dev/null | cut -d: -f2)
     
     if [ -z "$PORT" ]; then
         echo "❌ Caddy container not running or port not exposed."
@@ -335,7 +346,7 @@ setup-portless:
     echo "  /api/* → backend"
     echo "  /* → frontend"
 
-# Optional: configure Portless on port 80 (requires sudo) for bare autoposter.localhost
+# Optional: configure Portless on port 80 (requires sudo) for bare postpigeon.localhost
 setup-portless-80:
     #!/usr/bin/env bash
     if ! command -v portless >/dev/null 2>&1; then
@@ -344,7 +355,7 @@ setup-portless-80:
     fi
 
     CADDY_PORT=${CADDY_INTERNAL_PORT:-{{CADDY_INTERNAL_PORT}}}
-    PORT=$(docker port autoposter-caddy $CADDY_PORT 2>/dev/null | cut -d: -f2)
+    PORT=$(docker port postpigeon-caddy $CADDY_PORT 2>/dev/null | cut -d: -f2)
 
     if [ -z "$PORT" ]; then
         echo "❌ Caddy container not running or port not exposed."
@@ -366,7 +377,7 @@ setup-portless-prod:
     
     # Detect production port
     APP_PORT=${APP_INTERNAL_PORT:-8080}
-    PORT=$(docker port autoposter $APP_PORT 2>/dev/null | cut -d: -f2)
+    PORT=$(docker port postpigeon $APP_PORT 2>/dev/null | cut -d: -f2)
     
     if [ -z "$PORT" ]; then
         echo "❌ Production container not running."
@@ -429,9 +440,9 @@ show-ports:
     #!/usr/bin/env bash
     echo "🔌 Current Port Assignments:"
     echo ""
-    if docker ps --format "{{{{.Names}}}}" | grep -q "autoposter-caddy"; then
+    if docker ps --format "{{{{.Names}}}}" | grep -q "postpigeon-caddy"; then
         CADDY_PORT=${CADDY_INTERNAL_PORT:-{{CADDY_INTERNAL_PORT}}}
-        PORT=$(docker port autoposter-caddy $CADDY_PORT 2>/dev/null | cut -d: -f2)
+        PORT=$(docker port postpigeon-caddy $CADDY_PORT 2>/dev/null | cut -d: -f2)
         echo "Development (Caddy):"
         echo "  → http://localhost:$PORT"
         if command -v portless >/dev/null 2>&1; then
@@ -443,9 +454,9 @@ show-ports:
         echo "Development: (not running)"
     fi
     echo ""
-    if docker ps --format "{{{{.Names}}}}" | grep -q "^autoposter$"; then
+    if docker ps --format "{{{{.Names}}}}" | grep -q "^postpigeon$"; then
         APP_PORT=${APP_INTERNAL_PORT:-8080}
-        PROD_PORT=$(docker port autoposter $APP_PORT 2>/dev/null | cut -d: -f2)
+        PROD_PORT=$(docker port postpigeon $APP_PORT 2>/dev/null | cut -d: -f2)
         echo "Production:"
         echo "  → http://localhost:$PROD_PORT"
     else

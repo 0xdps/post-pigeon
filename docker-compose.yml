@@ -1,7 +1,7 @@
 services:
   # BACKEND - Dev mode (hot reload with nodemon)
   backend:
-    container_name: autoposter-backend
+    container_name: postpigeon-backend
     profiles: ["dev"]
     build:
       context: .
@@ -32,7 +32,7 @@ services:
   # FRONTEND - Dev only (hot reload)
   # Exclude from production (--profile prod)
   frontend:
-    container_name: autoposter-dashboard
+    container_name: postpigeon-dashboard
     profiles: ["dev"]
     build:
       context: ./dashboard
@@ -55,7 +55,7 @@ services:
 
   # CADDY - Reverse proxy (dev mode)
   caddy:
-    container_name: autoposter-caddy
+    container_name: postpigeon-caddy
     profiles: ["dev"]
     image: caddy:2-alpine
     # Keep dev Caddy config dynamic (no repo-level Caddyfile mount).
@@ -108,7 +108,7 @@ services:
 
   # PRODUCTION APP - Unified build (Caddy + Node)
   app:
-    container_name: autoposter
+    container_name: postpigeon
     profiles: ["prod"]
     build:
       context: .
@@ -121,10 +121,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=${APP_INTERNAL_PORT:-8080}
-      - API_KEY=${API_KEY}
-      - API_KEY_SECRET=${API_KEY_SECRET}
-      - ACCESS_TOKEN=${ACCESS_TOKEN}
-      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - SQLITE_HUB_URL=${SQLITE_HUB_URL}
       - SQLITE_HUB_SERVICE_SECRET=${SQLITE_HUB_SERVICE_SECRET}
       - SQLITE_HUB_DB=${SQLITE_HUB_DB:-postpigeon}
