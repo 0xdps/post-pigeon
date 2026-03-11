@@ -1,0 +1,25 @@
+docker-compose.yml
+  a8dbad1acea95ed6 4,35,58,111
+justfile
+  a8dbad1acea95ed6 4,69-80,200,321,349,358,380,443,445,457,459
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "2b013825eafdc2faf99d1d934bbe74b4429d94c5",
+  "prompts": {
+    "a8dbad1acea95ed6": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "57ef86b6-56c8-4270-b6f9-9459c52eaf40",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 30,
+      "total_deletions": 19,
+      "accepted_lines": 26,
+      "overriden_lines": 0
+    }
+  }
+}
