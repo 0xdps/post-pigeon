@@ -1,0 +1,651 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Schedule Once, Post Everywhere">
+  <!-- ──────────────────────────────────────
+       HERO
+  ─────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-bg-grid" aria-hidden="true"></div>
+    <div class="hero-content">
+      <span class="chip">Coming soon</span>
+      <h1>
+        One inbox.<br />
+        <em>Every</em> platform.
+      </h1>
+      <p class="hero-sub">
+        PostPigeon is a developer-first content scheduler that posts to X&nbsp;(Twitter),
+        LinkedIn, Threads, Reddit, Dev.to and Bluesky — from a single clean dashboard.
+        Write once, publish everywhere, on your terms.
+      </p>
+      <a href="#waitlist" class="btn-primary">Join the waitlist &darr;</a>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-logo-wrap" aria-label="PostPigeon logo">
+        <img
+          src="/logo-transparent.png"
+          alt="PostPigeon — a pigeon carrying an envelope"
+          width="320"
+          height="320"
+          class="hero-logo"
+        />
+      </div>
+      <div class="platform-grid">
+        <div class="platform-card" style="animation-delay:0s">
+          <span class="platform-icon">&#x1D54F;</span>
+          <span class="platform-name">X / Twitter</span>
+          <span class="platform-dot"></span>
+        </div>
+        <div class="platform-card" style="animation-delay:0.1s">
+          <span class="platform-icon">in</span>
+          <span class="platform-name">LinkedIn</span>
+          <span class="platform-dot"></span>
+        </div>
+        <div class="platform-card" style="animation-delay:0.2s">
+          <span class="platform-icon">@</span>
+          <span class="platform-name">Threads</span>
+          <span class="platform-dot"></span>
+        </div>
+        <div class="platform-card" style="animation-delay:0.3s">
+          <span class="platform-icon">r/</span>
+          <span class="platform-name">Reddit</span>
+          <span class="platform-dot"></span>
+        </div>
+        <div class="platform-card" style="animation-delay:0.4s">
+          <span class="platform-icon">&#9650;</span>
+          <span class="platform-name">Dev.to</span>
+          <span class="platform-dot"></span>
+        </div>
+        <div class="platform-card" style="animation-delay:0.5s">
+          <span class="platform-icon">&#9729;</span>
+          <span class="platform-name">Bluesky</span>
+          <span class="platform-dot"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────
+       FEATURES
+  ─────────────────────────────────────── -->
+  <section class="features" id="features">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="chip">What it does</span>
+        <h2>Built for builders who ship content.</h2>
+      </div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <span class="feature-num">01</span>
+          <div>
+            <h3>Queue &amp; Schedule</h3>
+            <p>Drop posts into a queue or set exact publish times. PostPigeon handles the rest — even across time zones.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-num">02</span>
+          <div>
+            <h3>Thread builder</h3>
+            <p>Compose Twitter / X threads visually. Preview each tweet with character counts before it goes live.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-num">03</span>
+          <div>
+            <h3>Content bank</h3>
+            <p>Store evergreen posts and re-use them. Tag, search, and re-queue content without duplicating work.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-num">04</span>
+          <div>
+            <h3>Image attachments</h3>
+            <p>Upload images once. Attach them to any post. Files are stored securely and served on demand.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-num">05</span>
+          <div>
+            <h3>Activity log</h3>
+            <p>Every post, every platform, every result. Full audit trail so you always know what went out and when.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-num">06</span>
+          <div>
+            <h3>Self-hostable</h3>
+            <p>Deploy on your own infra with Docker. Full ownership of your data — no vendor lock-in, ever.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────
+       PLATFORMS STRIP
+  ─────────────────────────────────────── -->
+  <section class="platforms-strip">
+    <p>Posts to</p>
+    <div class="platforms-row">
+      <span>X / Twitter</span>
+      <span class="dot">·</span>
+      <span>LinkedIn</span>
+      <span class="dot">·</span>
+      <span>Threads</span>
+      <span class="dot">·</span>
+      <span>Reddit</span>
+      <span class="dot">·</span>
+      <span>Dev.to</span>
+      <span class="dot">·</span>
+      <span>Bluesky</span>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────
+       HOW IT WORKS
+  ─────────────────────────────────────── -->
+  <section class="how" id="how">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="chip">How it works</span>
+        <h2>From draft to published in three steps.</h2>
+      </div>
+      <ol class="steps">
+        <li>
+          <span class="step-num">1</span>
+          <div>
+            <strong>Connect your platforms.</strong>
+            <p>Authorise PostPigeon once per platform. Credentials stay in your environment — we never store tokens on a shared server.</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <div>
+            <strong>Write your post.</strong>
+            <p>Use the rich editor, attach images, build a thread, or pull from your content bank. Set a schedule or queue it up.</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <div>
+            <strong>PostPigeon dispatches it.</strong>
+            <p>The scheduler fires at the right time and posts to every platform you chose. Check the activity log for receipts.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────
+       WAITLIST
+  ─────────────────────────────────────── -->
+  <section class="waitlist" id="waitlist">
+    <div class="waitlist-inner">
+      <span class="chip">Early access</span>
+      <h2>Be first to land.</h2>
+      <p>
+        PostPigeon is currently in private development. Drop your email and we will
+        notify you the moment early access opens. No spam — just one email when it is ready.
+      </p>
+      <form
+        class="waitlist-form"
+        name="waitlist"
+        method="POST"
+        action="/thank-you"
+        data-netlify="true"
+        novalidate
+      >
+        <input type="hidden" name="form-name" value="waitlist" />
+        <div class="field-row">
+          <label for="email" class="visually-hidden">Email address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+          />
+          <button type="submit">Notify me</button>
+        </div>
+        <p class="form-note">
+          We store only your email. Read our <a href="/privacy">Privacy Policy</a>.
+        </p>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ─── Hero ─── */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+    min-height: calc(100vh - 56px);
+    padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 6vw, 5rem);
+  }
+
+  .hero-bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 540px;
+  }
+
+  .hero-content h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .hero-content h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.8;
+    max-width: 440px;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+    padding: 0.75rem 2rem;
+    border-radius: var(--radius);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    font-family: var(--mono);
+    transition: background 0.2s, transform 0.15s;
+    align-self: flex-start;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .hero-visual {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .hero-logo-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero-logo {
+    width: clamp(160px, 22vw, 280px);
+    height: auto;
+    animation: logoFloat 6s ease-in-out infinite;
+    filter: drop-shadow(0 12px 32px rgba(46, 119, 220, 0.18));
+  }
+
+  @keyframes logoFloat {
+    0%, 100% { transform: translateY(0);    }
+    50%       { transform: translateY(-10px); }
+  }
+
+  .platform-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    max-width: 350px;
+    width: 100%;
+  }
+
+  .platform-card {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.7rem 1rem;
+    animation: cardIn 0.5s both;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .platform-card:hover {
+    border-color: var(--accent);
+    box-shadow: 3px 3px 0 var(--accent-light);
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .platform-icon {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .platform-name {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+
+  .platform-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    margin-left: auto;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(46, 143, 232, 0.5);
+  }
+
+  /* ─── Section commons ─── */
+  .section-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: clamp(4rem, 8vw, 6rem) clamp(1.5rem, 5vw, 2rem);
+  }
+
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .section-header h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  /* ─── Features ─── */
+  .features {
+    background: var(--paper-warm);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .feature-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+  }
+
+  .feature-item {
+    display: flex;
+    gap: 1.2rem;
+    padding: 1.8rem;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .feature-item:hover { background: var(--accent-light); }
+  .feature-item:nth-child(even) { border-right: none; }
+  .feature-item:nth-last-child(-n+2) { border-bottom: none; }
+
+  .feature-num {
+    font-size: 0.68rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    min-width: 28px;
+    padding-top: 2px;
+  }
+
+  .feature-item h3 {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    font-weight: 400;
+    margin-bottom: 0.4rem;
+  }
+
+  .feature-item p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ─── Platforms strip ─── */
+  .platforms-strip {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem clamp(1.5rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .platforms-strip p {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+
+  .platforms-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .platforms-row span {
+    font-size: 0.78rem;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+
+  .dot { color: var(--border); }
+
+  /* ─── How it works ─── */
+  .how { background: var(--paper); }
+
+  .steps {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+  }
+
+  .steps li {
+    display: flex;
+    gap: 1.5rem;
+    padding: 2rem;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .steps li:last-child { border-bottom: none; }
+
+  .step-num {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    font-style: italic;
+    color: var(--border);
+    line-height: 1;
+    min-width: 36px;
+    flex-shrink: 0;
+  }
+
+  .steps strong {
+    display: block;
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    font-weight: 400;
+    margin-bottom: 0.4rem;
+  }
+
+  .steps p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ─── Waitlist ─── */
+  .waitlist {
+    background: var(--ink);
+    padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 5vw, 2rem);
+  }
+
+  .waitlist-inner {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    text-align: center;
+    align-items: center;
+  }
+
+  .waitlist .chip {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .waitlist h2 {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 400;
+    color: var(--paper);
+    letter-spacing: -0.01em;
+  }
+
+  .waitlist > .waitlist-inner > p {
+    font-size: 0.85rem;
+    color: #8f8c85;
+    max-width: 460px;
+    line-height: 1.8;
+  }
+
+  .waitlist-form {
+    width: 100%;
+    max-width: 460px;
+    margin-top: 0.5rem;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 0;
+    border: 1px solid #2a2820;
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .field-row:focus-within { border-color: var(--accent); }
+
+  .field-row input {
+    flex: 1;
+    background: #1a1915;
+    border: none;
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    padding: 0.8rem 1.2rem;
+    outline: none;
+  }
+
+  .field-row input::placeholder { color: #4a4840; }
+
+  .field-row button {
+    background: var(--accent);
+    border: none;
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    padding: 0 1.5rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+
+  .field-row button:hover { background: #b04420; }
+
+  .form-note {
+    font-size: 0.72rem;
+    color: #4a4840;
+    margin-top: 0.75rem;
+  }
+
+  .form-note a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: unset;
+      padding-bottom: 4rem;
+    }
+
+    .hero-visual {
+      align-items: center;
+    }
+
+    .hero-logo {
+      width: 140px;
+    }
+
+    .platform-grid {
+      max-width: 100%;
+    }
+
+    .feature-list { grid-template-columns: 1fr; }
+
+    .feature-item { border-right: none; }
+
+    .feature-item:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
+
+    .feature-item:last-child { border-bottom: none; }
+  }
+</style>

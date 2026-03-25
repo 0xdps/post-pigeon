@@ -1,0 +1,298 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "PostPigeon — schedule and automate your developer content across every major platform from one place." } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} — PostPigeon</title>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo-32.png" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/logo-64.png" />
+
+    <!-- Umami Analytics -->
+    <script defer src="https://manage.anately.sh/script.js" data-website-id="66cbf2d8-d463-4885-b162-8d2e16f7db4e"></script>
+
+    <!-- Fonts: Instrument Serif + DM Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="site-wrapper">
+      <header>
+        <a href="/" class="logo" aria-label="PostPigeon home">
+          <img src="/logo-32.png" width="32" height="32" alt="" aria-hidden="true" />
+          <span>PostPigeon</span>
+        </a>
+        <nav>
+          <a href="/#features">Features</a>
+          <a href="/#waitlist" class="nav-cta">Join waitlist</a>
+        </nav>
+      </header>
+
+      <main>
+        <slot />
+      </main>
+
+      <footer>
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <a href="/" class="logo">
+              <img src="/logo-32.png" width="24" height="24" alt="" aria-hidden="true" />
+              <span>PostPigeon</span>
+            </a>
+            <p>Schedule once, post everywhere.</p>
+          </div>
+          <div class="footer-links">
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/tos">Terms of Service</a>
+            <a href="mailto:hello@postpigeon.app">Contact</a>
+          </div>
+          <p class="footer-copy">&copy; {new Date().getFullYear()} PostPigeon. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --ink: #0d1b3e;
+    --paper: #f7f4ee;
+    --paper-warm: #ece8df;
+    --accent: #f0920a;
+    --accent-light: #fef0d9;
+    --blue: #2e8fe8;
+    --blue-light: #daeeff;
+    --muted: #7a7567;
+    --border: #d4cfc5;
+    --mono: "DM Mono", "Fira Mono", monospace;
+    --serif: "Instrument Serif", Georgia, serif;
+    --radius: 3px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: clamp(14px, 1.5vw, 15px);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .site-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── Header ─── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(1.5rem, 5vw, 4rem);
+    height: 56px;
+    background: rgba(247, 244, 238, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .logo img { flex-shrink: 0; display: block; }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--ink); }
+
+  .nav-cta {
+    color: var(--accent) !important;
+    border: 1px solid var(--accent);
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius);
+    transition: background 0.2s, color 0.2s !important;
+  }
+
+  .nav-cta:hover {
+    background: var(--accent) !important;
+    color: var(--paper) !important;
+  }
+
+  /* ─── Main ─── */
+  main {
+    flex: 1;
+  }
+
+  /* ─── Footer ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem clamp(1.5rem, 5vw, 4rem);
+    background: var(--paper-warm);
+  }
+
+  .footer-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .footer-brand p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--ink); }
+
+  .footer-copy {
+    font-size: 0.72rem;
+    color: var(--border);
+    margin-top: 0.5rem;
+  }
+
+  /* ─── Prose pages (privacy / tos) ─── */
+  .prose-page {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: clamp(3rem, 7vw, 5rem) clamp(1.5rem, 5vw, 2rem);
+  }
+
+  .prose-page h1 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose-page .meta {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+  }
+
+  .prose-page h2 {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    font-weight: 400;
+    font-style: italic;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--accent);
+  }
+
+  .prose-page p {
+    margin-bottom: 1rem;
+    color: #2a2820;
+  }
+
+  .prose-page ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1rem;
+  }
+
+  .prose-page ul li {
+    padding-left: 1.2rem;
+    position: relative;
+    color: #2a2820;
+    margin-bottom: 0.4rem;
+  }
+
+  .prose-page ul li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .prose-page a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ─── Utility ─── */
+  .chip {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius);
+  }
+
+  @media (max-width: 600px) {
+    nav a:not(.nav-cta) { display: none; }
+  }
+</style>
