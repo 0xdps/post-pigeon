@@ -154,7 +154,7 @@ export default function Posts() {
 									onClick={() => setFilters({ ...filters, type: filters.type === t ? "" : t })}
 										className={`px-3 py-1 rounded-md text-sm transition-colors ${
 										filters.type === t
-												? "bg-amber-400/20 text-amber-300 border border-amber-400/30"
+												? "bg-sky-500/20 text-sky-400 border border-sky-500/30"
 												: "bg-[#1c1c1c] text-zinc-400 border border-[#252525] hover:text-zinc-200"
 									}`}
 								>
@@ -174,7 +174,7 @@ export default function Posts() {
 									onClick={() => setFilters({ ...filters, status: filters.status === s ? "" : s })}
 									className={`px-3 py-1 rounded-md text-sm transition-colors ${
 										filters.status === s
-											? "bg-amber-400/20 text-amber-300 border border-amber-400/30"
+											? "bg-sky-500/20 text-sky-400 border border-sky-500/30"
 											: "bg-[#1c1c1c] text-zinc-400 border border-[#252525] hover:text-zinc-200"
 									}`}
 								>
@@ -204,7 +204,7 @@ export default function Posts() {
 			) : posts.length === 0 ? (
 				<div className="py-12 text-center card rounded-xl">
 					<p className="text-zinc-500 mb-3">No posts yet</p>
-					<a href="/posts/new" className="text-amber-400 hover:text-amber-300 text-sm">
+					<a href="/posts/new" className="text-sky-500 hover:text-sky-400 text-sm">
 						Create your first post →
 					</a>
 				</div>
@@ -308,7 +308,7 @@ function PostCard({ post, onDelete, onDuplicate }) {
 					<div className="flex items-center gap-3 mb-2">
 						<a
 							href={`/posts/${post.id}`}
-							className="text-sm font-medium text-zinc-100 hover:text-amber-400 transition-colors"
+							className="text-sm font-medium text-zinc-100 hover:text-sky-500 transition-colors"
 							onClick={(e) => e.stopPropagation()}
 						>
 							{post.title}
@@ -375,7 +375,7 @@ function PostCard({ post, onDelete, onDuplicate }) {
 								<div className="space-y-3 mb-3">
 									{post.type === "thread" && contentText.length > 1 ? (
 										contentText.map((text, idx) => (
-											<div key={idx} className="border-l-2 border-amber-400/30 pl-3">
+											<div key={idx} className="border-l-2 border-sky-500/30 pl-3">
 												<p className="text-xs text-zinc-500 mb-1">Tweet {idx + 1}</p>
 												<p className="text-sm text-zinc-300 whitespace-pre-wrap font-mono">{text}</p>
 											</div>

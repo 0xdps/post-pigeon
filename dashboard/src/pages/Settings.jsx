@@ -44,7 +44,7 @@ function Toggle({ value, onChange }) {
 			type="button"
 			onClick={() => onChange(!value)}
 			className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
-				value ? "bg-amber-500" : "bg-zinc-700"
+				value ? "bg-sky-600" : "bg-zinc-700"
 			}`}
 		>
 			<span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${value ? "translate-x-5" : ""}`} />
@@ -108,7 +108,7 @@ export default function Settings() {
 					>
 						<div className="flex items-center gap-3">
 							<Toggle value={!form.paused} onChange={(v) => set("paused", !v)} />
-							<span className={`text-sm ${!form.paused ? "text-amber-400" : "text-zinc-500"}`}>
+							<span className={`text-sm ${!form.paused ? "text-sky-500" : "text-zinc-500"}`}>
 								{form.paused ? "Disabled" : "Enabled"}
 							</span>
 						</div>

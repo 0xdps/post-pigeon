@@ -4,7 +4,7 @@ import { Clock, CheckCircle2, AlertCircle, XCircle, RefreshCw, Plus, ExternalLin
 import { api } from "../api.js";
 
 const STATUS_STYLE = {
-	pending:   "bg-amber-500/10  text-amber-300  border-amber-500/20",
+	pending:   "bg-sky-600/10  text-sky-400  border-sky-600/20",
 	posted:    "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
 	failed:    "bg-red-500/10    text-red-300     border-red-500/20",
 	cancelled: "bg-zinc-800      text-zinc-500    border-zinc-700",
@@ -141,7 +141,7 @@ export default function Queue() {
 						onClick={() => setFilter(f)}
 						className={`capitalize text-xs px-3 py-2 border-b-2 transition-colors -mb-px ${
 							f === filter
-								? "border-amber-400 text-amber-300"
+								? "border-sky-500 text-sky-400"
 								: "border-transparent text-zinc-500 hover:text-zinc-300"
 						}`}
 					>
@@ -156,7 +156,7 @@ export default function Queue() {
 				<div className="text-center py-16 text-zinc-600">
 					<Clock size={28} className="mx-auto mb-3 opacity-30" />
 					<p className="text-sm">No jobs{filter !== "all" ? ` with status "${filter}"` : ""}</p>
-					<Link to="/posts/new" className="mt-4 inline-flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300">
+					<Link to="/posts/new" className="mt-4 inline-flex items-center gap-1.5 text-xs text-sky-500 hover:text-sky-400">
 						<Plus size={12} /> Create a post
 					</Link>
 				</div>
@@ -181,7 +181,7 @@ export default function Queue() {
 											{/* Post title */}
 											<Link
 												to={`/posts/${job.post_id}`}
-												className="flex-1 text-sm text-zinc-300 hover:text-amber-300 truncate"
+												className="flex-1 text-sm text-zinc-300 hover:text-sky-400 truncate"
 												title={title}
 											>
 												{title}
@@ -214,7 +214,7 @@ export default function Queue() {
 														type="button"
 														onClick={() => retryJob(job.id)}
 														disabled={retrying === job.id}
-														className="text-[11px] text-zinc-600 hover:text-amber-400 px-2 py-1 rounded hover:bg-amber-500/10 transition-colors inline-flex items-center gap-1"
+														className="text-[11px] text-zinc-600 hover:text-sky-500 px-2 py-1 rounded hover:bg-sky-600/10 transition-colors inline-flex items-center gap-1"
 													>
 														<RotateCcw size={11} className={retrying === job.id ? "animate-spin" : ""} />
 														{retrying === job.id ? "…" : "Retry"}

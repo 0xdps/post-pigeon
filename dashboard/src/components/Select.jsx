@@ -47,7 +47,7 @@ export default function Select({ value, onChange, options = [], placeholder = "S
 					bg-[#1d1d1d] border rounded-lg text-sm text-left
 					transition-all duration-150 cursor-pointer
 					${open
-						? "border-amber-400/40 ring-1 ring-amber-400/20 text-zinc-100"
+						? "border-sky-500/40 ring-1 ring-sky-500/20 text-zinc-100"
 						: "border-[#2e2e2e] text-zinc-300 hover:border-[#3a3a3a]"
 					}
 				`}
@@ -79,13 +79,13 @@ export default function Select({ value, onChange, options = [], placeholder = "S
 									w-full flex items-center justify-between gap-2
 									px-3 py-2 text-sm text-left transition-colors
 									${isSelected
-										? "text-amber-300 bg-amber-400/8"
+										? "text-sky-400 bg-sky-500/8"
 										: "text-zinc-300 hover:bg-white/[0.05] hover:text-zinc-100"
 									}
 								`}
 							>
 								<span className="truncate">{item.label}</span>
-								{isSelected && <Check size={13} className="shrink-0 text-amber-400" />}
+								{isSelected && <Check size={13} className="shrink-0 text-sky-500" />}
 							</button>
 						);
 					})}

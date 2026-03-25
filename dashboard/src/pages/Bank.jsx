@@ -152,7 +152,7 @@ export default function Bank() {
 					<div
 						key={item.id}
 						className={`card rounded-xl overflow-hidden transition-colors ${
-							isQueued ? "border-amber-400/30" : "hover:border-zinc-700"
+							isQueued ? "border-sky-500/30" : "hover:border-zinc-700"
 						}`}
 					>
 						<div
@@ -166,7 +166,7 @@ export default function Bank() {
 								void loadTextForItem(item);
 							}}
 						>
-							<span className={`font-mono text-sm w-16 flex-shrink-0 ${isPosted ? "text-emerald-400" : "text-amber-400"}`}>{item.id}</span>
+							<span className={`font-mono text-sm w-16 flex-shrink-0 ${isPosted ? "text-emerald-400" : "text-sky-500"}`}>{item.id}</span>
 
 								<p className="flex-1 text-sm text-zinc-400 truncate leading-relaxed">
 							{item.title}
@@ -187,7 +187,7 @@ export default function Bank() {
 									? "bg-emerald-500/10 text-emerald-400 cursor-default"
 									: isPosted
 									? "bg-zinc-800 text-zinc-600 cursor-default opacity-40"
-									: "bg-zinc-800 text-zinc-400 hover:bg-amber-400/10 hover:text-amber-400"
+									: "bg-zinc-800 text-zinc-400 hover:bg-sky-500/10 hover:text-sky-500"
 							}`}
 						>
 							{isAdded || isQueued ? <Check size={11} /> : <Plus size={11} />}
@@ -245,7 +245,7 @@ export default function Bank() {
 								className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors disabled:opacity-50 ${
 									isPosted
 										? "bg-emerald-500/10 text-emerald-400 cursor-default"
-										: "bg-amber-400/10 text-amber-400 hover:bg-amber-400/20"
+										: "bg-sky-500/10 text-sky-500 hover:bg-sky-500/20"
 								}`}
 							>
 								{isPosted ? <CheckCircle size={11} /> : <Zap size={11} />}
@@ -262,7 +262,7 @@ export default function Bank() {
 								</span>
 							)}
 							{postResult[item.id]?.limitBlocked && (
-								<span className="text-xs text-amber-400">
+								<span className="text-xs text-sky-500">
 									Daily limit reached. Enable override in Settings.
 								</span>
 							)}

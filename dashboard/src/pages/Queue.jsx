@@ -114,7 +114,7 @@ export default function Queue() {
 									<span className="text-sm text-zinc-700 font-mono w-5 text-center flex-shrink-0">
 										{i + 1}
 									</span>
-									<span className="font-mono text-sm text-amber-400 w-16 flex-shrink-0">
+									<span className="font-mono text-sm text-sky-500 w-16 flex-shrink-0">
 										{item.local_id}
 									</span>
 									<span className="flex-1 text-sm text-zinc-500 truncate">

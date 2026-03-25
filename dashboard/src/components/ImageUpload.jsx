@@ -70,7 +70,7 @@ export default function ImageUpload({ postId, onUploaded, compact = false }) {
 				>
 					{uploading
 						? <Loader size={13} className="animate-spin" />
-						: <Upload size={13} className="text-amber-400" />}
+						: <Upload size={13} className="text-sky-500" />}
 					{uploading ? "Uploading…" : "Add images"}
 				</button>
 				{error && <p className="text-xs text-red-400">{error}</p>}
@@ -92,7 +92,7 @@ export default function ImageUpload({ postId, onUploaded, compact = false }) {
 				onDrop={handleDrop}
 				className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors card ${
 					dragActive
-						? "border-amber-400/50 bg-amber-400/5"
+						? "border-sky-500/50 bg-sky-500/5"
 						: "border-[#2a2a2a] hover:border-zinc-600"
 				}`}
 			>
@@ -113,7 +113,7 @@ export default function ImageUpload({ postId, onUploaded, compact = false }) {
 				>
 					<Upload
 						size={32}
-						className={`${uploading ? "text-zinc-600" : "text-amber-400"}`}
+						className={`${uploading ? "text-zinc-600" : "text-sky-500"}`}
 					/>
 					<div>
 						<p className="font-medium text-zinc-100">
@@ -124,7 +124,7 @@ export default function ImageUpload({ postId, onUploaded, compact = false }) {
 						</p>
 					</div>
 					{uploading && (
-						<Loader size={20} className="animate-spin text-amber-400 mt-2" />
+						<Loader size={20} className="animate-spin text-sky-500 mt-2" />
 					)}
 				</button>
 			</div>

@@ -66,7 +66,7 @@ export default function ThreadBuilder({ content, onUpdate }) {
 						onDrop={(e) => handleDrop(e, index)}
 						className={`group flex-1 mb-3 rounded-xl border transition-colors focus-within:border-zinc-600 ${
 							dragging === index
-								? "border-amber-400/30 bg-amber-400/5 opacity-70"
+								? "border-sky-500/30 bg-sky-500/5 opacity-70"
 								: "border-[#252525] bg-[#1c1c1c]"
 						}`}
 					>

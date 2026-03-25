@@ -31,7 +31,7 @@ export default function Activity() {
 							onClick={() => setTab(id)}
 							className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${
 								tab === id
-									? "bg-amber-400/10 text-amber-400"
+									? "bg-sky-500/10 text-sky-500"
 									: "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
 							}`}
 						>

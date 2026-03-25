@@ -82,7 +82,7 @@ export default function Posted() {
 									className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:border-zinc-700 transition-colors"
 									onClick={() => setExpanded(isExpanded ? null : post.tweetId)}
 								>
-									<span className="font-mono text-sm text-amber-400 w-16 flex-shrink-0">{post.localId}</span>
+									<span className="font-mono text-sm text-sky-500 w-16 flex-shrink-0">{post.localId}</span>
 									<span className="font-mono text-xs text-zinc-600 flex-1 truncate">{post.tweetId}</span>
 									<span className="text-xs text-zinc-600 flex-shrink-0">
 										{new Date(post.ts).toLocaleDateString("en-US", {

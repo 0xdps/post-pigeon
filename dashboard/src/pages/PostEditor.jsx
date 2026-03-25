@@ -251,7 +251,7 @@ export default function PostEditor() {
 			.every((p) => postedPlatformKeys.has(p.key));
 	const isPosted  = post?.status === "posted";
 	const charCount = post?.content?.[0]?.text?.length || 0;
-	const charCls   = charCount > 280 ? "text-red-400" : charCount > 240 ? "text-amber-400" : "text-zinc-600";
+	const charCls   = charCount > 280 ? "text-red-400" : charCount > 240 ? "text-sky-500" : "text-zinc-600";
 
 	const actionLabel = { draft: saved ? "Saved!" : saving ? "Saving…" : "Save Draft", now: saving ? "Publishing…" : "Publish Now", fixed: saving ? "Saving…" : "Schedule", random: saving ? "Saving…" : "Schedule" }[scheduleMode];
 	const actionIcon  = { draft: saved ? <CheckCircle size={15} /> : <Save size={15} />, now: <Send size={15} />, fixed: <Clock size={15} />, random: <Clock size={15} /> }[scheduleMode];
@@ -260,7 +260,7 @@ export default function PostEditor() {
 	if (loading) {
 		return (
 			<div className="flex items-center justify-center h-64">
-				<Loader size={28} className="animate-spin text-amber-400" />
+				<Loader size={28} className="animate-spin text-sky-500" />
 			</div>
 		);
 	}
@@ -310,7 +310,7 @@ export default function PostEditor() {
 								rows={14}
 							className="w-full bg-[#131313] border border-[#282828] rounded-xl text-sm text-zinc-200 leading-relaxed
 							           placeholder:text-zinc-700 outline-none resize-none font-mono p-4
-							           focus:border-amber-400/30 focus:ring-1 focus:ring-amber-400/15 transition-all"
+							           focus:border-sky-500/30 focus:ring-1 focus:ring-sky-500/15 transition-all"
 							/>
 							<div className="flex items-center gap-3 mt-3 pt-3 border-t border-[#1e1e1e] text-xs">
 								<span className="text-zinc-600">{charCount} chars</span>							<button
@@ -319,7 +319,7 @@ export default function PostEditor() {
 									set("type", "thread");
 									set("content", [...(post.content || []), { id: `content-${Date.now()}`, text: "", media_ids: [], sequence: (post.content?.length || 1) + 1 }]);
 								}}
-								className="text-zinc-600 hover:text-amber-400 transition-colors"
+								className="text-zinc-600 hover:text-sky-500 transition-colors"
 							>
 								+ Continue as thread
 							</button>								<span className={`ml-auto ${charCls}`}>Twitter {charCount}/280</span>
@@ -368,7 +368,7 @@ export default function PostEditor() {
 								rows={10}
 							className="w-full bg-[#131313] border border-[#282828] rounded-xl text-sm text-zinc-200 leading-relaxed
 							           placeholder:text-zinc-700 outline-none resize-none font-mono p-4
-							           focus:border-amber-400/30 focus:ring-1 focus:ring-amber-400/15 transition-all"
+							           focus:border-sky-500/30 focus:ring-1 focus:ring-sky-500/15 transition-all"
 							/>
 							<p className={`text-xs ${charCls}`}>{charCount} / 280</p>
 						</div>
@@ -424,7 +424,7 @@ export default function PostEditor() {
 									onClick={() => set("type", t.value)}
 									className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
 										post.type === t.value
-											? "bg-amber-400/15 text-amber-400 border border-amber-400/25"
+											? "bg-sky-500/15 text-sky-500 border border-sky-500/25"
 											: "text-zinc-500 hover:text-zinc-300 bg-[#1c1c1c] border border-[#252525]"
 									}`}
 								>
@@ -454,7 +454,7 @@ export default function PostEditor() {
 										<span className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0
 											text-[10px] font-bold transition-colors
 											${ alreadyPosted ? "bg-emerald-500 border-emerald-500 text-black" :
-											   selected && enabled ? "bg-amber-400 border-amber-400 text-black" : "border-[#333]" }`}
+											   selected && enabled ? "bg-sky-500 border-sky-500 text-black" : "border-[#333]" }`}
 										>
 											{alreadyPosted || (selected && enabled) ? "✓" : null}
 										</span>
@@ -484,9 +484,9 @@ export default function PostEditor() {
 									}`}
 								>
 									<span className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center flex-shrink-0 transition-colors ${
-										scheduleMode === opt.id ? "border-amber-400" : "border-[#444]"
+										scheduleMode === opt.id ? "border-sky-500" : "border-[#444]"
 									}`}>
-										{scheduleMode === opt.id && <span className="w-2 h-2 rounded-full bg-amber-400" />}
+										{scheduleMode === opt.id && <span className="w-2 h-2 rounded-full bg-sky-500" />}
 									</span>
 									<input type="radio" name="scheduleMode" value={opt.id} checked={scheduleMode === opt.id}
 										onChange={() => setScheduleMode(opt.id)} className="sr-only" />

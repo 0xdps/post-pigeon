@@ -59,7 +59,7 @@ export default function Platforms() {
 						<div className="flex items-start justify-between gap-4 mb-3">
 							<div>
 								<div className="flex items-center gap-2">
-									<Layers3 size={14} className="text-amber-400" />
+									<Layers3 size={14} className="text-sky-500" />
 									<h2 className="text-sm font-medium text-zinc-100">{platform.name}</h2>
 								</div>
 								<p className="text-xs text-zinc-500 mt-1 font-mono">{platform.key}</p>

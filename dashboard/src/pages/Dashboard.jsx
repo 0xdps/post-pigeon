@@ -4,7 +4,7 @@ import { CheckCircle2, Clock, Plus, RefreshCw } from "lucide-react";
 import { api } from "../api.js";
 
 const STATUS_STYLE = {
-	pending:   { text: "text-amber-300",   bg: "bg-amber-400/10",   border: "border-amber-400/20"   },
+	pending:   { text: "text-sky-400",   bg: "bg-sky-500/10",   border: "border-sky-500/20"   },
 	posted:    { text: "text-emerald-300", bg: "bg-emerald-400/10", border: "border-emerald-400/20"  },
 	failed:    { text: "text-red-300",     bg: "bg-red-400/10",     border: "border-red-400/20"      },
 	cancelled: { text: "text-zinc-500",    bg: "bg-zinc-700/20",    border: "border-zinc-700/30"     },
@@ -111,7 +111,7 @@ export default function Dashboard() {
 			<div className="grid grid-cols-4 gap-4 mb-8">
 				{[
 				{ label: "Draft",  value: stats.draft  || 0, tone: "text-zinc-400"    },
-				{ label: "Today",  value: `${todays.count}/${todays.limit}`, tone: todays.count >= todays.limit ? "text-red-400" : todays.count > 0 ? "text-amber-400" : "text-emerald-400" },
+				{ label: "Today",  value: `${todays.count}/${todays.limit}`, tone: todays.count >= todays.limit ? "text-red-400" : todays.count > 0 ? "text-sky-500" : "text-emerald-400" },
 				{ label: "Posted", value: stats.posted || 0, tone: "text-emerald-400" },
 				{ label: "Failed", value: failedCount,       tone: failedCount > 0 ? "text-red-400" : "text-zinc-600" },
 				].map((s) => (
@@ -129,14 +129,14 @@ export default function Dashboard() {
 						<h2 className="text-xs font-medium text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
 							<Clock size={12} /> Upcoming
 						</h2>
-					<Link to="/queue" className="text-xs text-zinc-600 hover:text-amber-400 transition-colors">
+					<Link to="/queue" className="text-xs text-zinc-600 hover:text-sky-500 transition-colors">
 							See all →
 						</Link>
 					</div>
 					{upcoming.length === 0 ? (
 <div className="card rounded-xl px-4 py-8 text-center">
 							<p className="text-sm text-zinc-600 mb-3">Nothing scheduled yet</p>
-							<Link to="/posts/new" className="text-xs text-amber-400 hover:text-amber-300">
+							<Link to="/posts/new" className="text-xs text-sky-500 hover:text-sky-400">
 								Create a post →
 							</Link>
 						</div>
