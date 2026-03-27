@@ -111,6 +111,10 @@ export default function Compose() {
 	const [windowEnd, setWindowEnd]       = useState("21:00");
 	const [showNotes, setShowNotes]       = useState(false);
 
+	// Post picker for reply chaining
+	const [pickerPosts, setPickerPosts]   = useState(null); // null = not loaded yet
+	const [pickerSearch, setPickerSearch] = useState("");
+
 	const saveTimerRef        = useRef(null);
 	const postRef             = useRef(null);
 	const postIdRef           = useRef(postId);
@@ -178,7 +182,7 @@ export default function Compose() {
 				: (contentRes?.content || []);
 
 		const filledContent = content.length > 0
-			? content.map(c => ({ id: c.id, text: c.text || "", media_ids: c.media_ids || [], sequence: c.sequence || 1, reply_to_tweet_id: c.reply_to_tweet_id || null }))
+			? content.map(c => ({ id: c.id, text: c.text || "", media_ids: c.media_ids || [], sequence: c.sequence || 1, reply_to_tweet_id: c.reply_to_tweet_id || null, reply_to_post_id: c.reply_to_post_id || null }))
 			: BLANK_CONTENT();
 
 			setPost({ ...rawPost, content: filledContent });
@@ -201,6 +205,19 @@ export default function Compose() {
 			setLoading(false);
 		}
 	};
+
+	/* ── Post picker (for reply chaining) ── */
+	const loadPickerPosts = useCallback(async () => {
+		if (pickerPosts !== null) return; // already loaded
+		try {
+			const res = await api.listPosts({ limit: 200, orderBy: "created_at" });
+			const all = Array.isArray(res) ? res : (res?.posts || []);
+			// Exclude the current post from the picker list
+			setPickerPosts(all.filter(p => p.id !== postIdRef.current));
+		} catch {
+			setPickerPosts([]);
+		}
+	}, [pickerPosts]);
 
 	/* ── Auto-save (creates post on first save if not yet in DB) ── */
 	const performSave = useCallback(async () => {
@@ -249,6 +266,7 @@ export default function Compose() {
 					media_ids:         c.media_ids || [],
 					sequence:          c.sequence,
 					reply_to_tweet_id: c.reply_to_tweet_id || null,
+					reply_to_post_id:  c.reply_to_post_id  || null,
 				};
 				if (dbId) {
 					await api.updatePostContent(id, dbId, contentPayload);
@@ -664,57 +682,192 @@ export default function Compose() {
 				</>
 			)}
 
-						{/* ── Reply ── */}
-				{post.type === "reply" && (
-					<div className="space-y-4">
-						<div>
-							<p className="text-xs font-semibold mb-1.5 tracking-wide uppercase" style={{ color: "var(--text-3)" }}>
-								Reply to — tweet URL or ID
-							</p>
-							<input
-								type="text"
-								value={post.content?.[0]?.reply_to_tweet_id || ""}
-								onChange={e => updateContent(0, { reply_to_tweet_id: e.target.value })}
-								onBlur={e => {
-									// Normalise to numeric ID on blur so the stored value is always clean
-									const raw = e.target.value.trim();
-									const match = raw.match(/\/status\/(\d+)/);
-									const id = match ? match[1] : (/^\d+$/.test(raw) ? raw : raw);
-									if (id !== raw) updateContent(0, { reply_to_tweet_id: id });
-								}}
-								placeholder="https://x.com/user/status/… or tweet ID"
-								className="input-field"
-								disabled={isPosted}
-							/>
-							{(() => {
-								const raw = post.content?.[0]?.reply_to_tweet_id || "";
-								const isId = /^\d+$/.test(raw.trim());
-								const isUrl = raw.includes("/status/");
-								if (!raw) return null;
-								if (isId) return (
-									<p className="text-[11px] mt-1" style={{ color: "var(--green)" }}>
-										✓ Tweet ID: {raw.trim()}
-									</p>
-								);
-								if (!isUrl && !isId) return (
-									<p className="text-[11px] mt-1" style={{ color: "var(--red)" }}>
-										Not a valid tweet URL or ID
-									</p>
-								);
-								return null;
-							})()}
-						</div>
-							<textarea
-								value={post.content?.[0]?.text || ""}
-								onChange={e => updateContent(0, { text: e.target.value })}
-								placeholder="Write your reply…"
-								rows={10}
-								disabled={isPosted}
-						className="textarea-field"
-							style={{ width: "100%" }}
-						/>
+					{/* ── Reply ── */}
+			{post.type === "reply" && (
+				<div className="space-y-4">
+					{/* Reply target */}
+					<div>
+						<p className="text-xs font-semibold mb-2 tracking-wide uppercase" style={{ color: "var(--text-3)" }}>
+							Replying to
+						</p>
+
+						{/* Mode toggle */}
+						{!isPosted && (
+							<div className="flex gap-0.5 mb-3 p-0.5 rounded-lg w-fit" style={{ background: "var(--bg-3)" }}>
+								{[
+									{ id: "external", label: "External tweet" },
+									{ id: "linked",   label: "Scheduled post" },
+								].map(m => {
+									const active = m.id === "linked"
+										? !!post.content?.[0]?.reply_to_post_id
+										: !post.content?.[0]?.reply_to_post_id;
+									return (
+										<button
+											key={m.id}
+											type="button"
+											onClick={() => {
+												if (m.id === "linked") {
+													updateContent(0, { reply_to_post_id: "__pick__", reply_to_tweet_id: null });
+													loadPickerPosts();
+												} else {
+													updateContent(0, { reply_to_post_id: null });
+												}
+											}}
+											className="text-xs px-3 py-1.5 rounded-md transition-all font-medium"
+											style={{
+												background: active ? "var(--bg-2)" : "transparent",
+												color: active ? "var(--text)" : "var(--text-3)",
+												border: active ? "1px solid var(--border)" : "1px solid transparent",
+											}}
+										>
+											{m.label}
+										</button>
+									);
+								})}
+							</div>
+						)}
+
+						{/* External tweet mode */}
+						{!post.content?.[0]?.reply_to_post_id && (
+							<>
+								<input
+									type="text"
+									value={post.content?.[0]?.reply_to_tweet_id || ""}
+									onChange={e => updateContent(0, { reply_to_tweet_id: e.target.value })}
+									onBlur={e => {
+										const raw = e.target.value.trim();
+										const match = raw.match(/\/status\/(\d+)/);
+										const id = match ? match[1] : (/^\d+$/.test(raw) ? raw : raw);
+										if (id !== raw) updateContent(0, { reply_to_tweet_id: id });
+									}}
+									placeholder="https://x.com/user/status/… or tweet ID"
+									className="input-field"
+									disabled={isPosted}
+								/>
+								{(() => {
+									const raw = post.content?.[0]?.reply_to_tweet_id || "";
+									const isId = /^\d+$/.test(raw.trim());
+									const isUrl = raw.includes("/status/");
+									if (!raw) return null;
+									if (isId) return <p className="text-[11px] mt-1" style={{ color: "var(--green)" }}>✓ Tweet ID: {raw.trim()}</p>;
+									if (!isUrl && !isId) return <p className="text-[11px] mt-1" style={{ color: "var(--red)" }}>Not a valid tweet URL or ID</p>;
+									return null;
+								})()}
+							</>
+						)}
+
+						{/* Linked post mode */}
+						{!!post.content?.[0]?.reply_to_post_id && (
+							<div>
+								{/* Search input */}
+								<input
+									type="text"
+									value={pickerSearch}
+									onChange={e => setPickerSearch(e.target.value)}
+									placeholder="Search posts…"
+									className="input-field mb-2"
+									disabled={isPosted}
+								/>
+
+								{/* Currently selected */}
+								{post.content?.[0]?.reply_to_post_id !== "__pick__" && (() => {
+									const sel = pickerPosts?.find(p => p.id === post.content[0].reply_to_post_id);
+									return sel ? (
+										<div
+											className="flex items-center gap-2 px-3 py-2 rounded-lg mb-2"
+											style={{ background: "var(--accent-dim)", border: "1px solid rgba(91,184,245,0.25)" }}
+										>
+											<Check size={12} style={{ color: "var(--accent)", flexShrink: 0 }} />
+											<span className="text-sm flex-1 truncate" style={{ color: "var(--text)" }}>{sel.title || sel.id}</span>
+											<span className="text-[10px] font-mono" style={{ color: "var(--text-3)" }}>{sel.status}</span>
+											{!isPosted && (
+												<button
+													type="button"
+													onClick={() => updateContent(0, { reply_to_post_id: "__pick__" })}
+													className="text-[10px] underline ml-1"
+													style={{ color: "var(--text-3)" }}
+												>
+													change
+												</button>
+											)}
+										</div>
+									) : null;
+								})()}
+
+								{/* Post list */}
+								{(post.content?.[0]?.reply_to_post_id === "__pick__" || !pickerPosts?.find(p => p.id === post.content?.[0]?.reply_to_post_id)) && (
+									<div
+										className="rounded-lg overflow-hidden"
+										style={{ border: "1px solid var(--border)", maxHeight: "240px", overflowY: "auto" }}
+									>
+										{pickerPosts === null ? (
+											<div className="flex items-center justify-center gap-2 py-6 text-sm" style={{ color: "var(--text-3)" }}>
+												<Loader size={14} className="animate-spin" />
+												Loading posts…
+											</div>
+										) : (() => {
+											const q = pickerSearch.toLowerCase();
+											const filtered = pickerPosts.filter(p =>
+												!q || (p.title || p.id).toLowerCase().includes(q)
+											);
+											if (!filtered.length) return (
+												<div className="py-6 text-center text-sm" style={{ color: "var(--text-3)" }}>No posts found</div>
+											);
+											return filtered.map((p, i) => {
+												const isSelected = post.content?.[0]?.reply_to_post_id === p.id;
+												const scheduledMs = p.scheduled_at ? Number(p.scheduled_at) : null;
+												const scheduledLabel = scheduledMs
+													? new Date(scheduledMs).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+													: null;
+												return (
+													<div
+														key={p.id}
+														onClick={() => !isPosted && updateContent(0, { reply_to_post_id: p.id })}
+														className="flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors"
+														style={{
+															borderTop: i > 0 ? "1px solid var(--border)" : "none",
+															background: isSelected ? "var(--accent-dim)" : "transparent",
+														}}
+														onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = "var(--bg-3)"; }}
+														onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
+													>
+														<div className="flex-1 min-w-0">
+															<p className="text-sm truncate" style={{ color: "var(--text)" }}>{p.title || p.id}</p>
+															<p className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>
+																<span
+																	style={{ color: p.status === "posted" ? "var(--green)" : p.status === "scheduled" ? "var(--accent)" : "var(--text-3)" }}
+																>
+																	{p.status}
+																</span>
+																{scheduledLabel && <span> · {scheduledLabel}</span>}
+															</p>
+														</div>
+														{isSelected && <Check size={12} style={{ color: "var(--accent)", flexShrink: 0 }} />}
+													</div>
+												);
+											});
+										})()}
+									</div>
+								)}
+
+								<p className="text-[11px] mt-2" style={{ color: "var(--text-3)" }}>
+									The reply will be chained to the selected post's tweet ID once it has been published.
+								</p>
+							</div>
+						)}
 					</div>
-				)}
+
+					<textarea
+						value={post.content?.[0]?.text || ""}
+						onChange={e => updateContent(0, { text: e.target.value })}
+						placeholder="Write your reply…"
+						rows={10}
+						disabled={isPosted}
+						className="textarea-field"
+						style={{ width: "100%" }}
+					/>
+				</div>
+			)}
 
 					{/* ── Images ── */}
 					{images.length > 0 && (

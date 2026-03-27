@@ -160,12 +160,12 @@ export async function getPostStats() {
 /**
  * Create post content (tweet in thread)
  * @param {string} postId
- * @param {Object} content - {text, media_ids?, reply_to_tweet_id?, sequence?}
+ * @param {Object} content - {text, media_ids?, reply_to_tweet_id?, reply_to_post_id?, sequence?}
  * @returns {Promise<string>} content ID
  */
 export async function createPostContent(postId, content) {
 	const db = getDb();
-	const { text, media_ids = [], reply_to_tweet_id = null, sequence = 1 } = content;
+	const { text, media_ids = [], reply_to_tweet_id = null, reply_to_post_id = null, sequence = 1 } = content;
 	
 	if (!text) {
 		throw new Error("Content requires text");
@@ -181,6 +181,7 @@ export async function createPostContent(postId, content) {
 		text,
 		media_ids: JSON.stringify(media_ids),
 		reply_to_tweet_id,
+		reply_to_post_id,
 		created_at: now,
 	});
 	
@@ -223,6 +224,7 @@ export async function listPostContent(postId) {
 			text,
 			text_file_id,
 			media_ids: r.media_ids ? JSON.parse(r.media_ids) : [],
+			reply_to_post_id: r.reply_to_post_id || null,
 		};
 	});
 }
@@ -230,7 +232,7 @@ export async function listPostContent(postId) {
 /**
  * Update post content
  * @param {string} contentId
- * @param {Object} updates - {text?, media_ids?, reply_to_tweet_id?, sequence?}
+ * @param {Object} updates - {text?, media_ids?, reply_to_tweet_id?, reply_to_post_id?, sequence?}
  * @returns {Promise<void>}
  */
 export async function updatePostContent(contentId, updates) {

@@ -1,5 +1,6 @@
 import { createClient, postStatus, uploadMediaBuffer } from "./twitter-client.js";
 import { listPostContent, listPostImages } from "../store/db-posts.js";
+import { listPublishJobs } from "../store/publish-jobs.js";
 import { getFileFromHub } from "./sqlite-hub-upload.js";
 import config from "../core/config.js";
 
@@ -62,10 +63,26 @@ export async function preparePostById(postId, client = null) {
 			}
 			console.log(`[preparePostById] postId=${postId} tweet=${idx + 1} length=${validation.length}/${maxLength}`);
 
+			// Resolve in-app reply chain: reply_to_post_id → actual platform tweet ID
+			let replyToTweetId = c.reply_to_tweet_id || null;
+			if (c.reply_to_post_id && !replyToTweetId) {
+				const jobs = await listPublishJobs({ postId: c.reply_to_post_id, platformKey: "twitter", status: "posted" });
+				if (!jobs.length) {
+					throw new Error(
+						`Reply chain error: the linked post has not been published on Twitter yet. ` +
+						`Make sure the parent post is published before this one fires.`
+					);
+				}
+				// Use the most recently posted job's platform ID
+				const latest = jobs.sort((a, b) => (b.posted_at || 0) - (a.posted_at || 0))[0];
+				replyToTweetId = latest.platform_post_id;
+				console.log(`[preparePostById] Resolved reply_to_post_id=${c.reply_to_post_id} → tweet ${replyToTweetId}`);
+			}
+
 			return {
 				text,
 				mediaIds: [],
-				reply_to_tweet_id: c.reply_to_tweet_id || null,
+				reply_to_tweet_id: replyToTweetId,
 				sequence: c.sequence,
 			};
 		})

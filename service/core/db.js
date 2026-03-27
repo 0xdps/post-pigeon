@@ -163,6 +163,19 @@ export async function initDb() {
 		}
 	}
 
+	// Migrate post_content to support in-app reply chaining
+	// (reply_to_post_id links to another post whose platform_post_id is resolved at publish time)
+	const postContentMigrations = [
+		"ALTER TABLE post_content ADD COLUMN reply_to_post_id TEXT",
+	];
+	for (const sql of postContentMigrations) {
+		try {
+			await db.exec(sql);
+		} catch {
+			// Column already exists — safe to ignore
+		}
+	}
+
 	const now = Date.now();
 	await db.exec(
 		`INSERT OR IGNORE INTO platforms (key, name, enabled, auth_status, config, created_at, updated_at)
