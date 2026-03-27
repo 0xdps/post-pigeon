@@ -1,7 +1,7 @@
 import { Plus, Trash2, GripVertical } from "lucide-react";
 import { useState } from "react";
 
-export default function ThreadBuilder({ content, onUpdate }) {
+export default function ThreadBuilder({ content, onUpdate, charLimit = 280 }) {
 	const [dragging, setDragging] = useState(null);
 
 	const addTweet = () => {
@@ -81,7 +81,7 @@ export default function ThreadBuilder({ content, onUpdate }) {
 								onChange={(e) => updateTweet(index, { text: e.target.value })}
 								placeholder={index === 0 ? "What's happening?" : "Continue the thread…"}
 								rows={3}
-								maxLength={280}
+								maxLength={charLimit}
 								className="flex-1 bg-transparent resize-none text-sm text-zinc-200 placeholder-zinc-600 outline-none"
 							/>
 
@@ -98,8 +98,8 @@ export default function ThreadBuilder({ content, onUpdate }) {
 						</div>
 
 						<div className="px-3 pb-2 flex justify-end">
-							<span className={`text-[10px] ${tweet.text.length > 270 ? "text-yellow-500" : "text-zinc-600"}`}>
-								{tweet.text.length} / 280
+							<span className={`text-[10px] ${tweet.text.length > charLimit * 0.96 ? "text-yellow-500" : "text-zinc-600"}`}>
+								{tweet.text.length} / {charLimit}
 							</span>
 						</div>
 					</div>

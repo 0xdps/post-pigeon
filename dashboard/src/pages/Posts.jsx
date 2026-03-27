@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Trash2, Edit, Plus, Filter, Copy, ChevronDown, ChevronUp } from "lucide-react";
 import { api } from "../api.js";
 import { fileManager } from "../fileManager.js";
@@ -90,13 +91,13 @@ export default function Posts() {
 			<div className="mb-6">
 				<div className="flex items-center justify-between mb-2">
 					<h1 className="text-xl font-semibold">Posts</h1>
-					<a
-						href="/posts/new"
+					<Link
+						to="/posts/new"
 						className="btn-primary"
 					>
 						<Plus size={14} />
 						New Post
-					</a>
+					</Link>
 				</div>
 				<p className="text-zinc-500 text-sm mt-0.5">Create, manage, and schedule dynamic posts</p>
 			</div>
@@ -204,9 +205,9 @@ export default function Posts() {
 			) : posts.length === 0 ? (
 				<div className="py-12 text-center card rounded-xl">
 					<p className="text-zinc-500 mb-3">No posts yet</p>
-					<a href="/posts/new" className="text-sky-500 hover:text-sky-400 text-sm">
+					<Link to="/posts/new" className="text-sky-500 hover:text-sky-400 text-sm">
 						Create your first post →
-					</a>
+					</Link>
 				</div>
 			) : (
 				<div className="space-y-1.5">
@@ -306,13 +307,13 @@ function PostCard({ post, onDelete, onDuplicate }) {
 			<div className="flex items-start justify-between px-4 py-3 hover:border-zinc-700 transition-colors">
 				<div className="flex-1" onClick={toggleExpand} style={{ cursor: 'pointer' }}>
 					<div className="flex items-center gap-3 mb-2">
-						<a
-							href={`/posts/${post.id}`}
+						<Link
+							to={`/posts/${post.id}`}
 							className="text-sm font-medium text-zinc-100 hover:text-sky-500 transition-colors"
 							onClick={(e) => e.stopPropagation()}
 						>
 							{post.title}
-						</a>
+						</Link>
 						<span className={`${typeBg} text-[11px] px-2 py-0.5 rounded-md`}>{post.type}</span>
 						<span className={`${statusBg} text-[11px] px-2 py-0.5 rounded-md`}>{post.status}</span>
 					</div>
@@ -339,13 +340,13 @@ function PostCard({ post, onDelete, onDuplicate }) {
 				{expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
 			</button>
 				<div className="flex items-center gap-1.5 ml-1">
-					<a
-						href={`/posts/${post.id}`}
+					<Link
+						to={`/posts/${post.id}`}
 						className="p-1.5 rounded-md text-zinc-600 hover:text-zinc-300 hover:bg-white/5 transition-colors"
 						title="Edit"
 					>
 						<Edit size={14} />
-					</a>
+					</Link>
 					<button
 						onClick={onDuplicate}
 						className="p-1.5 rounded-md text-zinc-600 hover:text-zinc-300 hover:bg-white/5 transition-colors"

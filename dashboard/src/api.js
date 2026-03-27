@@ -55,27 +55,12 @@ function hydrateImage(image) {
 export const api = {
 	login: (token) => req("POST", "/auth/login", { token }),
 	logout: () => req("POST", "/auth/logout"),
-	getState: () => req("GET", "/state"),
-	getPosted: () => req("GET", "/posted"),
-	trigger: (force = false) => req("POST", "/trigger", { force }),
-	postItem: (id, force = false) => req("POST", `/post/${id}`, { force }),
-	deletePost: (id) => req("DELETE", `/post/${id}`),
-	getBank: () => req("GET", "/bank"),
-	getBankItem: (id) => req("GET", `/bank/${id}`),
 	getFileText: (fileId) => reqText(`/posts/files/${encodeURIComponent(fileId)}`),
-	getQueue: () => req("GET", "/queue"),
-	addToQueue: (localId) => req("POST", "/queue", { local_id: localId }),
-	removeFromQueue: (id) => req("DELETE", `/queue/${id}`),
 	getSettings: () => req("GET", "/settings"),
 	updateSettings: (data) => req("PATCH", "/settings", data),
 	getTwitterHealth: () => req("GET", "/twitter/health"),
-	// Scheduled posts
-	getScheduled: () => req("GET", "/scheduled"),
-	createScheduled: (localId, scheduledAt) => req("POST", "/scheduled", { local_id: localId, scheduled_at: scheduledAt }),
-	deleteScheduled: (id) => req("DELETE", `/scheduled/${id}`),
-	cancelScheduled: (id) => req("PATCH", `/scheduled/${id}/cancel`),
-	
-	// ═══ Dynamic Posts ═══
+
+	// ═══ Posts ═══
 	// Post management
 	listPosts: (filters = {}) => {
 		const params = new URLSearchParams();

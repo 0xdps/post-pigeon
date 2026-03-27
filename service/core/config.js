@@ -5,7 +5,6 @@
 import { getSetting, setSetting, loadAllSettings, updateMultipleSettings } from "../store/state-store.js";
 
 // ── Constants (non-configurable) ──────────────────────────────────────────────
-export const BANK_PATH = "content/bank.json";
 export const START_HOUR = 9; // inclusive
 export const END_HOUR = 21; // exclusive
 

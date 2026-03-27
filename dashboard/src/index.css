@@ -48,6 +48,9 @@
 	.sidebar-label {
 		@apply text-[11px] uppercase tracking-wider text-zinc-600 font-medium mb-2 block;
 	}
+	.platform-field-label {
+		@apply text-[11px] font-medium text-zinc-500 mb-1.5 block;
+	}
 	.dropdown-enter {
 		animation: dropdown-in 120ms cubic-bezier(0.16, 1, 0.3, 1) both;
 	}

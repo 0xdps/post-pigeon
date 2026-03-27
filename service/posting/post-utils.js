@@ -29,62 +29,6 @@ export function validateTweetLength(text, maxLength) {
 }
 
 /**
- * Prepare text and media for posting — reads from sqlite-hub via DB
- * @param {Object} item - Bank item (must have .id)
- * @param {number} counterIdx - Counter index for variant
- * @param {Object} [client] - Optional Twitter client (will create one if not provided)
- * @returns {Promise<{text: string, mediaIds: Array, client: Object}>}
- */
-export async function preparePost(item, counterIdx, client = null) {
-	const postId = `bank-${String(item.id)}`;
-
-	// Get content from DB
-	const contents = await listPostContent(postId);
-	if (!contents?.length) {
-		throw new Error(`No content found for post ${postId}. Run 'npm run sync' to populate the DB.`);
-	}
-
-	// Resolve text from text_file_id if needed
-	let text = contents[0].text?.trim() || "";
-	if (contents[0].text_file_id) {
-		const file = await getFileFromHub(contents[0].text_file_id);
-		if (file?.buffer) {
-			text = file.buffer.toString("utf8").trim();
-		}
-	}
-
-	text = makeVariant(text, counterIdx);
-
-	const maxLength = await config.getMaxTweetLength();
-	const validation = validateTweetLength(text, maxLength);
-	if (!validation.valid) {
-		throw new Error(validation.message);
-	}
-	console.log(`Tweet length: ${validation.length}/${maxLength} chars`);
-
-	if (!client) {
-		client = createClient();
-	}
-	const mediaIds = [];
-
-	// Get images from DB and download from sqlite-hub
-	const images = await listPostImages(postId);
-	for (const img of images) {
-		console.log("Downloading media from hub:", img.filename, img.file_path);
-		const file = await getFileFromHub(img.file_path);
-		if (!file?.buffer) {
-			console.warn(`[preparePost] Failed to download image ${img.filename} (${img.file_path}), skipping`);
-			continue;
-		}
-		console.log("Uploading media to X:", img.filename);
-		const mediaId = await uploadMediaBuffer(client, file.buffer, file.mime_type);
-		mediaIds.push(mediaId);
-	}
-
-	return { text, mediaIds, client };
-}
-
-/**
  * Platform-agnostic variant of preparePost — takes a postId directly (no bank- prefix).
  * Used by platform adapters for posts created via the post editor (posts table).
  * @param {string} postId - ID from the `posts` table

@@ -23,7 +23,7 @@ const PLATFORM_COLOR = {
 	reddit:   "text-orange-400",
 	threads:  "text-purple-400",
 	devto:    "text-violet-400",
-	github:   "text-zinc-300",
+	bluesky:  "text-cyan-300",
 };
 
 function fmt(ts) {

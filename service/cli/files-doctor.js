@@ -1,40 +1,18 @@
 import "dotenv/config";
-import { spawn } from "child_process";
 import { initDb, getDb } from "../core/db.js";
 
 function parseArgs(argv) {
 	const options = {
-		sync: false,
 		cleanup: false,
 		dryRun: false,
-		legacyBaseUrl: process.env.SQLITE_HUB_URL || "",
 	};
 
 	for (const arg of argv) {
-		if (arg === "--sync") options.sync = true;
 		if (arg === "--cleanup") options.cleanup = true;
 		if (arg === "--dry-run") options.dryRun = true;
-		if (arg.startsWith("--legacy-base-url=")) {
-			options.legacyBaseUrl = arg.split("=")[1] || "";
-		}
 	}
 
 	return options;
-}
-
-function runNodeScript(scriptPath, args = []) {
-	return new Promise((resolve, reject) => {
-		const child = spawn(process.execPath, [scriptPath, ...args], {
-			stdio: "inherit",
-			env: process.env,
-		});
-
-		child.on("error", reject);
-		child.on("exit", (code) => {
-			if (code === 0) resolve();
-			else reject(new Error(`${scriptPath} exited with code ${code}`));
-		});
-	});
 }
 
 async function listAllHubFileIds(db) {
@@ -107,16 +85,6 @@ async function cleanupUnreferenced(db, ids, dryRun) {
 
 async function main() {
 	const options = parseArgs(process.argv.slice(2));
-
-	if (options.sync) {
-		console.log("[files-doctor] Sync enabled: importing bank posts (idempotent) and running backfill...");
-		await runNodeScript("service/cli/import-bank-posts.js");
-
-		const backfillArgs = [];
-		if (options.dryRun) backfillArgs.push("--dry-run");
-		if (options.legacyBaseUrl) backfillArgs.push(`--legacy-base-url=${options.legacyBaseUrl}`);
-		await runNodeScript("service/cli/backfill-hub-files.js", backfillArgs);
-	}
 
 	await initDb();
 	const db = getDb();

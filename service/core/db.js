@@ -46,33 +46,6 @@ export async function initDb() {
 		{ ifNotExists: true }
 	);
 
-	// queued: priority items that post before normal bank order
-	await db.createTable(
-		"queued",
-		[
-			{ name: "id", type: "INTEGER", primaryKey: true, autoIncrement: true },
-			{ name: "local_id", type: "TEXT", notNull: true },
-			{ name: "created_at", type: "INTEGER", notNull: true },
-		],
-		{ ifNotExists: true }
-	);
-
-	// scheduled: items scheduled for specific times
-	await db.createTable(
-		"scheduled",
-		[
-			{ name: "id", type: "INTEGER", primaryKey: true, autoIncrement: true },
-			{ name: "local_id", type: "TEXT", notNull: true },
-			{ name: "scheduled_at", type: "INTEGER", notNull: true }, // unix timestamp
-			{ name: "status", type: "TEXT", notNull: true, default: "pending" }, // pending, posted, failed, cancelled
-			{ name: "created_at", type: "INTEGER", notNull: true },
-			{ name: "posted_at", type: "INTEGER" }, // when it was actually posted
-			{ name: "tweet_id", type: "TEXT" }, // twitter tweet id if posted
-			{ name: "error", type: "TEXT" }, // error message if failed
-		],
-		{ ifNotExists: true }
-	);
-
 	// posts: dynamic post entries (standalone, thread, reply)
 	await db.createTable(
 		"posts",
