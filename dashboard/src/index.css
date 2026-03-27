@@ -14,10 +14,10 @@
 	--text:        #efefef;
 	--text-2:      #888;
 	--text-3:      #4a4a4a;
-	--accent:      #a8e63d;
-	--accent-2:    #c6f135;
-	--accent-dim:  rgba(168, 230, 61, 0.08);
-	--accent-dim2: rgba(168, 230, 61, 0.15);
+	--accent:      #5bb8f5;
+	--accent-2:    #7dd3fc;
+	--accent-dim:  rgba(91, 184, 245, 0.08);
+	--accent-dim2: rgba(91, 184, 245, 0.15);
 	--red:         #f87171;
 	--red-dim:     rgba(248, 113, 113, 0.10);
 	--amber:       #fb923c;
@@ -60,8 +60,8 @@ body {
 	}
 	.input-field::placeholder { color: var(--text-3); }
 	.input-field:focus {
-		border-color: rgba(168, 230, 61, 0.35);
-		box-shadow: 0 0 0 3px rgba(168, 230, 61, 0.06);
+		border-color: rgba(91, 184, 245, 0.40);
+		box-shadow: 0 0 0 3px rgba(91, 184, 245, 0.08);
 	}
 
 	/* Textarea */
@@ -76,8 +76,8 @@ body {
 	}
 	.textarea-field::placeholder { color: var(--text-3); }
 	.textarea-field:focus {
-		border-color: rgba(168, 230, 61, 0.25);
-		box-shadow: 0 0 0 3px rgba(168, 230, 61, 0.05);
+		border-color: rgba(91, 184, 245, 0.30);
+		box-shadow: 0 0 0 3px rgba(91, 184, 245, 0.06);
 	}
 
 	/* Card */
@@ -92,7 +92,7 @@ body {
 		border-radius: 10px;
 	}
 
-	/* Primary button — lime accent */
+	/* Primary button — sky blue accent */
 	.btn-primary {
 		@apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
 		       transition-all duration-150 cursor-pointer select-none;
