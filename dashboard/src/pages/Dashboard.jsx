@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
 	Plus, RefreshCw, AlertTriangle, CheckCircle2,
-	Clock, ArrowRight, PenSquare, Zap,
+	Clock, ArrowRight, PenSquare,
 } from "lucide-react";
 import { api } from "../api.js";
 
@@ -449,30 +449,6 @@ export default function Dashboard() {
 				</div>
 			</div>
 
-			{/* ── Quick actions ── */}
-			<div className="grid grid-cols-3 gap-3">
-		{[
-				{ to: "/compose",  icon: PenSquare, label: "Write a post",      sub: "Start writing"                    },
-				{ to: "/activity", icon: Clock,     label: "Activity",           sub: `${pendingJobs.length} pending`    },
-				{ to: "/channels", icon: Zap,       label: "Channels",           sub: `${enabledPlatforms.length} active` },
-			].map(({ to, icon: Icon, label, sub }) => (
-					<Link
-						key={to}
-						to={to}
-						className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all group"
-						style={{ background: "var(--bg-2)", border: "1px solid var(--border)" }}
-						onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--border-3)"; }}
-						onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
-					>
-						<Icon size={16} style={{ color: "var(--accent)" }} />
-						<div>
-							<p className="text-sm font-medium" style={{ color: "var(--text)" }}>{label}</p>
-							<p className="text-xs" style={{ color: "var(--text-3)" }}>{sub}</p>
-						</div>
-						<ArrowRight size={13} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "var(--text-2)" }} />
-					</Link>
-				))}
-			</div>
-		</div>
+	</div>
 	);
 }

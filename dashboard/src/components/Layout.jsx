@@ -1,6 +1,6 @@
 import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { LayoutDashboard, BookOpen, Activity, Radio, Settings, LogOut, PenLine } from "lucide-react";
+import { LayoutDashboard, BookOpen, Activity, Radio, Settings, LogOut, PenLine, BookMarked } from "lucide-react";
 import { api, initializeFileAccess } from "../api.js";
 
 const NAV = [
@@ -70,13 +70,20 @@ export default function Layout() {
 					))}
 				</nav>
 
-				{/* Logout */}
-				<div className="p-2" style={{ borderTop: "1px solid var(--border)" }}>
-					<button onClick={handleLogout} className="nav-link w-full text-left">
-						<LogOut size={14} />
-						Logout
-					</button>
-				</div>
+			{/* Setup Guide + Logout */}
+			<div className="p-2 space-y-0.5" style={{ borderTop: "1px solid var(--border)" }}>
+				<NavLink
+					to="/guide"
+					className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}
+				>
+					<BookMarked size={14} className="shrink-0" />
+					Setup Guide
+				</NavLink>
+				<button onClick={handleLogout} className="nav-link w-full text-left">
+					<LogOut size={14} />
+					Logout
+				</button>
+			</div>
 			</aside>
 
 			{/* ── Content ── */}

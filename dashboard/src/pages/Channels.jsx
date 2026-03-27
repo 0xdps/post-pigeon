@@ -3,16 +3,32 @@ import { RefreshCw, CheckCircle2, AlertTriangle, XCircle, Loader2, Radio, Ban } 
 import { api } from "../api.js";
 
 const PLATFORM_META = {
-	twitter:  { label: "X / Twitter", color: "#000",    bg: "#e7e7e7",  initial: "𝕏",  defaultLimit: 280   },
-	bluesky:  { label: "Bluesky",     color: "#0085ff", bg: "#daeeff",  initial: "Bk", defaultLimit: 300   },
-	linkedin: { label: "LinkedIn",    color: "#0077b5", bg: "#dbeafe",  initial: "in", defaultLimit: 3000  },
-	devto:    { label: "Dev.to",      color: "#3b49df", bg: "#eceffe",  initial: "D",  defaultLimit: null  },
-	reddit:   {
+	twitter: {
+		label: "X / Twitter", color: "#000", bg: "#e7e7e7", initial: "𝕏", defaultLimit: 280,
+		requiredVars: ["TWITTER_API_KEY", "TWITTER_API_KEY_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_TOKEN_SECRET"],
+	},
+	bluesky: {
+		label: "Bluesky", color: "#0085ff", bg: "#daeeff", initial: "Bk", defaultLimit: 300,
+		requiredVars: ["BLUESKY_IDENTIFIER", "BLUESKY_APP_PASSWORD"],
+	},
+	linkedin: {
+		label: "LinkedIn", color: "#0077b5", bg: "#dbeafe", initial: "in", defaultLimit: 3000,
+		requiredVars: ["LINKEDIN_CLIENT_ID", "LINKEDIN_CLIENT_SECRET", "LINKEDIN_ACCESS_TOKEN", "LINKEDIN_PERSON_URN"],
+	},
+	devto: {
+		label: "Dev.to", color: "#3b49df", bg: "#eceffe", initial: "D", defaultLimit: null,
+		requiredVars: ["DEVTO_API_KEY"],
+	},
+	reddit: {
 		label: "Reddit", color: "#ff4500", bg: "#fff0eb", initial: "Rd", defaultLimit: 40000,
+		requiredVars: ["REDDIT_CLIENT_ID", "REDDIT_CLIENT_SECRET", "REDDIT_USERNAME", "REDDIT_PASSWORD", "REDDIT_USER_AGENT"],
 		restricted: true,
 		restrictedReason: "Reddit disabled self-serve API access for new developers in late 2024. New apps require manual approval from Reddit, which is rarely granted. Support will be added if Reddit reopens API access.",
 	},
-	threads:  { label: "Threads",     color: "#8b5cf6", bg: "#f3e8ff",  initial: "Th", defaultLimit: 500   },
+	threads: {
+		label: "Threads", color: "#8b5cf6", bg: "#f3e8ff", initial: "Th", defaultLimit: 500,
+		requiredVars: ["THREADS_APP_ID", "THREADS_APP_SECRET", "THREADS_ACCESS_TOKEN", "THREADS_USER_ID"],
+	},
 };
 
 function statusInfo(platform) {
@@ -72,9 +88,10 @@ function PlatformRow({ platform, onToggle, onSaveLimit }) {
 		setToggling(false);
 	};
 
-	const isCustomLimit = storedLimit != null && storedLimit !== meta.defaultLimit;
+	const isCustomLimit    = storedLimit != null && storedLimit !== meta.defaultLimit;
 	const placeholderLimit = meta.defaultLimit != null ? String(meta.defaultLimit) : "∞";
-	const isRestricted = !!meta.restricted;
+	const isRestricted     = !!meta.restricted;
+	const isNotConfigured  = !isRestricted && platform.auth_status === "not_configured";
 
 	return (
 		<div
@@ -142,52 +159,83 @@ function PlatformRow({ platform, onToggle, onSaveLimit }) {
 					</div>
 				)}
 
-				{/* Toggle — disabled and hidden for restricted platforms */}
-				{isRestricted ? (
-					<div className="ml-auto shrink-0">
-						<span
-							className="text-[10px] px-2 py-1 rounded font-medium"
-							style={{ background: "var(--bg-4)", color: "var(--text-3)", border: "1px solid var(--border-2)" }}
-						>
-							Unavailable
-						</span>
-					</div>
-				) : (
-					<button
-						onClick={handleToggle}
-						disabled={toggling}
-						className="relative w-9 h-5 rounded-full transition-all shrink-0 ml-3"
-						style={{ background: platform.enabled ? "var(--accent)" : "var(--bg-4)", cursor: "pointer" }}
-						aria-label={`${platform.enabled ? "Disable" : "Enable"} ${meta.label}`}
+			{/* Toggle — disabled for restricted or unconfigured platforms */}
+			{isRestricted ? (
+				<div className="ml-auto shrink-0">
+					<span
+						className="text-[10px] px-2 py-1 rounded font-medium"
+						style={{ background: "var(--bg-4)", color: "var(--text-3)", border: "1px solid var(--border-2)" }}
 					>
-						{toggling ? (
-							<div className="absolute inset-0 flex items-center justify-center">
-								<Loader2 size={9} className="animate-spin" style={{ color: platform.enabled ? "#080808" : "var(--text-3)" }} />
-							</div>
-						) : (
-							<span
-								className="absolute top-0.5 w-4 h-4 rounded-full transition-all"
-								style={{
-									left: platform.enabled ? "calc(100% - 18px)" : "2px",
-									background: platform.enabled ? "#080808" : "var(--text-3)",
-								}}
-							/>
-						)}
-					</button>
-				)}
+						Unavailable
+					</span>
+				</div>
+			) : isNotConfigured ? (
+				<div className="ml-auto shrink-0" title="Set required ENV vars to enable">
+					<span
+						className="text-[10px] px-2 py-1 rounded font-medium"
+						style={{ background: "var(--bg-4)", color: "var(--text-3)", border: "1px solid var(--border-2)" }}
+					>
+						Not configured
+					</span>
+				</div>
+			) : (
+				<button
+					onClick={handleToggle}
+					disabled={toggling}
+					className="relative w-9 h-5 rounded-full transition-all shrink-0 ml-3"
+					style={{ background: platform.enabled ? "var(--accent)" : "var(--bg-4)", cursor: "pointer" }}
+					aria-label={`${platform.enabled ? "Disable" : "Enable"} ${meta.label}`}
+				>
+					{toggling ? (
+						<div className="absolute inset-0 flex items-center justify-center">
+							<Loader2 size={9} className="animate-spin" style={{ color: platform.enabled ? "#080808" : "var(--text-3)" }} />
+						</div>
+					) : (
+						<span
+							className="absolute top-0.5 w-4 h-4 rounded-full transition-all"
+							style={{
+								left: platform.enabled ? "calc(100% - 18px)" : "2px",
+								background: platform.enabled ? "#080808" : "var(--text-3)",
+							}}
+						/>
+					)}
+				</button>
+			)}
 			</div>
 
-			{/* Restriction notice — shown inline below the row */}
+			{/* Restriction notice */}
 			{isRestricted && (
 				<div
 					className="px-4 py-2 text-xs leading-relaxed"
-					style={{
-						borderTop: "1px solid var(--border)",
-						color: "var(--text-3)",
-						background: "var(--bg-3)",
-					}}
+					style={{ borderTop: "1px solid var(--border)", color: "var(--text-3)", background: "var(--bg-3)" }}
 				>
 					{meta.restrictedReason}
+				</div>
+			)}
+
+			{/* Required ENV vars — shown when not configured */}
+			{isNotConfigured && meta.requiredVars?.length > 0 && (
+				<div
+					className="px-4 py-2.5"
+					style={{ borderTop: "1px solid var(--border)", background: "var(--bg-3)" }}
+				>
+					<p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "var(--text-3)" }}>
+						Required ENV vars
+					</p>
+					<div className="flex flex-wrap gap-1.5">
+						{meta.requiredVars.map(v => (
+							<code
+								key={v}
+								className="text-[10px] px-1.5 py-0.5 rounded font-mono"
+								style={{ background: "var(--bg-4)", color: "var(--amber)", border: "1px solid var(--border-2)" }}
+							>
+								{v}
+							</code>
+						))}
+					</div>
+					<p className="text-[10px] mt-1.5" style={{ color: "var(--text-3)" }}>
+						Add these to your <code className="font-mono" style={{ color: "var(--text-2)" }}>.env</code> file and restart the service. See the <a href="/guide" className="underline" style={{ color: "var(--accent)" }}>Setup Guide</a> for details.
+					</p>
 				</div>
 			)}
 		</div>

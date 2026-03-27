@@ -7,6 +7,7 @@ import Library from "./pages/Library.jsx";
 import Activity from "./pages/Activity.jsx";
 import Channels from "./pages/Channels.jsx";
 import Settings from "./pages/Settings.jsx";
+import Guide from "./pages/Guide.jsx";
 
 export default function App() {
 	return (
@@ -21,6 +22,7 @@ export default function App() {
 					<Route path="activity" element={<Activity />} />
 					<Route path="channels" element={<Channels />} />
 					<Route path="settings" element={<Settings />} />
+				<Route path="guide" element={<Guide />} />
 					{/* Legacy route redirects */}
 					<Route path="posts" element={<Navigate to="/library" replace />} />
 					<Route path="posts/new" element={<Navigate to="/compose" replace />} />
