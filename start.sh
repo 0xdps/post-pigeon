@@ -27,32 +27,13 @@ done
 
 echo "Backend ready on port $BACKEND_PORT"
 
-# Debug: Check if frontend files exist
-echo "Checking frontend files..."
-if [ -d /usr/share/caddy ]; then
-  echo "✓ /usr/share/caddy exists"
-  ls -la /usr/share/caddy/
-else
-  echo "✗ /usr/share/caddy does NOT exist"
+# Verify frontend build is present
+if [ ! -f /usr/share/caddy/index.html ]; then
+  echo "✗ Frontend build missing at /usr/share/caddy — image may be corrupted"
+  exit 1
 fi
 
 echo "Configuring Caddy..."
-
-# Debug: Check if static files exist
-echo "Checking for static files..."
-if [ -f /usr/share/caddy/content/texts/001.md ]; then
-  echo "✓ Text files found"
-  head -5 /usr/share/caddy/content/texts/001.md
-else
-  echo "✗ TEXT FILES NOT FOUND at /usr/share/caddy/content/texts/"
-  ls -la /usr/share/caddy/ || echo "Caddy directory doesn't exist"
-fi
-
-if [ -f /usr/share/caddy/content/media/001.jpg ]; then
-  echo "✓ Media files found"
-else
-  echo "✗ MEDIA FILES NOT FOUND at /usr/share/caddy/content/media/"
-fi
 
 # Create a temporary Caddyfile with the correct backend port
 # This avoids issues with sed -i on Alpine

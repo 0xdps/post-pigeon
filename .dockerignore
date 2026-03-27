@@ -8,3 +8,7 @@ dashboard/dist
 npm-debug.log*
 .vscode
 .idea
+docs
+landing
+data
+content

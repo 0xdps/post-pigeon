@@ -33,7 +33,11 @@ export async function syncPlatformCredentialsFromEnv() {
 	const now = Date.now();
 
 	const CREDENTIAL_MAP = {
-		twitter: ["TWITTER_API_KEY", "TWITTER_API_KEY_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_TOKEN_SECRET"],
+		twitter:  ["TWITTER_API_KEY", "TWITTER_API_KEY_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_TOKEN_SECRET"],
+		linkedin: ["LINKEDIN_CLIENT_ID", "LINKEDIN_CLIENT_SECRET", "LINKEDIN_ACCESS_TOKEN", "LINKEDIN_PERSON_URN"],
+		threads:  ["THREADS_APP_ID", "THREADS_APP_SECRET", "THREADS_ACCESS_TOKEN", "THREADS_USER_ID"],
+		devto:    ["DEVTO_API_KEY"],
+		// bluesky: adapter + catalog entry not yet implemented
 	};
 
 	for (const [key, envVars] of Object.entries(CREDENTIAL_MAP)) {
