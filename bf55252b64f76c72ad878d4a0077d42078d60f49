@@ -1,0 +1,24 @@
+service/store/platform-store.js
+  c1facde6608ba415 36-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.20",
+  "base_commit_sha": "bf55252b64f76c72ad878d4a0077d42078d60f49",
+  "prompts": {
+    "c1facde6608ba415": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "9bafece9-1b6a-482f-b737-502e5a954646",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 6,
+      "total_deletions": 2,
+      "accepted_lines": 5,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/959b195b009f34f595d4fc9d1088fecfe99b743e4d5b185d2aa81997b12e2dc2"
+    }
+  }
+}
