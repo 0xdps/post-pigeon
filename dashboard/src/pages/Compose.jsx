@@ -111,11 +111,13 @@ export default function Compose() {
 	const [windowEnd, setWindowEnd]       = useState("21:00");
 	const [showNotes, setShowNotes]       = useState(false);
 
-	const saveTimerRef    = useRef(null);
-	const postRef         = useRef(null);
-	const postIdRef       = useRef(postId);
-	const contentIdMapRef = useRef({});
-	const imgInputRef     = useRef(null);
+	const saveTimerRef        = useRef(null);
+	const postRef             = useRef(null);
+	const postIdRef           = useRef(postId);
+	const contentIdMapRef     = useRef({});
+	const imgInputRef         = useRef(null);
+	// Prevents init effect from reloading post when URL changes due to lazy creation
+	const wasLazyCreatedRef   = useRef(false);
 
 	useEffect(() => { postRef.current = post; }, [post]);
 	useEffect(() => { postIdRef.current = postId; }, [postId]);
@@ -124,6 +126,13 @@ export default function Compose() {
 	useEffect(() => {
 		loadPlatforms();
 		if (postId) {
+			// Skip reload if the URL change was triggered by our own lazy creation
+			// (post data is already in state — reloading would wipe unsaved content)
+			if (wasLazyCreatedRef.current) {
+				wasLazyCreatedRef.current = false;
+				setLoading(false);
+				return;
+			}
 			loadPost();
 		} else {
 			// Don't create in DB yet — wait until user types (lazy creation)
@@ -168,9 +177,9 @@ export default function Compose() {
 				? contentRes
 				: (contentRes?.content || []);
 
-			const filledContent = content.length > 0
-				? content.map(c => ({ id: c.id, text: c.text || "", media_ids: c.media_ids || [], sequence: c.sequence || 1 }))
-				: BLANK_CONTENT();
+		const filledContent = content.length > 0
+			? content.map(c => ({ id: c.id, text: c.text || "", media_ids: c.media_ids || [], sequence: c.sequence || 1, reply_to_tweet_id: c.reply_to_tweet_id || null }))
+			: BLANK_CONTENT();
 
 			setPost({ ...rawPost, content: filledContent });
 
@@ -212,6 +221,7 @@ export default function Compose() {
 				await api.createPost({ id: newId, type: p.type, title: firstLine, metadata: p.metadata || {} });
 				postIdRef.current = newId;
 				id = newId;
+				wasLazyCreatedRef.current = true;
 				navigate(`/compose/${newId}`, { replace: true });
 			} catch {
 				setAutoSaveStatus("error");
@@ -234,10 +244,16 @@ export default function Compose() {
 			for (const c of p.content || []) {
 				if (!c.text?.trim()) continue;
 				const dbId = idMap[c.id] || (isDbId(c.id) ? c.id : null);
+				const contentPayload = {
+					text:              c.text,
+					media_ids:         c.media_ids || [],
+					sequence:          c.sequence,
+					reply_to_tweet_id: c.reply_to_tweet_id || null,
+				};
 				if (dbId) {
-					await api.updatePostContent(id, dbId, { text: c.text, media_ids: c.media_ids || [], sequence: c.sequence });
+					await api.updatePostContent(id, dbId, contentPayload);
 				} else {
-					const res = await api.addPostContent(id, { text: c.text, media_ids: c.media_ids || [], sequence: c.sequence });
+					const res = await api.addPostContent(id, contentPayload);
 					if (res?.id || res?.contentId) {
 						contentIdMapRef.current = { ...idMap, [c.id]: res.id || res.contentId };
 					}
