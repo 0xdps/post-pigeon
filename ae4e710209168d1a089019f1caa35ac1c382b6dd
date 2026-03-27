@@ -1,0 +1,24 @@
+start.sh
+  c1facde6608ba415 4-5,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.20",
+  "base_commit_sha": "ae4e710209168d1a089019f1caa35ac1c382b6dd",
+  "prompts": {
+    "c1facde6608ba415": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "9bafece9-1b6a-482f-b737-502e5a954646",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 3,
+      "total_deletions": 3,
+      "accepted_lines": 3,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/a5df9005d8154f408f88ab9f12bb97d1eeed28e5e3c21869c3885b360141f38f"
+    }
+  }
+}
