@@ -49,16 +49,6 @@ export const PLATFORM_CATALOG = [
 			maxImagesPerPost: 100,
 		},
 	},
-	{
-		key: "github",
-		name: "GitHub",
-		capabilities: {
-			maxCharacters: 65536,
-			supportsThread: false,
-			supportsImages: true,
-			maxImagesPerPost: 10,
-		},
-	},
 ];
 
 function validateAgainstCapabilities(post, platform) {

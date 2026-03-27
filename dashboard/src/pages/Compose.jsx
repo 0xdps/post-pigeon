@@ -139,10 +139,10 @@ export default function Compose() {
 			const map = {};
 			for (const p of arr) {
 				map[p.key] = {
-					enabled:     !!p.enabled,
-					auth_status: p.auth_status,
-					// Store custom char limit from config (set in Platforms page)
-					charLimit:   p.config?.charLimit ?? null,
+					enabled:        !!p.enabled,
+					auth_status:    p.auth_status,
+					charLimit:      p.config?.charLimit ?? null,
+					supportsThread: p.catalog?.capabilities?.supportsThread ?? false,
 				};
 			}
 			setPlatformStatuses(map);
@@ -360,6 +360,11 @@ export default function Compose() {
 	const postedPlatformKeys = new Set(publishedJobs.map(j => j.platform_key));
 	const isPosted = post?.status === "posted";
 	const allPublished = isPosted && PLATFORMS.filter(p => platformStatuses[p.key]?.enabled).every(p => postedPlatformKeys.has(p.key));
+
+	// Platforms selected that don't support threads (only relevant in thread mode)
+	const threadUnsupportedPlatforms = post?.type === "thread"
+		? selectedPlatforms.filter(k => !platformStatuses[k]?.supportsThread)
+		: [];
 
 	const charCount = post?.content?.[0]?.text?.length || 0;
 	const tightestLimit = selectedPlatforms.length > 0
@@ -643,14 +648,36 @@ export default function Compose() {
 					</>
 				)}
 
-				{/* ── Thread ── */}
-				{post.type === "thread" && (
+			{/* ── Thread ── */}
+			{post.type === "thread" && (
+				<>
 					<ThreadBuilder
 						content={post.content || []}
 						onUpdate={updated => set("content", updated)}
 						charLimit={finiteLimit ?? Infinity}
+						disabled={isPosted}
 					/>
-				)}
+
+					{/* Warn when selected platforms don't support threads */}
+					{threadUnsupportedPlatforms.length > 0 && (
+						<div
+							className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-lg text-xs mt-1"
+							style={{
+								background: "var(--amber-dim)",
+								border: "1px solid rgba(251,146,60,0.2)",
+								color: "var(--amber)",
+							}}
+						>
+							<span className="shrink-0 mt-px">⚠</span>
+							<span>
+								<strong>{threadUnsupportedPlatforms.map(k => PLATFORMS.find(p => p.key === k)?.label || k).join(", ")}</strong>
+								{threadUnsupportedPlatforms.length === 1 ? " doesn't" : " don't"} support threads —
+								only the <strong>first tweet</strong> will be posted there.
+							</span>
+						</div>
+					)}
+				</>
+			)}
 
 					{/* ── Reply ── */}
 					{post.type === "reply" && (

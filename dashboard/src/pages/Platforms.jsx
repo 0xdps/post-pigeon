@@ -8,7 +8,6 @@ const PLATFORM_META = {
 	linkedin: { label: "LinkedIn",      color: "#38bdf8", description: "Professional network posts" },
 	reddit:   { label: "Reddit",        color: "#fb923c", description: "Community-based discussion posts" },
 	devto:    { label: "Dev.to",        color: "#a3e635", description: "Developer-focused long-form articles" },
-	github:   { label: "GitHub",        color: "#e4e4e7", description: "GitHub discussions and releases" },
 	bluesky:  { label: "Bluesky",       color: "#67e8f9", description: "Decentralized microblogging" },
 };
 

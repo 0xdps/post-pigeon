@@ -15,7 +15,6 @@ const PLATFORM = {
 	reddit:   { label: "Reddit",    color: "#fb923c" },
 	devto:    { label: "Dev.to",    color: "#a3e635" },
 	bluesky:  { label: "Bluesky",   color: "#67e8f9" },
-	github:   { label: "GitHub",    color: "#e4e4e7" },
 };
 
 function fmtTime(ts) {

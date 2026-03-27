@@ -6,7 +6,6 @@ import { DevToAdapter } from "./devto-adapter.js";
 import { RedditAdapter } from "./reddit-adapter.js";
 import { LinkedInAdapter } from "./linkedin-adapter.js";
 import { ThreadsAdapter } from "./threads-adapter.js";
-import { GitHubAdapter } from "./github-adapter.js";
 
 const _adapters = [
 	new TwitterAdapter(),
@@ -14,7 +13,6 @@ const _adapters = [
 	new RedditAdapter(),
 	new LinkedInAdapter(),
 	new ThreadsAdapter(),
-	new GitHubAdapter(),
 ];
 
 const _registry = Object.fromEntries(_adapters.map((a) => [a.key, a]));

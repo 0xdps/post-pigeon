@@ -171,9 +171,8 @@ export async function initDb() {
 		 ('linkedin', 'LinkedIn',    0, 'not_configured', '{"source":"seed"}', ?, ?),
 		 ('reddit',   'Reddit',      0, 'not_configured', '{"source":"seed"}', ?, ?),
 		 ('threads',  'Threads',     0, 'not_configured', '{"source":"seed"}', ?, ?),
-		 ('devto',    'Dev.to',      0, 'not_configured', '{"source":"seed"}', ?, ?),
-		 ('github',   'GitHub',      0, 'not_configured', '{"source":"seed"}', ?, ?)`,
-		[now, now, now, now, now, now, now, now, now, now, now, now]
+		 ('devto',    'Dev.to',      0, 'not_configured', '{"source":"seed"}', ?, ?)`,
+		[now, now, now, now, now, now, now, now, now, now]
 	);
 
 	console.log("DB tables ready.");
