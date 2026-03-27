@@ -1,0 +1,24 @@
+service/core/db.js
+  c1facde6608ba415 166-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.20",
+  "base_commit_sha": "29e58f08fc1dc9ad72db71542c4e21ae02fbbc42",
+  "prompts": {
+    "c1facde6608ba415": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "9bafece9-1b6a-482f-b737-502e5a954646",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 13,
+      "total_deletions": 0,
+      "accepted_lines": 13,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/9f8888e201002f9f070fafe1e859ac7610ab5bb3dcae45c45e9dd7fa7e48f28d"
+    }
+  }
+}
