@@ -1,0 +1,24 @@
+dashboard/src/pages/Compose.jsx
+  c1facde6608ba415 114-120,129-135,180-182,224,247-252,254,256
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.20",
+  "base_commit_sha": "deaa22e8564823831c2be3a55fefca376d11cf44",
+  "prompts": {
+    "c1facde6608ba415": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "9bafece9-1b6a-482f-b737-502e5a954646",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 26,
+      "total_deletions": 10,
+      "accepted_lines": 26,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/95db3292bb68edf3148510c854b9b0da2350bb3f86d2bebff43cd9a9a3542651"
+    }
+  }
+}
