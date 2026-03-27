@@ -648,22 +648,46 @@ export default function Compose() {
 				</>
 			)}
 
-					{/* ── Reply ── */}
-					{post.type === "reply" && (
-						<div className="space-y-4">
-							<div>
-								<p className="text-xs font-semibold mb-1.5 tracking-wide uppercase" style={{ color: "var(--text-3)" }}>
-									Reply to (tweet URL or ID)
-								</p>
-								<input
-									type="text"
-									value={post.content?.[0]?.reply_to_tweet_id || ""}
-									onChange={e => updateContent(0, { reply_to_tweet_id: e.target.value })}
-									placeholder="https://x.com/user/status/…"
-									className="input-field"
-									disabled={isPosted}
-								/>
-							</div>
+						{/* ── Reply ── */}
+				{post.type === "reply" && (
+					<div className="space-y-4">
+						<div>
+							<p className="text-xs font-semibold mb-1.5 tracking-wide uppercase" style={{ color: "var(--text-3)" }}>
+								Reply to — tweet URL or ID
+							</p>
+							<input
+								type="text"
+								value={post.content?.[0]?.reply_to_tweet_id || ""}
+								onChange={e => updateContent(0, { reply_to_tweet_id: e.target.value })}
+								onBlur={e => {
+									// Normalise to numeric ID on blur so the stored value is always clean
+									const raw = e.target.value.trim();
+									const match = raw.match(/\/status\/(\d+)/);
+									const id = match ? match[1] : (/^\d+$/.test(raw) ? raw : raw);
+									if (id !== raw) updateContent(0, { reply_to_tweet_id: id });
+								}}
+								placeholder="https://x.com/user/status/… or tweet ID"
+								className="input-field"
+								disabled={isPosted}
+							/>
+							{(() => {
+								const raw = post.content?.[0]?.reply_to_tweet_id || "";
+								const isId = /^\d+$/.test(raw.trim());
+								const isUrl = raw.includes("/status/");
+								if (!raw) return null;
+								if (isId) return (
+									<p className="text-[11px] mt-1" style={{ color: "var(--green)" }}>
+										✓ Tweet ID: {raw.trim()}
+									</p>
+								);
+								if (!isUrl && !isId) return (
+									<p className="text-[11px] mt-1" style={{ color: "var(--red)" }}>
+										Not a valid tweet URL or ID
+									</p>
+								);
+								return null;
+							})()}
+						</div>
 							<textarea
 								value={post.content?.[0]?.text || ""}
 								onChange={e => updateContent(0, { text: e.target.value })}

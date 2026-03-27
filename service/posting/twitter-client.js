@@ -67,6 +67,19 @@ export function createClient() {
 	});
 }
 
+/**
+ * Extract a numeric tweet ID from either a full URL or a bare ID string.
+ * e.g. "https://x.com/user/status/1234567890" → "1234567890"
+ *      "1234567890" → "1234567890"
+ */
+function extractTweetId(input) {
+	if (!input) return null;
+	const match = String(input).match(/\/status\/(\d+)/);
+	if (match) return match[1];
+	if (/^\d+$/.test(String(input).trim())) return String(input).trim();
+	return null;
+}
+
 export async function postStatus(client, payload) {
 	const { text, media_ids, reply_to_tweet_id } = payload;
 
@@ -75,7 +88,11 @@ export async function postStatus(client, payload) {
 		tweetData.media = { media_ids: media_ids.split(",") };
 	}
 	if (reply_to_tweet_id) {
-		tweetData.reply = { in_reply_to_tweet_id: String(reply_to_tweet_id) };
+		const tweetId = extractTweetId(reply_to_tweet_id);
+		if (!tweetId) {
+			throw new Error(`Invalid reply_to_tweet_id: "${reply_to_tweet_id}". Provide a tweet URL or numeric ID.`);
+		}
+		tweetData.reply = { in_reply_to_tweet_id: tweetId };
 	}
 
 	const configuredRetries = await config.getPostMaxRetries();
