@@ -1,10 +1,10 @@
 #!/bin/sh
 set -e
 
-# Backend internal port (configurable)
-export BACKEND_PORT=${BACKEND_PORT:-3000}
+# Internal port Node listens on — must NOT equal PORT (Railway's external port)
+export BACKEND_PORT=${BACKEND_PORT:-3001}
 
-# External port (for Caddy/Railway)
+# External port Caddy listens on — Railway injects this (e.g. 3000 or 8080)
 export PORT=${PORT:-80}
 
 # Start backend in background
