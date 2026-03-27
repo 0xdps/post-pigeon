@@ -1,52 +1,55 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Clock, CheckCircle2, AlertCircle, XCircle, RefreshCw, Plus, ExternalLink, RotateCcw } from "lucide-react";
+import { Clock, CheckCircle2, AlertCircle, XCircle, RefreshCw, Plus, ExternalLink, RotateCcw, Loader } from "lucide-react";
 import { api } from "../api.js";
 
-const STATUS_STYLE = {
-	pending:   "bg-sky-600/10  text-sky-400  border-sky-600/20",
-	posted:    "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
-	failed:    "bg-red-500/10    text-red-300     border-red-500/20",
-	cancelled: "bg-zinc-800      text-zinc-500    border-zinc-700",
+/* ── Helpers ─────────────────────────────────────────────────────────────── */
+
+const PLATFORM = {
+	twitter:  { label: "X",        color: "#60a5fa" },
+	threads:  { label: "Threads",  color: "#a78bfa" },
+	linkedin: { label: "LinkedIn", color: "#38bdf8" },
+	reddit:   { label: "Reddit",   color: "#fb923c" },
+	devto:    { label: "Dev.to",   color: "#a3e635" },
+	bluesky:  { label: "Bluesky",  color: "#67e8f9" },
 };
 
-const STATUS_ICON = {
-	pending:   <Clock size={11} />,
-	posted:    <CheckCircle2 size={11} />,
-	failed:    <AlertCircle size={11} />,
-	cancelled: <XCircle size={11} />,
+const STATUS_META = {
+	pending:    { label: "Pending",    badge: "badge-pending",   icon: Clock        },
+	processing: { label: "Processing", badge: "badge-pending",   icon: Loader       },
+	posted:     { label: "Posted",     badge: "badge-posted",    icon: CheckCircle2 },
+	failed:     { label: "Failed",     badge: "badge-failed",    icon: AlertCircle  },
+	cancelled:  { label: "Cancelled",  badge: "badge-cancelled", icon: XCircle      },
 };
 
-const PLATFORM_COLOR = {
-	twitter:  "text-sky-400",
-	linkedin: "text-blue-400",
-	reddit:   "text-orange-400",
-	threads:  "text-purple-400",
-	devto:    "text-violet-400",
-	bluesky:  "text-cyan-300",
-};
+const FILTERS = ["all", "pending", "posted", "failed", "cancelled"];
 
 function fmt(ts) {
 	if (!ts) return "—";
 	return new Date(ts).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
+function fmtTime(ts) {
+	if (!ts) return "—";
+	return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
 function dateLabel(ts) {
 	if (!ts) return "Unscheduled";
 	const d = new Date(ts);
-	const today = new Date();
-	const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+	const today     = new Date();
+	const tomorrow  = new Date(today); tomorrow.setDate(today.getDate() + 1);
 	const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
 	if (d.toDateString() === today.toDateString())     return "Today";
 	if (d.toDateString() === tomorrow.toDateString())  return "Tomorrow";
 	if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
-	return d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+	return d.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" });
 }
 
 function groupByDate(jobs) {
 	const groups = new Map();
 	for (const job of jobs) {
-		const ts = job.posted_at || job.scheduled_at;
+		const ts    = job.posted_at || job.scheduled_at;
 		const label = dateLabel(ts);
 		if (!groups.has(label)) groups.set(label, []);
 		groups.get(label).push(job);
@@ -54,7 +57,100 @@ function groupByDate(jobs) {
 	return groups;
 }
 
-const FILTERS = ["all", "pending", "posted", "failed", "cancelled"];
+/* ── Job row ─────────────────────────────────────────────────────────────── */
+
+function JobRow({ job, title, onRetry, onCancel, retrying, cancelling }) {
+	const plat       = PLATFORM[job.platform_key];
+	const sm         = STATUS_META[job.status] || STATUS_META.pending;
+	const StatusIcon = sm.icon;
+	const ts         = job.status === "posted" ? job.posted_at : job.scheduled_at;
+	const tweetUrl   = job.platform_post_id ? `https://x.com/i/status/${job.platform_post_id}` : null;
+
+	return (
+		<div
+			className="flex items-center gap-3 px-4 py-3 transition-all"
+			style={{ borderTop: "1px solid var(--border)" }}
+		>
+			{/* Time */}
+			<span className="font-mono text-xs w-12 shrink-0 text-right" style={{ color: "var(--text-3)" }}>
+				{fmtTime(ts)}
+			</span>
+
+			{/* Platform dot + label */}
+			<div className="flex items-center gap-1.5 w-20 shrink-0">
+				<span
+					className="w-2 h-2 rounded-full shrink-0"
+					style={{ background: plat?.color || "var(--text-3)" }}
+				/>
+				<span className="text-xs font-mono truncate" style={{ color: plat?.color || "var(--text-3)" }}>
+					{plat?.label || job.platform_key}
+				</span>
+			</div>
+
+			{/* Post title */}
+			<Link
+				to={`/posts/${job.post_id}`}
+				className="flex-1 text-sm truncate hover:underline underline-offset-2"
+				style={{ color: "var(--text)" }}
+				title={title}
+			>
+				{title}
+			</Link>
+
+			{/* Status badge */}
+			<span className={`badge ${sm.badge} shrink-0 gap-1`}>
+				<StatusIcon size={10} />
+				{sm.label}
+			</span>
+
+			{/* Actions */}
+			<div className="flex items-center gap-1 shrink-0">
+				{job.status === "posted" && tweetUrl && (
+					<a
+						href={tweetUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-[11px] px-2 py-1 rounded-md flex items-center gap-1 transition-all"
+						style={{ color: "var(--text-3)" }}
+						onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text)"; e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+						onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-3)"; e.currentTarget.style.background = "transparent"; }}
+					>
+						<ExternalLink size={10} /> View
+					</a>
+				)}
+				{job.status === "failed" && (
+					<button
+						type="button"
+						onClick={() => onRetry(job.id)}
+						disabled={retrying === job.id}
+						className="text-[11px] px-2 py-1 rounded-md flex items-center gap-1 transition-all"
+						style={{ color: "var(--text-3)" }}
+						onMouseEnter={(e) => { e.currentTarget.style.color = "var(--accent)"; e.currentTarget.style.background = "var(--accent-dim)"; }}
+						onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-3)"; e.currentTarget.style.background = "transparent"; }}
+					>
+						<RotateCcw size={10} className={retrying === job.id ? "animate-spin" : ""} />
+						{retrying === job.id ? "…" : "Retry"}
+					</button>
+				)}
+				{job.status === "pending" && (
+					<button
+						type="button"
+						onClick={() => onCancel(job.id)}
+						disabled={cancelling === job.id}
+						className="text-[11px] px-2 py-1 rounded-md transition-all"
+						style={{ color: "var(--text-3)" }}
+						onMouseEnter={(e) => { e.currentTarget.style.color = "var(--red)"; e.currentTarget.style.background = "var(--red-dim)"; }}
+						onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-3)"; e.currentTarget.style.background = "transparent"; }}
+					>
+						{cancelling === job.id ? "…" : "Cancel"}
+					</button>
+				)}
+			</div>
+		</div>
+	);
+}
+
+/* ── Main ─────────────────────────────────────────────────────────────────── */
 
 export default function Queue() {
 	const [jobs, setJobs]             = useState([]);
@@ -84,22 +180,14 @@ export default function Queue() {
 
 	const cancelJob = async (jobId) => {
 		setCancelling(jobId);
-		try {
-			await api.deleteSchedule(jobId);
-			await load();
-		} finally {
-			setCancelling(null);
-		}
+		try { await api.deleteSchedule(jobId); await load(); }
+		finally { setCancelling(null); }
 	};
 
 	const retryJob = async (jobId) => {
 		setRetrying(jobId);
-		try {
-			await api.publishJob(jobId);
-			await load();
-		} finally {
-			setRetrying(null);
-		}
+		try { await api.publishJob(jobId); await load(); }
+		finally { setRetrying(null); }
 	};
 
 	const visible = filter === "all" ? jobs : jobs.filter((j) => j.status === filter);
@@ -117,123 +205,103 @@ export default function Queue() {
 	const groups = groupByDate(sorted);
 
 	return (
-		<div className="p-8 max-w-4xl">
-			<div className="mb-6 flex items-center justify-between">
+		<div className="p-8 max-w-4xl mx-auto animate-fade-up">
+
+			{/* ── Header ── */}
+			<div className="flex items-center justify-between mb-8">
 				<div>
-					<h1 className="text-xl font-semibold">Queue</h1>
-					<p className="text-zinc-500 text-sm mt-0.5">All publish jobs — schedule, retry, or cancel.</p>
+					<h1 className="text-3xl font-bold tracking-tight" style={{ color: "var(--text)" }}>Queue</h1>
+					<p className="text-sm mt-0.5" style={{ color: "var(--text-2)" }}>
+						All publish jobs — schedule, retry, or cancel.
+					</p>
 				</div>
 				<div className="flex items-center gap-2">
-					<button onClick={load} disabled={loading} className="btn-ghost border border-[#252525]">
-						<RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Refresh
+					<button onClick={load} disabled={loading} className="btn-ghost">
+						<RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Refresh
 					</button>
 					<Link to="/posts/new" className="btn-primary">
-						<Plus size={14} /> New Post
+						<Plus size={13} /> New Post
 					</Link>
 				</div>
 			</div>
 
-			{/* Filter tabs */}
-			<div className="flex items-center gap-1 mb-5 border-b border-[#252525]">
+			{/* ── Filter tabs ── */}
+			<div className="flex items-center gap-0.5 mb-6" style={{ borderBottom: "1px solid var(--border)" }}>
 				{FILTERS.map((f) => (
 					<button
 						key={f}
 						onClick={() => setFilter(f)}
-						className={`capitalize text-xs px-3 py-2 border-b-2 transition-colors -mb-px ${
-							f === filter
-								? "border-sky-500 text-sky-400"
-								: "border-transparent text-zinc-500 hover:text-zinc-300"
-						}`}
+						className="capitalize text-xs px-3 py-2 -mb-px transition-all font-medium"
+						style={{
+							color:       f === filter ? "var(--accent)"  : "var(--text-3)",
+							borderBottom: f === filter ? "2px solid var(--accent)" : "2px solid transparent",
+						}}
 					>
-						{f} {counts[f] > 0 && <span className="ml-0.5 text-zinc-600">({counts[f]})</span>}
+						{f}
+						{counts[f] > 0 && (
+							<span className="ml-1.5 font-mono" style={{ color: f === filter ? "var(--accent)" : "var(--text-3)" }}>
+								{counts[f]}
+							</span>
+						)}
 					</button>
 				))}
 			</div>
 
+			{/* ── Content ── */}
 			{loading ? (
-				<div className="text-sm text-zinc-600">Loading…</div>
+				<div className="py-12 flex items-center justify-center gap-2 text-sm" style={{ color: "var(--text-3)" }}>
+					<Loader size={14} className="animate-spin" /> Loading…
+				</div>
 			) : sorted.length === 0 ? (
-				<div className="text-center py-16 text-zinc-600">
-					<Clock size={28} className="mx-auto mb-3 opacity-30" />
-					<p className="text-sm">No jobs{filter !== "all" ? ` with status "${filter}"` : ""}</p>
-					<Link to="/posts/new" className="mt-4 inline-flex items-center gap-1.5 text-xs text-sky-500 hover:text-sky-400">
-						<Plus size={12} /> Create a post
+				<div
+					className="py-16 text-center rounded-xl"
+					style={{ background: "var(--bg-2)", border: "1px solid var(--border)" }}
+				>
+					<Clock size={26} className="mx-auto mb-3 opacity-20" style={{ color: "var(--text-2)" }} />
+					<p className="text-sm" style={{ color: "var(--text-3)" }}>
+						No jobs{filter !== "all" ? ` with status "${filter}"` : ""}
+					</p>
+					<Link to="/posts/new" className="inline-flex items-center gap-1.5 text-xs mt-3" style={{ color: "var(--accent)" }}>
+						<Plus size={11} /> Create a post
 					</Link>
 				</div>
 			) : (
 				<div className="space-y-6">
 					{[...groups.entries()].map(([label, groupJobs]) => (
 						<div key={label}>
-							<p className="text-[11px] text-zinc-600 uppercase tracking-widest font-medium mb-2">{label}</p>
-							<div className="space-y-1.5">
-								{groupJobs.map((job) => {
-									const title = postTitles[job.post_id] || job.post_id;
-									const tweetUrl = job.platform_post_id
-										? `https://x.com/i/status/${job.platform_post_id}`
-										: null;
-									return (
-										<div key={job.id} className="card rounded-xl px-4 py-3 flex items-center gap-4">
-											{/* Platform */}
-											<span className={`text-xs font-medium w-20 shrink-0 ${PLATFORM_COLOR[job.platform_key] || "text-zinc-400"}`}>
-												{job.platform_key}
-											</span>
+							{/* Date header */}
+							<div className="flex items-center gap-3 mb-2">
+								<span
+									className="text-[10px] uppercase tracking-widest font-semibold"
+									style={{ color: label === "Today" ? "var(--accent)" : "var(--text-3)" }}
+								>
+									{label}
+								</span>
+								<span
+									className="text-[10px] font-mono"
+									style={{ color: "var(--text-3)" }}
+								>
+									{groupJobs.length} job{groupJobs.length !== 1 ? "s" : ""}
+								</span>
+								<div className="flex-1 h-px" style={{ background: "var(--border)" }} />
+							</div>
 
-											{/* Post title */}
-											<Link
-												to={`/posts/${job.post_id}`}
-												className="flex-1 text-sm text-zinc-300 hover:text-sky-400 truncate"
-												title={title}
-											>
-												{title}
-											</Link>
-
-											{/* Status badge */}
-											<span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded border shrink-0 ${STATUS_STYLE[job.status] || ""}`}>
-												{STATUS_ICON[job.status]} {job.status}
-											</span>
-
-											{/* Time */}
-											<span className="text-xs text-zinc-600 w-32 shrink-0 text-right">
-												{job.status === "posted" ? fmt(job.posted_at) : fmt(job.scheduled_at)}
-											</span>
-
-											{/* Actions */}
-											<div className="flex items-center gap-1 shrink-0">
-												{job.status === "posted" && tweetUrl && (
-													<a
-														href={tweetUrl}
-														target="_blank"
-														rel="noopener noreferrer"
-														className="text-[11px] text-zinc-600 hover:text-sky-400 px-2 py-1 rounded hover:bg-sky-500/10 transition-colors inline-flex items-center gap-1"
-													>
-														<ExternalLink size={11} /> View
-													</a>
-												)}
-												{job.status === "failed" && (
-													<button
-														type="button"
-														onClick={() => retryJob(job.id)}
-														disabled={retrying === job.id}
-														className="text-[11px] text-zinc-600 hover:text-sky-500 px-2 py-1 rounded hover:bg-sky-600/10 transition-colors inline-flex items-center gap-1"
-													>
-														<RotateCcw size={11} className={retrying === job.id ? "animate-spin" : ""} />
-														{retrying === job.id ? "…" : "Retry"}
-													</button>
-												)}
-												{job.status === "pending" && (
-													<button
-														type="button"
-														onClick={() => cancelJob(job.id)}
-														disabled={cancelling === job.id}
-														className="text-[11px] text-zinc-600 hover:text-red-400 px-2 py-1 rounded hover:bg-red-500/10 transition-colors"
-													>
-														{cancelling === job.id ? "…" : "Cancel"}
-													</button>
-												)}
-											</div>
-										</div>
-									);
-								})}
+							{/* Job rows */}
+							<div
+								className="rounded-xl overflow-hidden"
+								style={{ background: "var(--bg-2)", border: "1px solid var(--border)" }}
+							>
+								{groupJobs.map((job) => (
+									<JobRow
+										key={job.id}
+										job={job}
+										title={postTitles[job.post_id] || job.post_id}
+										onRetry={retryJob}
+										onCancel={cancelJob}
+										retrying={retrying}
+										cancelling={cancelling}
+									/>
+								))}
 							</div>
 						</div>
 					))}

@@ -14,21 +14,16 @@ export default function Select({ value, onChange, options = [], placeholder = "S
 	const [open, setOpen] = useState(false);
 	const ref = useRef(null);
 
-	// Normalise options to { value, label }
-	const items = options.map((o) => Array.isArray(o) ? { value: o[0], label: o[1] } : o);
+	const items    = options.map((o) => Array.isArray(o) ? { value: o[0], label: o[1] } : o);
 	const selected = items.find((o) => o.value === value);
 
-	// Close on outside click
 	useEffect(() => {
 		if (!open) return;
-		const handler = (e) => {
-			if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-		};
+		const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
 		document.addEventListener("mousedown", handler);
 		return () => document.removeEventListener("mousedown", handler);
 	}, [open]);
 
-	// Close on Escape
 	useEffect(() => {
 		if (!open) return;
 		const handler = (e) => { if (e.key === "Escape") setOpen(false); };
@@ -42,50 +37,53 @@ export default function Select({ value, onChange, options = [], placeholder = "S
 			<button
 				type="button"
 				onClick={() => setOpen((v) => !v)}
-				className={`
-					w-full flex items-center justify-between gap-3 px-3 py-2
-					bg-[#1d1d1d] border rounded-lg text-sm text-left
-					transition-all duration-150 cursor-pointer
-					${open
-						? "border-sky-500/40 ring-1 ring-sky-500/20 text-zinc-100"
-						: "border-[#2e2e2e] text-zinc-300 hover:border-[#3a3a3a]"
-					}
-				`}
+				className="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm text-left transition-all cursor-pointer"
+				style={{
+					background:  "var(--bg-3)",
+					color:       "var(--text)",
+					border:      `1px solid ${open ? "rgba(168,230,61,0.35)" : "var(--border-2)"}`,
+					boxShadow:   open ? "0 0 0 3px rgba(168,230,61,0.06)" : "none",
+				}}
 			>
 				<span className="truncate">{selected?.label ?? placeholder}</span>
 				<ChevronDown
-					size={14}
-					className={`shrink-0 text-zinc-500 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+					size={13}
+					style={{
+						color: "var(--text-3)",
+						transform: open ? "rotate(180deg)" : "none",
+						transition: "transform 0.2s",
+						flexShrink: 0,
+					}}
 				/>
 			</button>
 
-			{/* Dropdown panel */}
+			{/* Dropdown */}
 			{open && (
-				<div className="
-					absolute z-50 mt-1.5 w-full min-w-[200px]
-					bg-[#1e1e1e] border border-[#282828] rounded-xl
-					shadow-2xl shadow-black/60
-					py-1 overflow-y-auto max-h-64
-					dropdown-enter
-				">
+				<div
+					className="absolute z-50 mt-1.5 w-full min-w-[200px] rounded-xl py-1 overflow-y-auto max-h-64 dropdown-enter"
+					style={{
+						background: "var(--bg-3)",
+						border:     "1px solid var(--border-2)",
+						boxShadow:  "0 16px 48px rgba(0,0,0,0.6)",
+					}}
+				>
 					{items.map((item) => {
-						const isSelected = item.value === value;
+						const isSel = item.value === value;
 						return (
 							<button
 								key={item.value}
 								type="button"
 								onClick={() => { onChange(item.value); setOpen(false); }}
-								className={`
-									w-full flex items-center justify-between gap-2
-									px-3 py-2 text-sm text-left transition-colors
-									${isSelected
-										? "text-sky-400 bg-sky-500/8"
-										: "text-zinc-300 hover:bg-white/[0.05] hover:text-zinc-100"
-									}
-								`}
+								className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left transition-colors"
+								style={{
+									color:      isSel ? "var(--accent)" : "var(--text-2)",
+									background: isSel ? "var(--accent-dim)" : "transparent",
+								}}
+								onMouseEnter={(e) => { if (!isSel) { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.color = "var(--text)"; } }}
+								onMouseLeave={(e) => { if (!isSel) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-2)"; } }}
 							>
 								<span className="truncate">{item.label}</span>
-								{isSelected && <Check size={13} className="shrink-0 text-sky-500" />}
+								{isSel && <Check size={12} style={{ flexShrink: 0, color: "var(--accent)" }} />}
 							</button>
 						);
 					})}

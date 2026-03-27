@@ -1,238 +1,39 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Trash2, Edit, Plus, Filter, Copy, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, Edit3, Plus, Copy, ChevronDown, ChevronUp, Search, X } from "lucide-react";
 import { api } from "../api.js";
 import { fileManager } from "../fileManager.js";
 import { useFileUrl } from "../hooks/useFileUrl.js";
 
-export default function Posts() {
-	const [posts, setPosts] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [stats, setStats] = useState({});
-	const [filters, setFilters] = useState({
-		type: "",
-		status: "",
-		search: "",
-	});
-	const [showFilters, setShowFilters] = useState(false);
+/* ── Helpers ─────────────────────────────────────────────────────────────── */
 
-	useEffect(() => {
-		loadPosts();
-		loadStats();
-	}, [filters]);
+const STATUS_BADGE = {
+	draft:     { label: "Draft",     style: "badge-draft"     },
+	queue:     { label: "Queue",     style: "badge-queue"     },
+	scheduled: { label: "Scheduled", style: "badge-scheduled" },
+	posted:    { label: "Posted",    style: "badge-posted"    },
+};
 
-	const loadPosts = async () => {
-		setLoading(true);
-		try {
-			const result = await api.listPosts({
-				type: filters.type || undefined,
-				status: filters.status || undefined,
-				limit: 100,
-			});
+const TYPE_BADGE = {
+	standalone: { label: "Post",   color: "var(--text-3)" },
+	thread:     { label: "Thread", color: "var(--blue)"   },
+	reply:      { label: "Reply",  color: "var(--amber)"  },
+};
 
-			let filtered = result.posts || [];
-
-			// Client-side search
-			if (filters.search) {
-				const search = filters.search.toLowerCase();
-				filtered = filtered.filter(
-					(p) =>
-						p.title.toLowerCase().includes(search) ||
-						(p.metadata?.notes && p.metadata.notes.toLowerCase().includes(search))
-				);
-			}
-
-			setPosts(filtered);
-		} catch (err) {
-			console.error("Failed to load posts:", err);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const loadStats = async () => {
-		try {
-			const result = await api.getPostStats();
-			setStats(result.stats || {});
-		} catch (err) {
-			console.error("Failed to load stats:", err);
-		}
-	};
-
-	const handleDelete = async (postId) => {
-		if (!confirm("Delete this post? This cannot be undone.")) return;
-
-		try {
-			await api.deletePost(postId);
-			setPosts(posts.filter((p) => p.id !== postId));
-		} catch (err) {
-			alert("Failed to delete post: " + err.message);
-		}
-	};
-
-	const handleDuplicate = async (post) => {
-		try {
-			const newId = `${post.id}-copy-${Date.now()}`;
-			await api.createPost({
-				id: newId,
-				type: post.type,
-				title: `${post.title} (copy)`,
-				metadata: post.metadata,
-			});
-			loadPosts();
-		} catch (err) {
-			alert("Failed to duplicate post: " + err.message);
-		}
-	};
-
-	return (
-		<div className="p-8 max-w-4xl">
-			{/* Header */}
-			<div className="mb-6">
-				<div className="flex items-center justify-between mb-2">
-					<h1 className="text-xl font-semibold">Posts</h1>
-					<Link
-						to="/posts/new"
-						className="btn-primary"
-					>
-						<Plus size={14} />
-						New Post
-					</Link>
-				</div>
-				<p className="text-zinc-500 text-sm mt-0.5">Create, manage, and schedule dynamic posts</p>
-			</div>
-
-			{/* Stats */}
-			<div className="grid grid-cols-4 gap-4 mb-6">
-				{[
-					{ label: "Draft", value: stats.draft || 0, tone: "text-zinc-400" },
-					{ label: "Queue", value: stats.queue || 0, tone: "text-blue-400" },
-					{ label: "Scheduled", value: stats.scheduled || 0, tone: "text-purple-400" },
-					{ label: "Posted", value: stats.posted || 0, tone: "text-emerald-400" },
-				].map((stat) => (
-					<div key={stat.label} className="card rounded-xl p-4">
-						<p className="text-zinc-600 text-[11px] uppercase tracking-wider">{stat.label}</p>
-						<p className={`text-2xl font-semibold mt-1 ${stat.tone}`}>{stat.value}</p>
-					</div>
-				))}
-			</div>
-
-			{/* Filters */}
-			<div className="mb-6 flex items-center gap-3">
-				<button
-					onClick={() => setShowFilters(!showFilters)}
-					className="btn-ghost border border-[#252525] h-9 px-3"
-				>
-					<Filter size={14} />
-					Filters
-				</button>
-
-				{(filters.type || filters.status || filters.search) && (
-					<button
-						onClick={() =>
-							setFilters({
-								type: "",
-								status: "",
-								search: "",
-							})
-						}
-						className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
-					>
-						Clear filters
-					</button>
-				)}
-			</div>
-
-			{showFilters && (
-					<div className="mb-6 p-4 card rounded-xl space-y-4">
-					{/* Type filter */}
-					<div>
-						<label className="block text-sm font-medium text-zinc-300 mb-2">Type</label>
-						<div className="flex gap-2">
-							{["standalone", "thread", "reply"].map((t) => (
-								<button
-									key={t}
-									onClick={() => setFilters({ ...filters, type: filters.type === t ? "" : t })}
-										className={`px-3 py-1 rounded-md text-sm transition-colors ${
-										filters.type === t
-												? "bg-sky-500/20 text-sky-400 border border-sky-500/30"
-												: "bg-[#1c1c1c] text-zinc-400 border border-[#252525] hover:text-zinc-200"
-									}`}
-								>
-									{t}
-								</button>
-							))}
-						</div>
-					</div>
-
-					{/* Status filter */}
-					<div>
-						<label className="block text-sm font-medium text-zinc-300 mb-2">Status</label>
-						<div className="flex gap-2 flex-wrap">
-							{["draft", "queue", "scheduled", "posted"].map((s) => (
-								<button
-									key={s}
-									onClick={() => setFilters({ ...filters, status: filters.status === s ? "" : s })}
-									className={`px-3 py-1 rounded-md text-sm transition-colors ${
-										filters.status === s
-											? "bg-sky-500/20 text-sky-400 border border-sky-500/30"
-											: "bg-[#1c1c1c] text-zinc-400 border border-[#252525] hover:text-zinc-200"
-									}`}
-								>
-									{s}
-								</button>
-							))}
-						</div>
-					</div>
-
-					{/* Search */}
-					<div>
-						<label className="block text-sm font-medium text-zinc-300 mb-2">Search</label>
-						<input
-							type="text"
-							placeholder="Search by title or notes..."
-							value={filters.search}
-							onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-							className="input-field"
-						/>
-					</div>
-				</div>
-			)}
-
-			{/* Posts List */}
-			{loading ? (
-				<div className="text-sm text-zinc-600 py-10">Loading posts...</div>
-			) : posts.length === 0 ? (
-				<div className="py-12 text-center card rounded-xl">
-					<p className="text-zinc-500 mb-3">No posts yet</p>
-					<Link to="/posts/new" className="text-sky-500 hover:text-sky-400 text-sm">
-						Create your first post →
-					</Link>
-				</div>
-			) : (
-				<div className="space-y-1.5">
-					{posts.map((post) => (
-						<PostCard
-							key={post.id}
-							post={post}
-							onDelete={() => handleDelete(post.id)}
-							onDuplicate={() => handleDuplicate(post)}
-						/>
-					))}
-				</div>
-			)}
-		</div>
-	);
+function fmtDate(ts) {
+	return new Date(ts).toLocaleDateString([], { month: "short", day: "numeric" });
 }
+
+/* ── PostCard ─────────────────────────────────────────────────────────────── */
 
 function ImageThumb({ img }) {
 	const src = useFileUrl(img.file_id, img.url);
 	return (
-		<div className="w-16 h-16 rounded-lg overflow-hidden card flex-shrink-0">
+		<div className="w-14 h-14 rounded-lg overflow-hidden shrink-0" style={{ border: "1px solid var(--border)" }}>
 			{src ? (
 				<img src={src} alt={img.filename} className="w-full h-full object-cover" />
 			) : (
-				<div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">…</div>
+				<div className="w-full h-full flex items-center justify-center text-[10px]" style={{ color: "var(--text-3)" }}>…</div>
 			)}
 		</div>
 	);
@@ -245,22 +46,18 @@ function PostCard({ post, onDelete, onDuplicate }) {
 	const [loadingContent, setLoadingContent] = useState(false);
 
 	const loadContent = async () => {
-		if (contentText !== null) return; // Already loaded
-		
+		if (contentText !== null) return;
 		setLoadingContent(true);
 		try {
 			const [postResult, imgResult] = await Promise.all([
 				api.getPost(post.id),
 				api.listPostImages(post.id),
-		]);
-
-			// Load text
+			]);
 			if (postResult.success && postResult.post.content?.length > 0) {
 				const texts = await Promise.all(
 					postResult.post.content.map(async (c) => {
 						if (c.text_file_id) {
-							const text = (await fileManager.getFileText(c.text_file_id))
-								?? (await api.getFileText(c.text_file_id));
+							const text = (await fileManager.getFileText(c.text_file_id)) ?? (await api.getFileText(c.text_file_id));
 							return text || "";
 						}
 						return c.text || "";
@@ -270,11 +67,8 @@ function PostCard({ post, onDelete, onDuplicate }) {
 			} else {
 				setContentText([]);
 			}
-
-			// Load images
 			setImages(imgResult?.images || []);
-		} catch (err) {
-			console.error("Failed to load content:", err);
+		} catch {
 			setContentText([]);
 			setImages([]);
 		} finally {
@@ -282,123 +76,322 @@ function PostCard({ post, onDelete, onDuplicate }) {
 		}
 	};
 
-	const toggleExpand = () => {
-		if (!expanded) {
-			loadContent();
-		}
+	const toggle = () => {
+		if (!expanded) loadContent();
 		setExpanded(!expanded);
 	};
 
-	const statusBg = {
-		draft: "bg-zinc-700/20 text-zinc-300 border border-zinc-700/30",
-		queue: "bg-blue-500/10 text-blue-300 border border-blue-500/20",
-		scheduled: "bg-purple-500/10 text-purple-300 border border-purple-500/20",
-		posted: "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20",
-	}[post.status] || "bg-zinc-700/20 text-zinc-300 border border-zinc-700/30";
-
-	const typeBg = {
-		standalone: "bg-zinc-700/20 text-zinc-300 border border-zinc-700/30",
-		thread: "bg-cyan-500/10 text-cyan-300 border border-cyan-500/20",
-		reply: "bg-pink-500/10 text-pink-300 border border-pink-500/20",
-	}[post.type] || "bg-zinc-700/20 text-zinc-300 border border-zinc-700/30";
+	const sb = STATUS_BADGE[post.status] || STATUS_BADGE.draft;
+	const tb = TYPE_BADGE[post.type] || TYPE_BADGE.standalone;
 
 	return (
-		<div className="card rounded-xl overflow-hidden">
-			<div className="flex items-start justify-between px-4 py-3 hover:border-zinc-700 transition-colors">
-				<div className="flex-1" onClick={toggleExpand} style={{ cursor: 'pointer' }}>
-					<div className="flex items-center gap-3 mb-2">
-						<Link
-							to={`/posts/${post.id}`}
-							className="text-sm font-medium text-zinc-100 hover:text-sky-500 transition-colors"
-							onClick={(e) => e.stopPropagation()}
-						>
-							{post.title}
-						</Link>
-						<span className={`${typeBg} text-[11px] px-2 py-0.5 rounded-md`}>{post.type}</span>
-						<span className={`${statusBg} text-[11px] px-2 py-0.5 rounded-md`}>{post.status}</span>
-					</div>
+		<div
+			className="rounded-xl overflow-hidden transition-all"
+			style={{ background: "var(--bg-2)", border: "1px solid var(--border)" }}
+		>
+			{/* Main row */}
+			<div className="flex items-center gap-3 px-4 py-3">
+				{/* Expand toggle */}
+				<button
+					onClick={toggle}
+					className="shrink-0 transition-colors"
+					style={{ color: "var(--text-3)" }}
+				>
+					{expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+				</button>
 
-					{post.metadata?.notes && (
-						<p className="text-xs text-zinc-500 mb-2 leading-relaxed">{post.metadata.notes}</p>
-					)}
+				{/* Type indicator */}
+				<span
+					className="text-[10px] font-mono font-semibold uppercase shrink-0"
+					style={{ color: tb.color, minWidth: 44 }}
+				>
+					{tb.label}
+				</span>
 
-					<div className="flex items-center gap-3 text-xs text-zinc-600">
-						<span>{new Date(post.created_at).toLocaleDateString()}</span>
-						{post.scheduled_at && (
-							<span>
-								Scheduled:{" "}
-								{new Date(post.scheduled_at).toLocaleString()}
-							</span>
-						)}
-					</div>
-				</div>
-			{/* Expand/Collapse Chevron */}
-			<button
-				onClick={toggleExpand}
-				className="p-1.5 rounded-md text-zinc-600 hover:text-zinc-300 hover:bg-white/5 transition-colors flex-shrink-0"
-			>
-				{expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-			</button>
-				<div className="flex items-center gap-1.5 ml-1">
+				{/* Title */}
+				<Link
+					to={`/posts/${post.id}`}
+					className="flex-1 text-sm font-medium truncate hover:underline"
+					style={{ color: "var(--text)" }}
+				>
+					{post.title}
+				</Link>
+
+				{/* Meta */}
+				<span className="text-xs shrink-0 font-mono" style={{ color: "var(--text-3)" }}>
+					{fmtDate(post.updated_at || post.created_at)}
+				</span>
+
+				{/* Status */}
+				<span className={`badge ${sb.style} shrink-0`}>{sb.label}</span>
+
+				{/* Actions */}
+				<div className="flex items-center gap-0.5 shrink-0">
 					<Link
 						to={`/posts/${post.id}`}
-						className="p-1.5 rounded-md text-zinc-600 hover:text-zinc-300 hover:bg-white/5 transition-colors"
+						className="p-1.5 rounded-md transition-colors"
+						style={{ color: "var(--text-3)" }}
+						onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text)"; e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+						onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-3)"; e.currentTarget.style.background = "transparent"; }}
 						title="Edit"
 					>
-						<Edit size={14} />
+						<Edit3 size={13} />
 					</Link>
 					<button
 						onClick={onDuplicate}
-						className="p-1.5 rounded-md text-zinc-600 hover:text-zinc-300 hover:bg-white/5 transition-colors"
+						className="p-1.5 rounded-md transition-colors"
+						style={{ color: "var(--text-3)" }}
+						onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text)"; e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+						onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-3)"; e.currentTarget.style.background = "transparent"; }}
 						title="Duplicate"
 					>
-						<Copy size={14} />
+						<Copy size={13} />
 					</button>
 					<button
 						onClick={onDelete}
-						className="p-1.5 rounded-md text-zinc-600 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+						className="p-1.5 rounded-md transition-colors"
+						style={{ color: "var(--text-3)" }}
+						onMouseEnter={(e) => { e.currentTarget.style.color = "var(--red)"; e.currentTarget.style.background = "var(--red-dim)"; }}
+						onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-3)"; e.currentTarget.style.background = "transparent"; }}
 						title="Delete"
 					>
-						<Trash2 size={14} />
+						<Trash2 size={13} />
 					</button>
 				</div>
 			</div>
 
-			{/* Expanded content section */}
+			{/* Expanded content */}
 			{expanded && (
-				<div className="px-4 pb-4 pt-1 border-t border-[#1e1e1e]">
+				<div
+					className="px-4 pb-4 pt-3"
+					style={{ borderTop: "1px solid var(--border)" }}
+				>
 					{loadingContent ? (
-						<p className="text-xs text-zinc-600">Loading content...</p>
+						<p className="text-xs" style={{ color: "var(--text-3)" }}>Loading…</p>
 					) : (
 						<>
-							{/* Text */}
 							{contentText && contentText.length > 0 && (
 								<div className="space-y-3 mb-3">
 									{post.type === "thread" && contentText.length > 1 ? (
 										contentText.map((text, idx) => (
-											<div key={idx} className="border-l-2 border-sky-500/30 pl-3">
-												<p className="text-xs text-zinc-500 mb-1">Tweet {idx + 1}</p>
-												<p className="text-sm text-zinc-300 whitespace-pre-wrap font-mono">{text}</p>
+											<div key={idx} className="pl-3" style={{ borderLeft: "2px solid var(--accent-dim2)" }}>
+												<p className="text-[10px] font-mono mb-1" style={{ color: "var(--text-3)" }}>
+													{idx + 1}
+												</p>
+												<p className="text-sm whitespace-pre-wrap font-mono leading-relaxed" style={{ color: "var(--text-2)" }}>
+													{text}
+												</p>
 											</div>
 										))
 									) : (
-										<p className="text-sm text-zinc-300 whitespace-pre-wrap font-mono">{contentText[0]}</p>
+										<p className="text-sm whitespace-pre-wrap font-mono leading-relaxed" style={{ color: "var(--text-2)" }}>
+											{contentText[0]}
+										</p>
 									)}
 								</div>
 							)}
-							{/* Images */}
 							{images && images.length > 0 && (
 								<div className="flex flex-wrap gap-2 mt-2">
-									{images.map((img) => (
-										<ImageThumb key={img.id} img={img} />
-									))}
+									{images.map((img) => <ImageThumb key={img.id} img={img} />)}
 								</div>
 							)}
-							{(!contentText || contentText.length === 0) && (!images || images.length === 0) && (
-								<p className="text-xs text-zinc-600 italic">No content</p>
+							{(!contentText?.length && !images?.length) && (
+								<p className="text-xs italic" style={{ color: "var(--text-3)" }}>No content yet</p>
 							)}
 						</>
 					)}
+				</div>
+			)}
+		</div>
+	);
+}
+
+/* ── Main ─────────────────────────────────────────────────────────────────── */
+
+const STATUSES = ["draft", "queue", "scheduled", "posted"];
+const TYPES    = ["standalone", "thread", "reply"];
+
+export default function Posts() {
+	const [posts, setPosts]   = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [stats, setStats]   = useState({});
+	const [activeStatus, setActiveStatus] = useState("");
+	const [activeType, setActiveType]     = useState("");
+	const [search, setSearch] = useState("");
+
+	const load = async () => {
+		setLoading(true);
+		try {
+			const [postsRes, statsRes] = await Promise.all([
+				api.listPosts({ status: activeStatus || undefined, type: activeType || undefined, limit: 100 }),
+				api.getPostStats(),
+			]);
+			let list = postsRes?.posts || [];
+			if (search) {
+				const q = search.toLowerCase();
+				list = list.filter((p) =>
+					p.title.toLowerCase().includes(q) ||
+					(p.metadata?.notes && p.metadata.notes.toLowerCase().includes(q))
+				);
+			}
+			setPosts(list);
+			setStats(statsRes?.stats || {});
+		} catch (err) {
+			console.error(err);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => { load(); }, [activeStatus, activeType, search]); // eslint-disable-line
+
+	const handleDelete = async (postId) => {
+		if (!confirm("Delete this post? This cannot be undone.")) return;
+		try {
+			await api.deletePost(postId);
+			setPosts((prev) => prev.filter((p) => p.id !== postId));
+		} catch (err) {
+			alert("Failed to delete: " + err.message);
+		}
+	};
+
+	const handleDuplicate = async (post) => {
+		try {
+			const newId = `${post.id}-copy-${Date.now()}`;
+			await api.createPost({ id: newId, type: post.type, title: `${post.title} (copy)`, metadata: post.metadata });
+			load();
+		} catch (err) {
+			alert("Failed to duplicate: " + err.message);
+		}
+	};
+
+	const totalPosts = Object.values(stats).reduce((s, v) => s + (v || 0), 0);
+	const hasFilter = activeStatus || activeType || search;
+
+	return (
+		<div className="p-8 max-w-4xl mx-auto animate-fade-up">
+
+			{/* ── Header ── */}
+			<div className="flex items-center justify-between mb-8">
+				<div>
+					<h1 className="text-3xl font-bold tracking-tight" style={{ color: "var(--text)" }}>Library</h1>
+					<p className="text-sm mt-0.5" style={{ color: "var(--text-2)" }}>
+						{totalPosts} post{totalPosts !== 1 ? "s" : ""} total
+					</p>
+				</div>
+				<Link to="/posts/new" className="btn-primary">
+					<Plus size={14} /> New Post
+				</Link>
+			</div>
+
+			{/* ── Stats strip ── */}
+			<div className="grid grid-cols-4 gap-2 mb-6">
+				{[
+					{ key: "draft",     label: "Drafts",    color: "var(--text-3)" },
+					{ key: "queue",     label: "Queued",    color: "var(--amber)"  },
+					{ key: "scheduled", label: "Scheduled", color: "var(--blue)"   },
+					{ key: "posted",    label: "Posted",    color: "var(--green)"  },
+				].map(({ key, label, color }) => (
+					<button
+						key={key}
+						onClick={() => setActiveStatus((s) => s === key ? "" : key)}
+						className="rounded-xl p-3 text-left transition-all"
+						style={{
+							background: activeStatus === key ? "var(--accent-dim)" : "var(--bg-2)",
+							border: `1px solid ${activeStatus === key ? "rgba(168,230,61,0.2)" : "var(--border)"}`,
+						}}
+					>
+						<p className="text-xs uppercase tracking-wider mb-0.5" style={{ color: "var(--text-3)" }}>{label}</p>
+						<p className="text-xl font-bold font-mono" style={{ color: activeStatus === key ? "var(--accent)" : color }}>
+							{stats[key] || 0}
+						</p>
+					</button>
+				))}
+			</div>
+
+			{/* ── Filters + Search ── */}
+			<div className="flex items-center gap-3 mb-5">
+				{/* Type chips */}
+				<div className="flex items-center gap-1.5">
+					{TYPES.map((t) => (
+						<button
+							key={t}
+							onClick={() => setActiveType((v) => v === t ? "" : t)}
+							className="px-2.5 py-1 rounded-md text-xs font-medium transition-all capitalize"
+							style={{
+								background: activeType === t ? "var(--accent-dim2)" : "transparent",
+								color: activeType === t ? "var(--accent)" : "var(--text-3)",
+								border: `1px solid ${activeType === t ? "rgba(168,230,61,0.3)" : "var(--border-2)"}`,
+							}}
+						>
+							{t}
+						</button>
+					))}
+				</div>
+
+				<div className="h-4 w-px" style={{ background: "var(--border-2)" }} />
+
+				{/* Search */}
+				<div className="flex-1 relative max-w-xs">
+					<Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-3)" }} />
+					<input
+						type="text"
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+						placeholder="Search posts…"
+						className="input-field pl-8 pr-8 py-1.5 text-xs"
+					/>
+					{search && (
+						<button
+							onClick={() => setSearch("")}
+							className="absolute right-3 top-1/2 -translate-y-1/2"
+							style={{ color: "var(--text-3)" }}
+						>
+							<X size={12} />
+						</button>
+					)}
+				</div>
+
+				{hasFilter && (
+					<button
+						onClick={() => { setActiveStatus(""); setActiveType(""); setSearch(""); }}
+						className="text-xs transition-colors"
+						style={{ color: "var(--text-3)" }}
+						onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text-2)"; }}
+						onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-3)"; }}
+					>
+						Clear
+					</button>
+				)}
+			</div>
+
+			{/* ── Post list ── */}
+			{loading ? (
+				<div className="py-12 text-sm text-center" style={{ color: "var(--text-3)" }}>Loading…</div>
+			) : posts.length === 0 ? (
+				<div
+					className="py-16 text-center rounded-xl"
+					style={{ background: "var(--bg-2)", border: "1px solid var(--border)" }}
+				>
+					<p className="text-sm mb-3" style={{ color: "var(--text-3)" }}>
+						{hasFilter ? "No posts match your filters" : "No posts yet"}
+					</p>
+					{!hasFilter && (
+						<Link to="/posts/new" className="inline-flex items-center gap-1.5 text-xs" style={{ color: "var(--accent)" }}>
+							<Plus size={11} /> Create your first post
+						</Link>
+					)}
+				</div>
+			) : (
+				<div className="space-y-1.5">
+					{posts.map((post) => (
+						<PostCard
+							key={post.id}
+							post={post}
+							onDelete={() => handleDelete(post.id)}
+							onDuplicate={() => handleDuplicate(post)}
+						/>
+					))}
 				</div>
 			)}
 		</div>

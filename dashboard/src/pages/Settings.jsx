@@ -3,6 +3,8 @@ import { Save, CheckCircle } from "lucide-react";
 import { api } from "../api.js";
 import Select from "../components/Select.jsx";
 
+/* ── Helpers ─────────────────────────────────────────────────────────────── */
+
 function cronToHuman(expr) {
 	if (!expr) return "";
 	const parts = expr.trim().split(/\s+/);
@@ -13,56 +15,78 @@ function cronToHuman(expr) {
 		if (hour !== "*") {
 			if (hour.includes("-")) {
 				const [s, e] = hour.split("-").map(Number);
-				const f = (h) => h === 0 ? "12am" : h < 12 ? `${h}am` : h === 12 ? "12pm" : `${h - 12}pm`;
+				const f = (h) => h === 0 ? "12 am" : h < 12 ? `${h} am` : h === 12 ? "12 pm" : `${h - 12} pm`;
 				desc += ` between ${f(s)} and ${f(e)}`;
 			} else {
 				const h = Number(hour);
-				desc += ` at ${h === 0 ? "12am" : h < 12 ? `${h}am` : h === 12 ? "12pm" : `${h - 12}pm`}`;
+				desc += ` at ${h === 0 ? "12 am" : h < 12 ? `${h} am` : h === 12 ? "12 pm" : `${h - 12} pm`}`;
 			}
 		}
 		return desc;
-	} catch (e) { return expr; }
+	} catch { return expr; }
 }
 
 const TIMEZONES = [
-	["Asia/Kolkata",       "Asia/Kolkata (IST, UTC+5:30)"],
-	["UTC",                "UTC (UTC+0)"],
-	["Asia/Dubai",         "Asia/Dubai (GST, UTC+4)"],
-	["Asia/Singapore",     "Asia/Singapore (SGT, UTC+8)"],
-	["Asia/Tokyo",         "Asia/Tokyo (JST, UTC+9)"],
-	["Australia/Sydney",   "Australia/Sydney (AEDT, UTC+11)"],
-	["America/Los_Angeles","America/Los_Angeles (PST, UTC-8)"],
-	["America/Chicago",    "America/Chicago (CST, UTC-6)"],
-	["America/New_York",   "America/New_York (EST, UTC-5)"],
-	["Europe/London",      "Europe/London (GMT, UTC+0)"],
-	["Europe/Paris",       "Europe/Paris (CET, UTC+1)"],
+	["Asia/Kolkata",        "Asia/Kolkata (IST, UTC+5:30)"],
+	["UTC",                 "UTC (UTC+0)"],
+	["Asia/Dubai",          "Asia/Dubai (GST, UTC+4)"],
+	["Asia/Singapore",      "Asia/Singapore (SGT, UTC+8)"],
+	["Asia/Tokyo",          "Asia/Tokyo (JST, UTC+9)"],
+	["Australia/Sydney",    "Australia/Sydney (AEDT, UTC+11)"],
+	["America/Los_Angeles", "America/Los_Angeles (PST, UTC-8)"],
+	["America/Chicago",     "America/Chicago (CST, UTC-6)"],
+	["America/New_York",    "America/New_York (EST, UTC-5)"],
+	["Europe/London",       "Europe/London (GMT, UTC+0)"],
+	["Europe/Paris",        "Europe/Paris (CET, UTC+1)"],
 ];
+
+/* ── Components ──────────────────────────────────────────────────────────── */
 
 function Toggle({ value, onChange }) {
 	return (
 		<button
 			type="button"
 			onClick={() => onChange(!value)}
-			className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
-				value ? "bg-sky-600" : "bg-zinc-700"
-			}`}
+			className="relative shrink-0 transition-all duration-200 focus:outline-none"
+			style={{
+				width: 40,
+				height: 22,
+				borderRadius: 99,
+				background: value ? "var(--accent)" : "var(--bg-4)",
+				border: `1px solid ${value ? "var(--accent)" : "var(--border-2)"}`,
+			}}
 		>
-			<span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${value ? "translate-x-5" : ""}`} />
+			<span
+				className="absolute top-0.5 transition-transform duration-200"
+				style={{
+					left: 2,
+					width: 16,
+					height: 16,
+					borderRadius: "50%",
+					background: value ? "#080808" : "var(--text-3)",
+					transform: value ? "translateX(18px)" : "translateX(0)",
+				}}
+			/>
 		</button>
 	);
 }
 
-function Field({ label, desc, children }) {
+function SettingRow({ label, desc, children, last }) {
 	return (
-		<div className="flex items-start justify-between gap-6 py-5 border-b border-[#252525] last:border-0">
+		<div
+			className="flex items-start justify-between gap-6 py-5"
+			style={{ borderBottom: last ? "none" : "1px solid var(--border)" }}
+		>
 			<div className="flex-1 min-w-0">
-				<p className="text-sm font-medium text-zinc-200">{label}</p>
-				{desc && <p className="text-xs text-zinc-600 mt-0.5">{desc}</p>}
+				<p className="text-sm font-medium" style={{ color: "var(--text)" }}>{label}</p>
+				{desc && <p className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>{desc}</p>}
 			</div>
-			<div className="flex-shrink-0">{children}</div>
+			<div className="shrink-0 flex items-center gap-3">{children}</div>
 		</div>
 	);
 }
+
+/* ── Main ─────────────────────────────────────────────────────────────────── */
 
 export default function Settings() {
 	const [form, setForm]     = useState(null);
@@ -91,78 +115,118 @@ export default function Settings() {
 		setTimeout(() => setSaved(false), 3000);
 	};
 
-	if (!form) return <div className="p-8 text-zinc-600 text-sm">Loading…</div>;
+	if (!form) {
+		return (
+			<div className="p-8 text-sm" style={{ color: "var(--text-3)" }}>Loading…</div>
+		);
+	}
+
+	const cronDesc = cronToHuman(form.cron_schedule);
 
 	return (
-		<div className="p-8 max-w-2xl">
+		<div className="p-8 max-w-2xl mx-auto animate-fade-up">
+
+			{/* ── Header ── */}
 			<div className="mb-8">
-				<h1 className="text-xl font-semibold">Settings</h1>
-				<p className="text-zinc-500 text-sm mt-0.5">Stored in DB — overrides env vars at runtime.</p>
+				<h1 className="text-3xl font-bold tracking-tight" style={{ color: "var(--text)" }}>Settings</h1>
+				<p className="text-sm mt-0.5" style={{ color: "var(--text-2)" }}>
+					Stored in DB — overrides environment variables at runtime.
+				</p>
 			</div>
 
 			<form onSubmit={handleSave}>
-				<div className="card rounded-xl px-4">
-					<Field
-						label="Posting"
-						desc="Enable or disable all scheduled posts"
+				{/* ── Section: Posting ── */}
+				<div className="mb-4">
+					<p className="text-[10px] uppercase tracking-widest font-semibold mb-3" style={{ color: "var(--text-3)" }}>
+						Posting
+					</p>
+					<div
+						className="rounded-xl px-5"
+						style={{ background: "var(--bg-2)", border: "1px solid var(--border)" }}
 					>
-						<div className="flex items-center gap-3">
+						<SettingRow
+							label="Posting active"
+							desc="Pause to stop all scheduled posts from firing"
+						>
 							<Toggle value={!form.paused} onChange={(v) => set("paused", !v)} />
-							<span className={`text-sm ${!form.paused ? "text-sky-500" : "text-zinc-500"}`}>
-								{form.paused ? "Disabled" : "Enabled"}
+							<span className="text-sm font-mono" style={{ color: !form.paused ? "var(--green)" : "var(--text-3)" }}>
+								{form.paused ? "Paused" : "Active"}
 							</span>
-						</div>
-					</Field>
+						</SettingRow>
 
-					<Field
-						label="Daily Post Limit"
-						desc="Maximum number of posts per calendar day"
-					>
-						<input
-							type="number"
-							min={1}
-							max={50}
-							value={form.daily_limit || 10}
-							onChange={(e) => set("daily_limit", e.target.value)}
-							className="input-field font-mono w-24 text-center"
-						/>
-					</Field>
+						<SettingRow
+							label="Daily post limit"
+							desc="Maximum publish jobs executed per calendar day"
+						>
+							<input
+								type="number"
+								min={1}
+								max={50}
+								value={form.daily_limit || 10}
+								onChange={(e) => set("daily_limit", e.target.value)}
+								className="input-field font-mono text-center"
+								style={{ width: 80 }}
+							/>
+						</SettingRow>
 
-					<Field
-						label="Timezone"
-						desc="Used for posting window checks and daily limit resets"
-					>
-						<Select
-							value={form.timezone || "UTC"}
-							onChange={(v) => set("timezone", v)}
-							options={TIMEZONES}
-							className="w-72"
-						/>
-					</Field>
+						<SettingRow
+							label="Timezone"
+							desc="Used for posting window checks and daily limit resets"
+							last
+						>
+							<Select
+								value={form.timezone || "UTC"}
+								onChange={(v) => set("timezone", v)}
+								options={TIMEZONES}
+								className="w-72"
+							/>
+						</SettingRow>
+					</div>
+				</div>
 
-					<Field
-						label="Scheduler"
-						desc={form.cron_schedule ? cronToHuman(form.cron_schedule) : "6-field node-cron: sec min hr day month weekday"}
+				{/* ── Section: Scheduler ── */}
+				<div className="mb-8">
+					<p className="text-[10px] uppercase tracking-widest font-semibold mb-3" style={{ color: "var(--text-3)" }}>
+						Scheduler
+					</p>
+					<div
+						className="rounded-xl px-5"
+						style={{ background: "var(--bg-2)", border: "1px solid var(--border)" }}
 					>
-						<div className="flex items-center gap-3">
+						<SettingRow
+							label="Cron scheduler"
+							desc={cronDesc || "6-field node-cron: sec min hr day month weekday"}
+							last
+						>
 							<Toggle value={!!form.cron_enabled} onChange={(v) => set("cron_enabled", v)} />
 							<input
 								type="text"
 								value={form.cron_schedule || ""}
 								onChange={(e) => set("cron_schedule", e.target.value)}
-								className="input-field font-mono w-40 text-sm"
+								className="input-field font-mono text-sm"
+								style={{ width: 160 }}
 								placeholder="0 0 9-20 * * *"
 							/>
-						</div>
-					</Field>
+						</SettingRow>
+					</div>
+					{cronDesc && (
+						<p className="text-xs mt-2 ml-1 font-mono" style={{ color: "var(--text-3)" }}>
+							→ {cronDesc}
+						</p>
+					)}
 				</div>
 
-				<div className="flex items-center gap-3 mt-6">
+				{/* ── Save ── */}
+				<div className="flex items-center gap-3">
 					<button type="submit" disabled={saving} className="btn-primary">
 						{saved ? <CheckCircle size={14} /> : <Save size={14} />}
 						{saved ? "Saved!" : saving ? "Saving…" : "Save Settings"}
 					</button>
-					{saved && <span className="text-xs text-emerald-400">Changes saved.</span>}
+					{saved && (
+						<span className="text-xs font-mono" style={{ color: "var(--green)" }}>
+							Changes saved.
+						</span>
+					)}
 				</div>
 			</form>
 		</div>
