@@ -1,0 +1,24 @@
+service/posting/twitter-client.js
+  c1facde6608ba415 70-82,91-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.20",
+  "base_commit_sha": "e77dbc66c784d13ace1f4cd516ff8c5ce8f0a7fd",
+  "prompts": {
+    "c1facde6608ba415": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "9bafece9-1b6a-482f-b737-502e5a954646",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 18,
+      "total_deletions": 1,
+      "accepted_lines": 18,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/dd41fa7c14c23db99a7082f57e405ef56a990647c3e2b8a9f6740b05459c7b62"
+    }
+  }
+}
