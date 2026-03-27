@@ -4,29 +4,29 @@ import { api } from "../api.js";
 
 const PLATFORM_META = {
 	twitter: {
-		label: "X / Twitter", color: "#000", bg: "#e7e7e7", initial: "𝕏", defaultLimit: 280,
+		label: "X / Twitter", color: "#000", bg: "#e7e7e7", initial: "𝕏",
 		requiredVars: ["TWITTER_API_KEY", "TWITTER_API_KEY_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_TOKEN_SECRET"],
 	},
 	bluesky: {
-		label: "Bluesky", color: "#0085ff", bg: "#daeeff", initial: "Bk", defaultLimit: 300,
+		label: "Bluesky", color: "#0085ff", bg: "#daeeff", initial: "Bk",
 		requiredVars: ["BLUESKY_IDENTIFIER", "BLUESKY_APP_PASSWORD"],
 	},
 	linkedin: {
-		label: "LinkedIn", color: "#0077b5", bg: "#dbeafe", initial: "in", defaultLimit: 3000,
+		label: "LinkedIn", color: "#0077b5", bg: "#dbeafe", initial: "in",
 		requiredVars: ["LINKEDIN_CLIENT_ID", "LINKEDIN_CLIENT_SECRET", "LINKEDIN_ACCESS_TOKEN", "LINKEDIN_PERSON_URN"],
 	},
 	devto: {
-		label: "Dev.to", color: "#3b49df", bg: "#eceffe", initial: "D", defaultLimit: null,
+		label: "Dev.to", color: "#3b49df", bg: "#eceffe", initial: "D",
 		requiredVars: ["DEVTO_API_KEY"],
 	},
 	reddit: {
-		label: "Reddit", color: "#ff4500", bg: "#fff0eb", initial: "Rd", defaultLimit: 40000,
+		label: "Reddit", color: "#ff4500", bg: "#fff0eb", initial: "Rd",
 		requiredVars: ["REDDIT_CLIENT_ID", "REDDIT_CLIENT_SECRET", "REDDIT_USERNAME", "REDDIT_PASSWORD", "REDDIT_USER_AGENT"],
 		restricted: true,
 		restrictedReason: "Reddit disabled self-serve API access for new developers in late 2024. New apps require manual approval from Reddit, which is rarely granted. Support will be added if Reddit reopens API access.",
 	},
 	threads: {
-		label: "Threads", color: "#8b5cf6", bg: "#f3e8ff", initial: "Th", defaultLimit: 500,
+		label: "Threads", color: "#8b5cf6", bg: "#f3e8ff", initial: "Th",
 		requiredVars: ["THREADS_APP_ID", "THREADS_APP_SECRET", "THREADS_ACCESS_TOKEN", "THREADS_USER_ID"],
 	},
 };
@@ -51,36 +51,16 @@ function sortPlatforms(platforms) {
 	return [...platforms].sort((a, b) => order(a) - order(b));
 }
 
-function PlatformRow({ platform, onToggle, onSaveLimit }) {
+function PlatformRow({ platform, onToggle }) {
 	const meta = PLATFORM_META[platform.key] || {
-		label:        platform.key,
-		color:        "var(--text)",
-		bg:           "var(--bg-3)",
-		initial:      platform.key?.slice(0, 2).toUpperCase(),
-		defaultLimit: null,
+		label:   platform.key,
+		color:   "var(--text)",
+		bg:      "var(--bg-3)",
+		initial: platform.key?.slice(0, 2).toUpperCase(),
 	};
 
 	const { label: statusLabel, color: statusColor, icon: StatusIcon } = statusInfo(platform);
-	const storedLimit = platform.config?.charLimit;
-
-	const [limitValue, setLimitValue] = useState(storedLimit != null ? String(storedLimit) : "");
-	const [limitSaving, setLimitSaving] = useState(false);
 	const [toggling, setToggling] = useState(false);
-
-	// Keep local state in sync if parent updates (e.g. after refresh)
-	useEffect(() => {
-		setLimitValue(storedLimit != null ? String(storedLimit) : "");
-	}, [storedLimit]);
-
-	const saveLimit = async () => {
-		const num = parseInt(limitValue, 10);
-		const newLimit = limitValue.trim() === "" ? null : (isNaN(num) || num <= 0 ? null : num);
-		// Skip if unchanged
-		if (newLimit === (storedLimit ?? null)) return;
-		setLimitSaving(true);
-		await onSaveLimit(platform.key, { ...(platform.config || {}), charLimit: newLimit });
-		setLimitSaving(false);
-	};
 
 	const handleToggle = async () => {
 		setToggling(true);
@@ -88,10 +68,8 @@ function PlatformRow({ platform, onToggle, onSaveLimit }) {
 		setToggling(false);
 	};
 
-	const isCustomLimit    = storedLimit != null && storedLimit !== meta.defaultLimit;
-	const placeholderLimit = meta.defaultLimit != null ? String(meta.defaultLimit) : "∞";
-	const isRestricted     = !!meta.restricted;
-	const isNotConfigured  = !isRestricted && platform.auth_status === "not_configured";
+	const isRestricted    = !!meta.restricted;
+	const isNotConfigured = !isRestricted && platform.auth_status === "not_configured";
 
 	return (
 		<div
@@ -124,40 +102,6 @@ function PlatformRow({ platform, onToggle, onSaveLimit }) {
 					}
 					<span className="text-xs" style={{ color: statusColor }}>{statusLabel}</span>
 				</div>
-
-				{/* Char limit — hidden for restricted platforms */}
-				{!isRestricted && (
-					<div className="flex items-center gap-1.5 ml-auto">
-						<span className="text-xs shrink-0" style={{ color: "var(--text-3)" }}>limit</span>
-						<div className="relative">
-							<input
-								type="number"
-								min="1"
-								value={limitValue}
-								onChange={e => setLimitValue(e.target.value)}
-								onBlur={saveLimit}
-								onKeyDown={e => e.key === "Enter" && e.currentTarget.blur()}
-								placeholder={placeholderLimit}
-								className="text-xs px-2 py-1 rounded-md font-mono"
-								style={{
-									width: "80px",
-									background: "var(--bg-3)",
-									border: `1px solid ${isCustomLimit ? "rgba(91,184,245,0.35)" : "var(--border-2)"}`,
-									color: isCustomLimit ? "var(--accent)" : "var(--text)",
-									outline: "none",
-								}}
-								onFocus={e => { e.currentTarget.style.borderColor = "rgba(91,184,245,0.4)"; }}
-								onBlurCapture={e => { e.currentTarget.style.borderColor = isCustomLimit ? "rgba(91,184,245,0.35)" : "var(--border-2)"; }}
-							/>
-							{limitSaving && (
-								<div className="absolute inset-y-0 right-1.5 flex items-center">
-									<Loader2 size={9} className="animate-spin" style={{ color: "var(--text-3)" }} />
-								</div>
-							)}
-						</div>
-						<span className="text-xs shrink-0" style={{ color: "var(--text-3)" }}>chars</span>
-					</div>
-				)}
 
 			{/* Toggle — disabled for restricted or unconfigured platforms */}
 			{isRestricted ? (
@@ -261,11 +205,6 @@ export default function Channels() {
 		setPlatforms(prev => prev.map(p => p.key === key ? { ...p, enabled } : p));
 	};
 
-	const handleSaveLimit = async (key, newConfig) => {
-		await api.updatePlatform(key, { config: newConfig });
-		setPlatforms(prev => prev.map(p => p.key === key ? { ...p, config: newConfig } : p));
-	};
-
 	const connected = platforms.filter(p => p.enabled && p.auth_status === "ok").length;
 	const total = platforms.length;
 	const sorted = sortPlatforms(platforms);
@@ -317,7 +256,6 @@ export default function Channels() {
 									key={p.key}
 									platform={p}
 									onToggle={handleToggle}
-									onSaveLimit={handleSaveLimit}
 								/>
 							))}
 						</div>

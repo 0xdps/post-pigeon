@@ -7,12 +7,12 @@ import { SecureImage } from "../components/SecureImage.jsx";
 
 /* ── Platform config ─────────────────────────────────────────────────────── */
 const PLATFORMS = [
-	{ key: "twitter",  label: "X / Twitter", color: "#60a5fa", charLimit: 280    },
-	{ key: "threads",  label: "Threads",      color: "#a78bfa", charLimit: 500    },
-	{ key: "linkedin", label: "LinkedIn",     color: "#38bdf8", charLimit: 3000   },
-	{ key: "reddit",   label: "Reddit",       color: "#fb923c", charLimit: 40000  },
-	{ key: "devto",    label: "Dev.to",       color: "#a3e635", charLimit: 100000 },
-	{ key: "bluesky",  label: "Bluesky",      color: "#67e8f9", charLimit: 300    },
+	{ key: "twitter",  label: "X / Twitter", color: "#60a5fa" },
+	{ key: "threads",  label: "Threads",      color: "#a78bfa" },
+	{ key: "linkedin", label: "LinkedIn",     color: "#38bdf8" },
+	{ key: "reddit",   label: "Reddit",       color: "#fb923c" },
+	{ key: "devto",    label: "Dev.to",       color: "#a3e635" },
+	{ key: "bluesky",  label: "Bluesky",      color: "#67e8f9" },
 ];
 
 const BLANK_CONTENT = () => [{ id: `c-${Date.now()}`, text: "", media_ids: [], sequence: 1 }];
@@ -138,24 +138,16 @@ export default function Compose() {
 			const arr = Array.isArray(res) ? res : (res?.platforms || []);
 			const map = {};
 			for (const p of arr) {
-				map[p.key] = {
-					enabled:        !!p.enabled,
-					auth_status:    p.auth_status,
-					charLimit:      p.config?.charLimit ?? null,
-					supportsThread: p.catalog?.capabilities?.supportsThread ?? false,
-				};
+			map[p.key] = {
+				enabled:        !!p.enabled,
+				auth_status:    p.auth_status,
+				supportsThread: p.catalog?.capabilities?.supportsThread ?? false,
+			};
 			}
 			setPlatformStatuses(map);
 		} catch { /* silent */ }
 	};
 
-	// Resolve the effective char limit for a platform:
-	// 1. Custom limit saved in platform config  2. Hardcoded default  3. Infinity
-	const getCharLimit = (key) => {
-		const custom = platformStatuses[key]?.charLimit;
-		if (custom != null && custom > 0) return custom;
-		return PLATFORMS.find(p => p.key === key)?.charLimit ?? Infinity;
-	};
 
 	const loadPost = async () => {
 		setLoading(true);
@@ -366,13 +358,6 @@ export default function Compose() {
 		? selectedPlatforms.filter(k => !platformStatuses[k]?.supportsThread)
 		: [];
 
-	const charCount = post?.content?.[0]?.text?.length || 0;
-	const tightestLimit = selectedPlatforms.length > 0
-		? Math.min(...selectedPlatforms.map(k => getCharLimit(k)))
-		: null;
-	const finiteLimit = tightestLimit !== Infinity ? tightestLimit : null;
-	const charOver = finiteLimit && charCount > finiteLimit;
-	const charWarn = finiteLimit && !charOver && charCount > finiteLimit * 0.85;
 
 	const publishLabel = {
 		now:    publishing ? "Publishing…" : "Publish Now",
@@ -509,15 +494,6 @@ export default function Compose() {
 							</button>
 						</span>
 					)}
-				{/* Show tightest char limit hint */}
-				{finiteLimit && (
-					<span
-						className="ml-auto text-xs font-mono shrink-0"
-						style={{ color: "var(--text-3)" }}
-					>
-						limit: {finiteLimit.toLocaleString()} chars
-					</span>
-				)}
 				</div>
 
 				{/* Platform-specific fields (Reddit, Dev.to etc.) — inline below selector */}
@@ -638,25 +614,18 @@ export default function Compose() {
 										+ Continue as thread
 									</button>
 								)}
-								<span
-									className="ml-auto text-xs font-mono"
-									style={{ color: charOver ? "var(--red)" : charWarn ? "var(--amber)" : "var(--text-3)" }}
-								>
-							{charCount}{finiteLimit ? ` / ${finiteLimit.toLocaleString()}` : ""}
-							</span>
-						</div>
-					</>
-				)}
+				</div>
+			</>
+			)}
 
-			{/* ── Thread ── */}
-			{post.type === "thread" && (
-				<>
-					<ThreadBuilder
-						content={post.content || []}
-						onUpdate={updated => set("content", updated)}
-						charLimit={finiteLimit ?? Infinity}
-						disabled={isPosted}
-					/>
+		{/* ── Thread ── */}
+		{post.type === "thread" && (
+			<>
+				<ThreadBuilder
+					content={post.content || []}
+					onUpdate={updated => set("content", updated)}
+					disabled={isPosted}
+				/>
 
 					{/* Warn when selected platforms don't support threads */}
 					{threadUnsupportedPlatforms.length > 0 && (
@@ -701,14 +670,11 @@ export default function Compose() {
 								placeholder="Write your reply…"
 								rows={10}
 								disabled={isPosted}
-								className="textarea-field"
-								style={{ width: "100%" }}
-							/>
-						<p className="text-xs font-mono" style={{ color: charOver ? "var(--red)" : charWarn ? "var(--amber)" : "var(--text-3)" }}>
-							{charCount}{finiteLimit ? ` / ${finiteLimit.toLocaleString()}` : ""}
-						</p>
-						</div>
-					)}
+						className="textarea-field"
+							style={{ width: "100%" }}
+						/>
+					</div>
+				)}
 
 					{/* ── Images ── */}
 					{images.length > 0 && (
