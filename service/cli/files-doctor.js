@@ -88,9 +88,6 @@ async function main() {
 
 	await initDb();
 	const db = getDb();
-	if (!db.files) {
-		throw new Error("sqlite-hub-client files API unavailable. Install sqlite-hub-client@0.8.0+");
-	}
 
 	let status = await getStatus(db);
 	console.log("[files-doctor] status", JSON.stringify(status, null, 2));

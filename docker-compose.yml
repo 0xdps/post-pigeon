@@ -1,4 +1,27 @@
 services:
+  # MESAHUB — embedded database server (dev only)
+  # Runs a local mesahub-core instance so no external mesahub account is needed.
+  mesahub:
+    container_name: postpigeon-mesahub
+    profiles: ["dev"]
+    build:
+      context: ./infra
+      dockerfile: Dockerfile.mesahub
+    environment:
+      - PORT=3002
+      - DATA_PATH=/data
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-change-me-for-dev}
+      - DB_NAME=postpigeon
+    volumes:
+      - mesahub-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:3002/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 30s
+
   # BACKEND - Dev mode (hot reload with nodemon)
   backend:
     container_name: postpigeon-backend
@@ -14,14 +37,17 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
+      - MESAHUB_URL=mh://${ADMIN_TOKEN:-change-me-for-dev}@mesahub:3002/postpigeon
     extra_hosts:
       - "host.docker.internal:host-gateway"
-      - "sqlite-hub.localhost:host-gateway"
     volumes:
       - ./service:/app/service
       - ./content:/app/content
       - /app/node_modules
     restart: unless-stopped
+    depends_on:
+      mesahub:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 10s
@@ -125,9 +151,7 @@ services:
       - ADMIN_TOKEN=${ADMIN_TOKEN}
       - SESSION_SECRET=${SESSION_SECRET}
       # Database
-      - SQLITE_HUB_URL=${SQLITE_HUB_URL}
-      - SQLITE_HUB_SERVICE_SECRET=${SQLITE_HUB_SERVICE_SECRET}
-      - SQLITE_HUB_DB=${SQLITE_HUB_DB:-postpigeon}
+      - MESAHUB_URL=${MESAHUB_URL}
       # X / Twitter
       - TWITTER_API_KEY=${TWITTER_API_KEY}
       - TWITTER_API_KEY_SECRET=${TWITTER_API_KEY_SECRET}
@@ -163,7 +187,7 @@ services:
       - ./content:/app/content
       - ./content/texts:/usr/share/caddy/content/texts
       - ./content/media:/usr/share/caddy/content/media
-      - ./data:/app/data
+      - app-data:/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:${APP_INTERNAL_PORT:-8080}/health"]
@@ -171,3 +195,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+volumes:
+  mesahub-data:
+  app-data:

@@ -8,7 +8,7 @@ function parseArgs(argv) {
 	const options = {
 		dryRun: false,
 		limit: null,
-		legacyBaseUrl: process.env.SQLITE_HUB_URL || "",
+		legacyBaseUrl: "",
 	};
 
 	for (const arg of argv) {
@@ -77,14 +77,8 @@ async function tryFetchLegacyFile(postImage, baseUrl) {
 	const url = legacyUrlFor(baseUrl, postImage.file_path);
 	if (!url) return null;
 
-	const token = process.env.SQLITE_HUB_SERVICE_SECRET;
-	const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
 	try {
-		let response = await fetch(url);
-		if (!response.ok && token) {
-			response = await fetch(url, { headers });
-		}
+		const response = await fetch(url);
 
 		if (!response.ok) {
 			return null;
@@ -115,9 +109,6 @@ async function main() {
 
 	await initDb();
 	const db = getDb();
-	if (!db.files) {
-		throw new Error("sqlite-hub-client files API unavailable. Upgrade to sqlite-hub-client@0.8.0+");
-	}
 
 	const allImages = await db.find("post_images", {}, { orderBy: "created_at", order: "ASC" });
 	const images = options.limit ? allImages.slice(0, options.limit) : allImages;
@@ -142,14 +133,10 @@ async function main() {
 				continue;
 			}
 
+			// Non-legacy references (no leading '/') are assumed to be native MesaHub file IDs.
 			if (!looksLikeLegacyPath(currentRef)) {
-				try {
-					await db.files.getMeta(currentRef);
-					summary.alreadyNative += 1;
-					continue;
-				} catch {
-					// reference is not a valid native file id; migrate below
-				}
+				summary.alreadyNative += 1;
+				continue;
 			}
 
 			let resolved = await tryReadLegacyTableBlob(db, currentRef);

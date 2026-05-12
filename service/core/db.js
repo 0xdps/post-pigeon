@@ -1,161 +1,144 @@
-// service/db.js
-// sqlite-hub-client singleton + table initialisation
-import { connect } from "sqlite-hub-client";
+// service/core/db.js
+// Database singleton and schema initialisation.
+// The active storage backend is configured in service/store/storage/index.js.
+// To swap backends (PostgreSQL, MongoDB, …) change only that file.
 
-let _db = null;
+import { getStorage } from "../store/storage/index.js";
 
+/**
+ * Return the active storage provider (lazy singleton).
+ * All store modules call this to get a handle for their queries.
+ * @returns {import('../store/storage/MesahubStorage.js').MesahubStorage}
+ */
 export function getDb() {
-	if (!_db) {
-		const { SQLITE_HUB_URL, SQLITE_HUB_SERVICE_SECRET, SQLITE_HUB_DB } = process.env;
-		if (!SQLITE_HUB_URL || !SQLITE_HUB_SERVICE_SECRET || !SQLITE_HUB_DB) {
-			throw new Error("Missing DB config. Required: SQLITE_HUB_URL, SQLITE_HUB_SERVICE_SECRET, SQLITE_HUB_DB");
-		}
-		_db = connect({
-			url: SQLITE_HUB_URL,
-			token: SQLITE_HUB_SERVICE_SECRET,
-			db: SQLITE_HUB_DB,
-		});
-	}
-	return _db;
+	return getStorage();
 }
 
+/**
+ * Create all application tables if they don't exist, run column migrations,
+ * and seed the platforms lookup rows. Safe to call on every startup.
+ */
 export async function initDb() {
 	const db = getDb();
-	console.log(`[db] Creating tables on ${process.env.SQLITE_HUB_URL} / ${process.env.SQLITE_HUB_DB}...`);
-	await db.createTable(
-		"config",
-		[
-			{ name: "id", type: "INTEGER", primaryKey: true, autoIncrement: true },
-			{ name: "key", type: "TEXT", unique: true, notNull: true },
-			{ name: "value", type: "TEXT", notNull: true },
-		],
-		{ ifNotExists: true }
-	);
+	const mesahubUrl = process.env.MESAHUB_URL || "";
+	const dbLabel = mesahubUrl ? mesahubUrl.split("/").pop() : "unknown";
+	console.log(`[db] Creating tables on MesaHub / ${dbLabel}...`);
 
-	// history: all tweets published with trigger type and optional deletion
-	await db.createTable(
-		"history",
-		[
-			{ name: "id", type: "INTEGER", primaryKey: true, autoIncrement: true },
-			{ name: "local_id", type: "TEXT", notNull: true },
-			{ name: "tweet_id", type: "TEXT", notNull: true },
-			{ name: "ts", type: "INTEGER", notNull: true }, // when posted
-			{ name: "trigger_type", type: "TEXT", notNull: true, default: "manual" }, // manual, cron, queued, scheduled
-			{ name: "deleted_at", type: "INTEGER" }, // when user deleted (null = still active)
-		],
-		{ ifNotExists: true }
-	);
+	// ── Core tables ────────────────────────────────────────────────────────────
 
-	// posts: dynamic post entries (standalone, thread, reply)
-	await db.createTable(
-		"posts",
-		[
-			{ name: "id", type: "TEXT", primaryKey: true },
-			{ name: "type", type: "TEXT", notNull: true, default: "standalone" }, // standalone, thread, reply
-			{ name: "title", type: "TEXT", notNull: true },
-			{ name: "status", type: "TEXT", notNull: true, default: "draft" }, // draft, queue, scheduled, posted
-			{ name: "scheduled_at", type: "INTEGER" }, // unix timestamp when to post
-			{ name: "metadata", type: "TEXT" }, // json: {tags, category, notes}
-			{ name: "created_at", type: "INTEGER", notNull: true },
-			{ name: "updated_at", type: "INTEGER", notNull: true },
-		],
-		{ ifNotExists: true }
-	);
+	await db.exec(`
+		CREATE TABLE IF NOT EXISTS config (
+			id    INTEGER PRIMARY KEY AUTOINCREMENT,
+			key   TEXT    UNIQUE NOT NULL,
+			value TEXT    NOT NULL
+		)
+	`);
 
-	// post_content: individual tweet content within a post (for threads)
-	await db.createTable(
-		"post_content",
-		[
-			{ name: "id", type: "TEXT", primaryKey: true },
-			{ name: "post_id", type: "TEXT", notNull: true },
-			{ name: "sequence", type: "INTEGER", notNull: true, default: 1 }, // order in thread
-			{ name: "text", type: "TEXT", notNull: true },
-			{ name: "media_ids", type: "TEXT" }, // json: ["img-001", "img-002"]
-			{ name: "reply_to_tweet_id", type: "TEXT" }, // for replies
-			{ name: "created_at", type: "INTEGER", notNull: true },
-		],
-		{ ifNotExists: true }
-	);
+	await db.exec(`
+		CREATE TABLE IF NOT EXISTS history (
+			id           INTEGER PRIMARY KEY AUTOINCREMENT,
+			local_id     TEXT    NOT NULL,
+			tweet_id     TEXT    NOT NULL,
+			ts           INTEGER NOT NULL,
+			trigger_type TEXT    NOT NULL DEFAULT 'manual',
+			deleted_at   INTEGER
+		)
+	`);
 
-	// post_images: image metadata and file paths
-	await db.createTable(
-		"post_images",
-		[
-			{ name: "id", type: "TEXT", primaryKey: true },
-			{ name: "post_id", type: "TEXT", notNull: true },
-			{ name: "filename", type: "TEXT", notNull: true },
-			{ name: "mime_type", type: "TEXT", notNull: true },
-			{ name: "size", type: "INTEGER", notNull: true },
-			{ name: "file_path", type: "TEXT", notNull: true }, // path from sqlite-hub
-			{ name: "created_at", type: "INTEGER", notNull: true },
-		],
-		{ ifNotExists: true }
-	);
+	await db.exec(`
+		CREATE TABLE IF NOT EXISTS posts (
+			id           TEXT    PRIMARY KEY,
+			type         TEXT    NOT NULL DEFAULT 'standalone',
+			title        TEXT    NOT NULL,
+			status       TEXT    NOT NULL DEFAULT 'draft',
+			scheduled_at INTEGER,
+			metadata     TEXT,
+			created_at   INTEGER NOT NULL,
+			updated_at   INTEGER NOT NULL
+		)
+	`);
 
-	// platforms: publish destination definitions
-	await db.createTable(
-		"platforms",
-		[
-			{ name: "key", type: "TEXT", primaryKey: true },
-			{ name: "name", type: "TEXT", notNull: true },
-			{ name: "enabled", type: "INTEGER", notNull: true, default: 0 },
-			{ name: "auth_status", type: "TEXT", notNull: true, default: "not_configured" },
-			{ name: "config", type: "TEXT" },
-			{ name: "created_at", type: "INTEGER", notNull: true },
-			{ name: "updated_at", type: "INTEGER", notNull: true },
-		],
-		{ ifNotExists: true }
-	);
+	await db.exec(`
+		CREATE TABLE IF NOT EXISTS post_content (
+			id                TEXT    PRIMARY KEY,
+			post_id           TEXT    NOT NULL,
+			sequence          INTEGER NOT NULL DEFAULT 1,
+			text              TEXT    NOT NULL,
+			media_ids         TEXT,
+			reply_to_tweet_id TEXT,
+			reply_to_post_id  TEXT,
+			created_at        INTEGER NOT NULL
+		)
+	`);
 
-	// platform_accounts: account-level credentials per platform
-	await db.createTable(
-		"platform_accounts",
-		[
-			{ name: "id", type: "TEXT", primaryKey: true },
-			{ name: "platform_key", type: "TEXT", notNull: true },
-			{ name: "label", type: "TEXT", notNull: true },
-			{ name: "external_account_id", type: "TEXT" },
-			{ name: "credentials", type: "TEXT" },
-			{ name: "is_active", type: "INTEGER", notNull: true, default: 1 },
-			{ name: "created_at", type: "INTEGER", notNull: true },
-			{ name: "updated_at", type: "INTEGER", notNull: true },
-		],
-		{ ifNotExists: true }
-	);
+	await db.exec(`
+		CREATE TABLE IF NOT EXISTS post_images (
+			id         TEXT    PRIMARY KEY,
+			post_id    TEXT    NOT NULL,
+			filename   TEXT    NOT NULL,
+			mime_type  TEXT    NOT NULL,
+			size       INTEGER NOT NULL,
+			file_path  TEXT    NOT NULL,
+			created_at INTEGER NOT NULL
+		)
+	`);
 
-	// publish_jobs: platform-specific publish units generated from posts
-	await db.createTable(
-		"publish_jobs",
-		[
-			{ name: "id", type: "TEXT", primaryKey: true },
-			{ name: "post_id", type: "TEXT", notNull: true },
-			{ name: "platform_key", type: "TEXT", notNull: true },
-			{ name: "account_id", type: "TEXT" },
-			{ name: "status", type: "TEXT", notNull: true, default: "pending" },
-			{ name: "mode", type: "TEXT", notNull: true, default: "manual" },
-			{ name: "scheduled_at", type: "INTEGER" },
-			// resolved random window bounds stored for display / re-scheduling
-			{ name: "random_window_start", type: "TEXT" }, // e.g. "09:00"
-			{ name: "random_window_end", type: "TEXT" },   // e.g. "21:00"
-			{ name: "payload", type: "TEXT" },
-			{ name: "error", type: "TEXT" },
-			{ name: "platform_post_id", type: "TEXT" }, // ID assigned by the platform after posting
-			{ name: "posted_at", type: "INTEGER" },      // actual publish timestamp
-			{ name: "created_at", type: "INTEGER", notNull: true },
-			{ name: "updated_at", type: "INTEGER", notNull: true },
-		],
-		{ ifNotExists: true }
-	);
+	await db.exec(`
+		CREATE TABLE IF NOT EXISTS platforms (
+			key         TEXT    PRIMARY KEY,
+			name        TEXT    NOT NULL,
+			enabled     INTEGER NOT NULL DEFAULT 0,
+			auth_status TEXT    NOT NULL DEFAULT 'not_configured',
+			config      TEXT,
+			created_at  INTEGER NOT NULL,
+			updated_at  INTEGER NOT NULL
+		)
+	`);
 
-	// Migrate existing publish_jobs tables that predate the random-window and platform_post_id columns.
-	// ALTER TABLE ADD COLUMN is idempotent in SQLite — we catch 'duplicate column' errors silently.
-	const publishJobsMigrations = [
+	await db.exec(`
+		CREATE TABLE IF NOT EXISTS platform_accounts (
+			id                  TEXT    PRIMARY KEY,
+			platform_key        TEXT    NOT NULL,
+			label               TEXT    NOT NULL,
+			external_account_id TEXT,
+			credentials         TEXT,
+			is_active           INTEGER NOT NULL DEFAULT 1,
+			created_at          INTEGER NOT NULL,
+			updated_at          INTEGER NOT NULL
+		)
+	`);
+
+	await db.exec(`
+		CREATE TABLE IF NOT EXISTS publish_jobs (
+			id                   TEXT    PRIMARY KEY,
+			post_id              TEXT    NOT NULL,
+			platform_key         TEXT    NOT NULL,
+			account_id           TEXT,
+			status               TEXT    NOT NULL DEFAULT 'pending',
+			mode                 TEXT    NOT NULL DEFAULT 'manual',
+			scheduled_at         INTEGER,
+			random_window_start  TEXT,
+			random_window_end    TEXT,
+			payload              TEXT,
+			error                TEXT,
+			platform_post_id     TEXT,
+			posted_at            INTEGER,
+			created_at           INTEGER NOT NULL,
+			updated_at           INTEGER NOT NULL
+		)
+	`);
+
+	// ── Column migrations (idempotent — duplicate column errors are silently ignored) ──
+
+	const migrations = [
 		"ALTER TABLE publish_jobs ADD COLUMN random_window_start TEXT",
 		"ALTER TABLE publish_jobs ADD COLUMN random_window_end TEXT",
 		"ALTER TABLE publish_jobs ADD COLUMN platform_post_id TEXT",
 		"ALTER TABLE publish_jobs ADD COLUMN posted_at INTEGER",
+		"ALTER TABLE post_content ADD COLUMN reply_to_post_id TEXT",
 	];
-	for (const sql of publishJobsMigrations) {
+
+	for (const sql of migrations) {
 		try {
 			await db.exec(sql);
 		} catch {
@@ -163,18 +146,7 @@ export async function initDb() {
 		}
 	}
 
-	// Migrate post_content to support in-app reply chaining
-	// (reply_to_post_id links to another post whose platform_post_id is resolved at publish time)
-	const postContentMigrations = [
-		"ALTER TABLE post_content ADD COLUMN reply_to_post_id TEXT",
-	];
-	for (const sql of postContentMigrations) {
-		try {
-			await db.exec(sql);
-		} catch {
-			// Column already exists — safe to ignore
-		}
-	}
+	// ── Seed platform rows ─────────────────────────────────────────────────────
 
 	const now = Date.now();
 	await db.exec(
@@ -188,5 +160,5 @@ export async function initDb() {
 		[now, now, now, now, now, now, now, now, now, now]
 	);
 
-	console.log("DB tables ready.");
+	console.log("[db] Tables ready.");
 }

@@ -1,0 +1,41 @@
+name: Check
+
+on:
+  push:
+    branches: [trunk]
+  pull_request:
+    branches: [trunk]
+
+jobs:
+  build:
+    name: Build check — ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: backend
+            path: .
+            build_cmd: "node --check service/index.js"
+            install_cmd: "npm ci"
+          - name: dashboard
+            path: dashboard
+            build_cmd: "npm run build"
+            install_cmd: "npm ci"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ${{ matrix.path }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.path }}
+        run: ${{ matrix.install_cmd }}
+
+      - name: Build / syntax check (${{ matrix.name }})
+        working-directory: ${{ matrix.path }}
+        run: ${{ matrix.build_cmd }}

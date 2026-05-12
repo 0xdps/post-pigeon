@@ -14,7 +14,6 @@ import {
 	deleteFileFromHub,
 	getFileFromHub,
 	getFileUrl,
-	createFileReadSessionToken,
 	createPresignedFileUrl,
 	listAllFileIdsFromHub,
 	validateFile,
@@ -59,30 +58,18 @@ export function createImagesRouter() {
 	});
 
 	/**
-	 * POST /api/posts/files/session - Create long-lived read-only file token for frontend
+	 * POST /api/posts/files/session - Previously created long-lived file read tokens.
+	 * Session tokens are not supported by @mesahub/client; all file access
+	 * goes through the backend proxy at /api/posts/files/:id.
 	 */
 	router.post("/files/session", async (c) => {
-		try {
-			let body = {};
-			try {
-				body = await c.req.json();
-			} catch {
-				// optional JSON body
-			}
-
-			const expiresIn = Number(body?.expiresIn) || 30 * 24 * 60 * 60;
-			const token = await createFileReadSessionToken(expiresIn);
-
-			return c.json({
-				success: true,
-				session: token,
-				db: process.env.SQLITE_HUB_DB,
-				base_url: process.env.SQLITE_HUB_URL,
-			});
-		} catch (err) {
-			console.error("POST /posts/files/session error:", err);
-			return c.json({ success: false, error: err.message }, 500);
-		}
+		return c.json(
+			{
+				success: false,
+				error: "Direct file session tokens are not supported. Use the /api/posts/files/:id proxy endpoint instead.",
+			},
+			501
+		);
 	});
 
 	/**

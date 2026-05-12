@@ -1,39 +1,46 @@
 // service/posting/sqlite-hub-upload.js
-// SQLite Hub file upload and management functions
+// File upload and management via @mesahub/client file storage.
 import fs from "fs/promises";
 import path from "path";
+import { parseMesahubUrl } from "@mesahub/client";
 import { getDb } from "../core/db.js";
-
-function normalizeStoragePath(customPath = "posts") {
-	const sanitized = String(customPath || "posts")
-		.replace(/\\/g, "/")
-		.replace(/^\/+|\/+$/g, "");
-	return sanitized || "posts";
-}
 
 function buildProxyFileUrl(fileId) {
 	return `/api/posts/files/${encodeURIComponent(fileId)}`;
 }
 
 function getFilesClient() {
-	const db = getDb();
-	if (!db.files) {
-		throw new Error("sqlite-hub-client files API not available. Install sqlite-hub-client@0.8.0+");
-	}
-	return db.files;
+	return getDb().files;
 }
 
 /**
- * Upload a file to SQLite Hub
+ * Build the direct authenticated download URL for a file.
+ * Used for backend-to-backend fetches (e.g. reading file content before posting).
+ * @param {string} fileId
+ * @returns {string|null}
+ */
+function buildDirectDownloadUrl(fileId) {
+	const url = process.env.MESAHUB_URL;
+	if (!url) return null;
+	try {
+		const { apiUrl, dbName, routePrefix } = parseMesahubUrl(url);
+		return `${apiUrl}/${routePrefix}/files/${dbName}/${encodeURIComponent(fileId)}`;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Upload a file to MesaHub file storage.
  * @param {Buffer|string} fileData - File buffer or file path
- * @param {string} customPath - Optional custom path (e.g., 'posts/001')
- * @param {string} filename - Original filename
- * @param {string} mimeType - Mime type of file
- * @returns {Promise<{file_path: string, url: string}>}
+ * @param {string} _customPath     - Unused (kept for call-site compatibility)
+ * @param {string} filename        - Original filename
+ * @param {string} mimeType        - Mime type of file
+ * @returns {Promise<{file_path: string, url: string, proxy_url: string, download_url: string|null, file_id: string, filename: string, size: number}>}
  */
 export async function uploadFileToHub(
 	fileData,
-	customPath = "posts",
+	_customPath = "posts",
 	filename = "file",
 	mimeType = "application/octet-stream"
 ) {
@@ -42,52 +49,36 @@ export async function uploadFileToHub(
 	try {
 		let buffer;
 
-		// If fileData is a string (file path), read it
 		if (typeof fileData === "string") {
 			buffer = await fs.readFile(fileData);
 			filename = path.basename(fileData);
 		} else {
-			// Assume it's a Buffer
 			buffer = fileData;
 		}
 
-		// Generate unique file path
-		const normalizedPath = normalizeStoragePath(customPath);
+		// Derive a unique filename so re-uploads don't overwrite each other.
 		const ext = path.extname(filename);
 		const base = path.basename(filename, ext).replace(/\s+/g, "-").slice(0, 64) || "file";
 		const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}-${base}${ext}`;
 
-		const uploaded = await files.upload({
-			file: buffer,
-			filename: uniqueName,
-			folderPath: normalizedPath,
-			conflictMode: "replace",
-			metadata: { original_filename: filename, source: "postpigeon" },
-		});
+		// @mesahub/client accepts Blob or ArrayBuffer.
+		const blob = new Blob([buffer], { type: mimeType });
+		const uploaded = await files.upload(blob, uniqueName, mimeType);
 
-		let signed = null;
-		try {
-			signed = await files.presign(uploaded.id, {
-				expiresIn: 3600,
-				disposition: "inline",
-			});
-		} catch (presignErr) {
-			console.warn(`[sqlite-hub] Presign unavailable for ${uploaded.id}: ${presignErr.message}`);
-		}
-
-		console.log(`[sqlite-hub] Uploaded file ${filename} -> ${uploaded.id}`);
+		const downloadUrl = buildDirectDownloadUrl(uploaded.id);
+		console.log(`[mesahub] Uploaded file ${filename} → ${uploaded.id}`);
 
 		return {
 			file_path: uploaded.id,
-			url: signed?.url || buildProxyFileUrl(uploaded.id),
+			url: uploaded.url || buildProxyFileUrl(uploaded.id),
 			proxy_url: buildProxyFileUrl(uploaded.id),
-			download_url: files.getDownloadUrl(uploaded.id),
+			download_url: downloadUrl,
 			file_id: uploaded.id,
 			filename,
 			size: buffer.length,
 		};
 	} catch (err) {
-		console.error("[sqlite-hub] Upload failed:", err.message);
+		console.error("[mesahub] Upload failed:", err.message);
 		throw new Error(`Failed to upload file: ${err.message}`);
 	}
 }
@@ -105,12 +96,12 @@ export async function deleteFileFromHub(filePath) {
 			throw new Error("filePath required");
 		}
 
-		console.log(`[sqlite-hub] Deleting file ${filePath}`);
+		console.log(`[mesahub] Deleting file ${filePath}`);
 		await files.delete(filePath);
-		console.log(`[sqlite-hub] File deleted: ${filePath}`);
+		console.log(`[mesahub] File deleted: ${filePath}`);
 	} catch (err) {
-		console.error("[sqlite-hub] Delete failed:", err.message);
-		// Don't throw - log and continue (file may already be deleted)
+		console.error("[mesahub] Delete failed:", err.message);
+		// Don't throw — log and continue (file may already be deleted)
 	}
 }
 
@@ -125,7 +116,8 @@ export function getFileUrl(filePath) {
 }
 
 /**
- * Read file data from SQLite Hub file storage
+ * Read file data from MesaHub file storage.
+ * Uses the file download stream and converts it to a Buffer.
  * @param {string} fileId
  * @returns {Promise<{file_path: string, filename: string, mime_type: string, size: number, buffer: Buffer} | null>}
  */
@@ -133,34 +125,44 @@ export async function getFileFromHub(fileId) {
 	if (!fileId) return null;
 
 	const files = getFilesClient();
-	const token = process.env.SQLITE_HUB_SERVICE_SECRET;
 
-	const [meta, response] = await Promise.all([
-		files.getMeta(fileId),
-		fetch(files.getDownloadUrl(fileId), {
-			headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-		}),
-	]);
+	try {
+		const streamResp = await files.download(fileId);
 
-	if (!response.ok) {
-		if (response.status === 404) return null;
-		throw new Error(`Failed to fetch file ${fileId}: HTTP ${response.status}`);
+		if (!streamResp || streamResp.status === 404) return null;
+		if (streamResp.status >= 400) {
+			throw new Error(`Failed to fetch file ${fileId}: HTTP ${streamResp.status}`);
+		}
+
+		// Consume the ReadableStream (Node.js or web streams both support async iteration).
+		const chunks = [];
+		for await (const chunk of streamResp.stream) {
+			chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+		}
+		const buffer = Buffer.concat(chunks);
+
+		// content-type may be a plain object or a Headers-like map
+		const headers = streamResp.headers || {};
+		const contentType =
+			(typeof headers.get === "function" ? headers.get("content-type") : headers["content-type"]) ||
+			"application/octet-stream";
+
+		return {
+			file_path: fileId,
+			filename: fileId.split("/").pop() || "file",
+			mime_type: contentType,
+			size: buffer.length,
+			buffer,
+		};
+	} catch (err) {
+		// Treat any 404-like error as "not found" rather than a hard failure.
+		if (err?.message?.includes("404") || err?.status === 404) return null;
+		throw err;
 	}
-
-	const arrayBuffer = await response.arrayBuffer();
-	const contentType = response.headers.get("content-type") || meta?.content_type || "application/octet-stream";
-
-	return {
-		file_path: fileId,
-		filename: meta?.filename || "file",
-		mime_type: contentType,
-		size: Number(meta?.size_bytes) || arrayBuffer.byteLength,
-		buffer: Buffer.from(arrayBuffer),
-	};
 }
 
 /**
- * List all file ids from SQLite Hub file API
+ * List all file IDs stored in MesaHub file storage.
  * @returns {Promise<Set<string>>}
  */
 export async function listAllFileIdsFromHub() {
@@ -184,30 +186,21 @@ export async function listAllFileIdsFromHub() {
 }
 
 /**
- * Create long-lived read-only file token for frontend direct access.
- * @param {number} expiresInSeconds
+ * Presigned URLs are not supported by @mesahub/client.
+ * Returns null so call sites fall back to the backend proxy URL automatically.
+ * @returns {Promise<null>}
  */
-export async function createFileReadSessionToken(expiresInSeconds = 30 * 24 * 60 * 60) {
-	const files = getFilesClient();
-	const result = await files.createFileAccessToken({
-		scope: "files:read",
-		expiresIn: expiresInSeconds,
-		description: "postpigeon-dashboard",
-	});
-	return result.token;
+export async function createPresignedFileUrl(_fileId, _expiresInSeconds = 3600) {
+	return null;
 }
 
 /**
- * Create a presigned URL for a stored file.
- * @param {string} fileId
- * @param {number} expiresInSeconds
+ * Long-lived read session tokens are not supported by @mesahub/client.
+ * Returns null; call sites should use the backend proxy for file access.
+ * @returns {Promise<null>}
  */
-export async function createPresignedFileUrl(fileId, expiresInSeconds = 3600) {
-	const files = getFilesClient();
-	return files.presign(fileId, {
-		expiresIn: expiresInSeconds,
-		disposition: "inline",
-	});
+export async function createFileReadSessionToken(_expiresInSeconds = 30 * 24 * 60 * 60) {
+	return null;
 }
 
 /**
