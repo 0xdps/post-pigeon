@@ -1,0 +1,202 @@
+app/lib/schedule.js
+  s_58014e5b6f6d84::t_6192bd08cfb631 1-153
+instrumentation.js
+  s_58014e5b6f6d84::t_66c8649d7bd280 5,7,9
+  s_58014e5b6f6d84::t_dc27851bce8c77 3,6,8,10-20
+  s_58014e5b6f6d84::t_346bde6426204c 4
+  s_58014e5b6f6d84::t_112c1e69b1632b 1-2
+  s_58014e5b6f6d84::t_ec214c02d775bf 21
+app/api/platforms/accounts/route.js
+  s_58014e5b6f6d84::t_4392d1606143bf 1-11
+app/layout.js
+  s_58014e5b6f6d84::t_2e2238d89a8511 3-4,6-10,20-22
+  s_58014e5b6f6d84::t_8097f44b069889 1-2,5,11-19
+app/lib/posts.js
+  s_58014e5b6f6d84::t_4bdb1fa47e72f7 1-134
+service/posting/twitter-client.js
+  s_58014e5b6f6d84::t_48ed80f309915e 62,134,139,142-145
+  s_58014e5b6f6d84::t_d6cb4adddca92e 135-138,140-141
+app/api/posts/[id]/images/route.js
+  s_58014e5b6f6d84::t_623a893aa0e0a0 1-16
+app/components/RetryList.js
+  s_58014e5b6f6d84::t_371e291ebdb0ea 1-31
+app/lib/platforms.js
+  s_58014e5b6f6d84::t_e4546076a6780f 1-149
+app/components/PlatformList.js
+  s_58014e5b6f6d84::t_43233594feb63a 1-51
+app/api/health/route.js
+  s_58014e5b6f6d84::t_7b350a3823f38b 1-5
+app/api/posts/stats/route.js
+  s_58014e5b6f6d84::t_10860af91a00c1 1-8
+app/api/schedule/[id]/publish/route.js
+  s_58014e5b6f6d84::t_1837a8c38287d2 1-9
+app/api/posts/[id]/route.js
+  s_58014e5b6f6d84::t_b546946d8f134d 1-26
+app/globals.css
+  s_58014e5b6f6d84::t_95b7de051b2ab6 52,88-89,103
+  s_58014e5b6f6d84::t_1f4d29a7cd32f7 157-158
+  s_58014e5b6f6d84::t_fb158c992f04a1 46
+  s_58014e5b6f6d84::t_e015d17b570e3c 105
+  s_58014e5b6f6d84::t_207840347f4878 176-181,205
+  s_58014e5b6f6d84::t_ebbfe27e216341 1-45,47-51,53-87,108,111-129,134,136,138-146,153,155-156,159-175,206-211,213-218
+  s_58014e5b6f6d84::t_2df6ebb45ad22b 182-204
+  s_58014e5b6f6d84::t_53aff4933c93f0 109-110,135,137
+  s_58014e5b6f6d84::t_b615f0bc19d42a 90-102,104,106-107,130-133,147-152,212
+  s_58014e5b6f6d84::t_68abcd2818a20c 154
+app/api/platforms/plan/route.js
+  s_58014e5b6f6d84::t_f7ecd1032ecc6e 1-11
+app/api/posts/route.js
+  s_58014e5b6f6d84::t_9659c8a18c10ef 1-17
+next.config.mjs
+  s_58014e5b6f6d84::t_331b231938722d 7
+  s_58014e5b6f6d84::t_a993322ed2c187 4-6
+  s_58014e5b6f6d84::t_62c59ee80ee14a 1-3,12-19
+  s_58014e5b6f6d84::t_155111d7b56170 8-11
+app/components/SettingsForm.js
+  s_58014e5b6f6d84::t_039c4d40ba2ca0 1-9,11-12,14-19,26-39,45-52
+  s_58014e5b6f6d84::t_79c54f2c96abb6 10,13,20-25,40-44
+app/activity/page.js
+  s_58014e5b6f6d84::t_0e36ade9f93b00 1-23
+app/api/posts/[id]/images/[imageId]/download/route.js
+  s_58014e5b6f6d84::t_1edad506ca27c8 1-9
+service/platforms/twitter-adapter.js
+  s_58014e5b6f6d84::t_46e5aa71c367d4 19
+.gitignore
+  s_58014e5b6f6d84::t_d78c9bc86df80b 110
+  s_58014e5b6f6d84::t_7fb5d4b5ad6279 141
+app/page.js
+  s_58014e5b6f6d84::t_53c77aee2ae187 5
+  s_58014e5b6f6d84::t_dc3ed5bfa57272 1-4,6-7
+package.json
+  s_58014e5b6f6d84::t_9f5bb2bdfadc63 8-11
+  s_58014e5b6f6d84::t_f8234f1eac9381 15
+  s_58014e5b6f6d84::t_d91c07c1a89e5a 44,48,50-51,55-56
+app/api/posts/[id]/images/[imageId]/info/route.js
+  s_58014e5b6f6d84::t_cbcd9d7e88f8ee 1-9
+app/api/platforms/route.js
+  s_58014e5b6f6d84::t_9414850f9c024c 1-8
+app/lib/images.js
+  s_58014e5b6f6d84::t_f6b1ac82eacd74 1-200
+jsconfig.json
+  s_58014e5b6f6d84::t_e059527652f907 1-8
+app/api/schedule/[id]/route.js
+  s_58014e5b6f6d84::t_68313d29cbd653 1-16
+app/api/twitter/health/route.js
+  s_58014e5b6f6d84::t_32ed1bdff7b997 1-34
+app/api/posts/images/integrity/route.js
+  s_58014e5b6f6d84::t_328b21458ba88c 1-8
+app/api/posts/[id]/content/[contentId]/route.js
+  s_58014e5b6f6d84::t_795900c2a5f9f5 1-19
+app/api/posts/[id]/images/[imageId]/route.js
+  s_58014e5b6f6d84::t_08b9faa9018996 1-9
+app/lib/time.js
+  s_58014e5b6f6d84::t_a0c93828a93aaa 1-27
+app/api/auth/login/route.js
+  s_58014e5b6f6d84::t_c9219161ecfb4e 1-22
+app/api/posts/[id]/content/route.js
+  s_58014e5b6f6d84::t_a33924ee194d1d 1-19
+app/api/platforms/catalog/route.js
+  s_58014e5b6f6d84::t_8b3eaef6eb0eb0 1-8
+app/components/Select.js
+  s_58014e5b6f6d84::t_4adaeabae18e90 1-92
+app/components/PostLibrary.js
+  s_58014e5b6f6d84::t_1720e0f5fdca50 1-48
+app/overview/page.js
+  s_58014e5b6f6d84::t_0e36ade9f93b00 1-58
+app/posts/page.js
+  s_58014e5b6f6d84::t_0e36ade9f93b00 1-24
+app/lib/bootstrap.js
+  s_58014e5b6f6d84::t_2654501cfa3e18 1-28
+.dockerignore
+  s_58014e5b6f6d84::t_866e611982a183 6,16
+app/lib/client.js
+  s_58014e5b6f6d84::t_09c23676497a45 1-45,61-68
+  s_58014e5b6f6d84::t_6a53ad76f5365a 46-60
+app/components/Composer.js
+  s_58014e5b6f6d84::t_b1e962100582c1 1-5,7-13,15-25,28-34,36-105,109-132,156,176,178-180,182-185,216-219
+  s_58014e5b6f6d84::t_50086da8883532 14
+  s_58014e5b6f6d84::t_11d3900b2f9faf 133-155,157-167,175,177,186-215
+  s_58014e5b6f6d84::t_c164ac82008a15 168-174,181
+  s_58014e5b6f6d84::t_a362b26fd3666e 6,26-27,106-108
+  s_58014e5b6f6d84::t_290bc8e343fbb5 35
+app/compose/[id]/page.js
+  s_58014e5b6f6d84::t_ba9e6d62be7c58 17
+  s_58014e5b6f6d84::t_0e36ade9f93b00 1-16,18-20
+app/guide/page.js
+  s_58014e5b6f6d84::t_074b75b6dbbd86 1,3,12-15
+  s_58014e5b6f6d84::t_03a39f6637f159 2,4-11,16-35
+Dockerfile
+  s_58014e5b6f6d84::t_8d15bd46a78357 1-7,9,12,14-20,24-27,29-30,32-35,37-41,43-44,46
+app/api/posts/files/session/route.js
+  s_58014e5b6f6d84::t_eaff1f12a4c981 1-8
+app/components/Timeline.js
+  s_58014e5b6f6d84::t_0f3dd53c6bbe8a 1-64
+app/api/settings/route.js
+  s_58014e5b6f6d84::t_b65f7515bdcd2b 1-18
+app/api/platforms/accounts/[id]/route.js
+  s_58014e5b6f6d84::t_0b5a66d5f95cbd 1-19
+service/posting/sqlite-hub-upload.js
+  s_58014e5b6f6d84::t_badeadfe6a1096 16-54,104-112,138-143,178
+app/lib/http.js
+  s_58014e5b6f6d84::t_2219702f363b3e 1-13
+app/login/page.js
+  s_58014e5b6f6d84::t_4f23faf1cc5a90 1-26,28-31,39-42,44-45,47,50-53
+  s_58014e5b6f6d84::t_3314f5d8169ccf 32-38,43,46,48-49
+  s_58014e5b6f6d84::t_5f7744e9ccc885 27
+app/components/Shell.js
+  s_58014e5b6f6d84::t_a55e09fe53d8c3 5,8,10-13,29,36-45
+  s_58014e5b6f6d84::t_ab6360a2f41717 1-4,6-7,9,14-28,30-35,46-50
+app/compose/page.js
+  s_58014e5b6f6d84::t_7251958be25644 12
+  s_58014e5b6f6d84::t_0e36ade9f93b00 1-11,13-15
+app/api/schedule/route.js
+  s_58014e5b6f6d84::t_7bb2b73917d88e 1-17
+service/posting/scheduler.js
+  s_58014e5b6f6d84::t_fb86c884ff7fba 35
+app/api/posts/files/[fileId]/route.js
+  s_58014e5b6f6d84::t_9a479d9e2bf1a6 1-9
+app/api/platforms/jobs/route.js
+  s_58014e5b6f6d84::t_6c9982a6dda503 1-8
+service/core/config.js
+  s_58014e5b6f6d84::t_7ff251bede095a 91
+app/settings/page.js
+  s_58014e5b6f6d84::t_0e36ade9f93b00 1-15,17-18,20-22
+  s_58014e5b6f6d84::t_73a3ec659cdf76 16,19
+app/platforms/page.js
+  s_58014e5b6f6d84::t_bce232c260697c 8-14
+  s_58014e5b6f6d84::t_0e36ade9f93b00 1-7,15-28
+app/lib/session.js
+  s_58014e5b6f6d84::t_e5ebbf2bf5fd65 1-56
+app/api/auth/logout/route.js
+  s_58014e5b6f6d84::t_ef25e5003cee66 1-8
+app/api/platforms/[platformKey]/route.js
+  s_58014e5b6f6d84::t_5de9ca82384390 1-12
+app/lib/data.js
+  s_58014e5b6f6d84::t_52fbe45c49c9b5 80-81,84,88-95
+  s_58014e5b6f6d84::t_274d79299d3923 1-79,82-83,85-87,96-97
+.github/workflows/docker-publish.yml
+  s_58014e5b6f6d84::t_79c688bc5b3bd4 21
+package-lock.json
+  s_58014e5b6f6d84::t_2772cc6a8551a1 17,19-20,24-25,532-541,743-1293,1296,1770-1915,1985-1993,2100-2119,2545-2550,2696-2702,2753-2762,4410-4421,4522-4539,4547-4598,4911-4938,5050-5074,5542-5550,5561-5623,5694-5702,5819-5841
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4698a5ef555287aed9af9095f2327e6e51ae969d",
+  "prompts": {},
+  "humans": {
+    "h_95aea6b4aa8772": {
+      "author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_58014e5b6f6d84": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "6c1595ba-dfa8-425a-85f6-d8e23bb969d0",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
