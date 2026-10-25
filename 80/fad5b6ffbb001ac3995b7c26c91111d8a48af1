@@ -1,0 +1,45 @@
+dashboard/src/pages/Channels.jsx
+  s_58014e5b6f6d84::t_5327bf38d7a6fa 8
+docker-compose.yml
+  s_58014e5b6f6d84::t_9fa041e72c4bab 156-157,159
+service/posting/post-utils.js
+  s_58014e5b6f6d84::t_8732f1c7d6d6bd 46,131
+service/posting/twitter-client.js
+  s_58014e5b6f6d84::t_ccb244e1d2ce1b 1,49-91,94-136,138,217-219,223
+dashboard/src/pages/Guide.jsx
+  s_58014e5b6f6d84::t_60b3675a7dd699 14-17,19
+service/http/server.js
+  s_58014e5b6f6d84::t_059cd27050113e 43
+docs/platforms/twitter.md
+  s_58014e5b6f6d84::t_23c26371af3a1e 9-12,37,39-42,44,46-47,49-51,53
+service/platforms/twitter-adapter.js
+  s_58014e5b6f6d84::t_d9478cfc9a19d5 21,65,75
+service/cli/delete-post.js
+  s_58014e5b6f6d84::t_7860458b3743b6 54
+service/store/platform-store.js
+  s_58014e5b6f6d84::t_d9ff543ccc4ce2 36
+  s_58014e5b6f6d84::t_d7d989af461a1b 44-49
+.env.example
+  s_58014e5b6f6d84::t_ba3362507ac66f 1-7,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "80fad5b6ffbb001ac3995b7c26c91111d8a48af1",
+  "prompts": {},
+  "humans": {
+    "h_95aea6b4aa8772": {
+      "author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_58014e5b6f6d84": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "6c1595ba-dfa8-425a-85f6-d8e23bb969d0",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
