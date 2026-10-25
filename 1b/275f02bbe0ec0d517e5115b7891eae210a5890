@@ -1,0 +1,40 @@
+dashboard/src/pages/Activity.jsx
+  0a00f20e38610e18 1-54
+dashboard/src/components/Layout.jsx
+  0a00f20e38610e18 3,7-11,14-27,50,58-68,74-83,85-90
+dashboard/src/App.jsx
+  2fa06b8fff125246 12,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "1b275f02bbe0ec0d517e5115b7891eae210a5890",
+  "prompts": {
+    "0a00f20e38610e18": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "852afeca-8e16-42e7-8dac-7849d85e0b7f",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 109,
+      "total_deletions": 28,
+      "accepted_lines": 102,
+      "overriden_lines": 0
+    },
+    "2fa06b8fff125246": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "3952b600-914d-4f5e-b241-e4f16a353860",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 0,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}

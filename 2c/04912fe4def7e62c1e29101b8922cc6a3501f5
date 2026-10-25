@@ -1,0 +1,76 @@
+service/store/storage/MesahubStorage.js
+  h_d60f3499e5a1c3 1-193
+.env.example
+  h_7a2f4c8f0473b8 41-44
+service/posting/sqlite-hub-upload.js
+  2107af80e9bcee71 2,5,13-29,34,36-39,43,59,64-66,68-69,73,75,81,99,101,103-104,119-120,129-142,144-161,165,189-191,193-194,198-200,202-203
+.github/workflows/check.yml
+  h_7a2f4c8f0473b8 1-41
+service/index.js
+  2107af80e9bcee71 12,17,25,27
+service/http/routes/images.js
+  h_d60f3499e5a1c3 61-63,69,71
+service/cli/backfill-hub-files.js
+  2107af80e9bcee71 11,81,136,138-139
+infra/start-mesahub.sh
+  h_7a2f4c8f0473b8 1-23
+service/core/db.js
+  2107af80e9bcee71 1-4,6,8-12,14,17-20,23-25,27,29-35,37-46,48-59,61-72,74-84,86-129,131-133,140-141,149-150,163
+start.sh
+  h_7a2f4c8f0473b8 36
+  s_2107af80e9bcee::t_6b8d0040ead72a 4,6,9-35,37-75,84-85,90,92,98,102-103,107,109-111,113-115,117-120,122-124,126-129,134-135
+Dockerfile
+  s_2107af80e9bcee::t_83caf2098ea5d2 1-13,25-26,29-34,36-38,40-51,53-54,58
+package.json
+  s_2107af80e9bcee::t_b63386c82847d1 47
+service/store/storage/index.js
+  h_d60f3499e5a1c3 1-19
+infra/Dockerfile.mesahub
+  h_7a2f4c8f0473b8 1-27
+.github/workflows/docker-publish.yml
+  h_7a2f4c8f0473b8 1-93
+docker-compose.yml
+  2107af80e9bcee71 154
+  s_2107af80e9bcee::t_a6d290e812e6db 190,198-201
+  s_2107af80e9bcee::t_1ee429728fd015 2-12,14-24,48-50
+  h_7a2f4c8f0473b8 13,40
+service/store/storage/StorageProvider.js
+  h_d60f3499e5a1c3 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "2c04912fe4def7e62c1e29101b8922cc6a3501f5",
+  "prompts": {
+    "2107af80e9bcee71": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "58120dfd-dc8f-4b12-ba20-df5d42bb3a14",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "total_additions": 218,
+      "total_deletions": 274,
+      "accepted_lines": 217,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_7a2f4c8f0473b8": {
+      "author": "Devendra Pratap Singh <dps.manit@gmail.com>"
+    },
+    "h_d60f3499e5a1c3": {
+      "author": "Devendra Pratap Singh"
+    }
+  },
+  "sessions": {
+    "s_2107af80e9bcee": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "58120dfd-dc8f-4b12-ba20-df5d42bb3a14",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>"
+    }
+  }
+}

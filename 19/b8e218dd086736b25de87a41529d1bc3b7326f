@@ -1,0 +1,35 @@
+dashboard/src/pages/Dashboard.jsx
+  8f54da0230a7a24f 3,10-11,19,22-23,27,34,36-39,41,50-60,89-110,112-113,263,267-269,275-284,286,292-293,295-296,298-299,301-302,304-329,332,345-347,349-350,359,365-406
+dashboard/src/pages/Scheduled.jsx
+  8f54da0230a7a24f 2,8,13-18,23-39,41,80-120,141-144,158,163-183,186-195,197-215,241,247,250,256-274
+dashboard/src/pages/Queue.jsx
+  8f54da0230a7a24f 14,70-73,76,81-89,120
+dashboard/src/pages/Bank.jsx
+  8f54da0230a7a24f 9-10,17,20,39-40,66,108-109,111,113,118,120-121,123,157
+dashboard/src/components/ConfirmDialog.jsx
+  8f54da0230a7a24f 1-32
+dashboard/src/components/DateTimePicker.jsx
+  8f54da0230a7a24f 31-32,35,46,51,59
+dashboard/src/pages/Posted.jsx
+  8f54da0230a7a24f 4,12-13,43-48,55-60,64-72,74,79-85,87-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "19b8e218dd086736b25de87a41529d1bc3b7326f",
+  "prompts": {
+    "8f54da0230a7a24f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "d8d38c4e-31d9-4f9c-bbd5-ce041455367d",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 577,
+      "total_deletions": 258,
+      "accepted_lines": 423,
+      "overriden_lines": 7
+    }
+  }
+}

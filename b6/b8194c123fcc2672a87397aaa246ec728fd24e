@@ -1,0 +1,31 @@
+dashboard/src/components/DateTimePicker.jsx
+  8f54da0230a7a24f 1-73
+dashboard/src/pages/Scheduled.jsx
+  8f54da0230a7a24f 1-133
+dashboard/src/App.jsx
+  8f54da0230a7a24f 8,21
+dashboard/src/pages/Bank.jsx
+  8f54da0230a7a24f 2,4,14-15,59-77,87-88,155-170,202-209
+dashboard/src/components/Layout.jsx
+  8f54da0230a7a24f 2,10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "b6b8194c123fcc2672a87397aaa246ec728fd24e",
+  "prompts": {
+    "8f54da0230a7a24f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "d8d38c4e-31d9-4f9c-bbd5-ce041455367d",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 260,
+      "total_deletions": 4,
+      "accepted_lines": 260,
+      "overriden_lines": 0
+    }
+  }
+}

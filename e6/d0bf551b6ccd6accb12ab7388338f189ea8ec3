@@ -1,0 +1,23 @@
+dashboard/src/pages/Settings.jsx
+  5ce5cedc0abbed50 5-113,264,266,268-271
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "e6d0bf551b6ccd6accb12ab7388338f189ea8ec3",
+  "prompts": {
+    "5ce5cedc0abbed50": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "32505262-e233-4d88-b2ba-d54a09308ca8",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 120,
+      "total_deletions": 6,
+      "accepted_lines": 115,
+      "overriden_lines": 1
+    }
+  }
+}

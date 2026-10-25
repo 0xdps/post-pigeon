@@ -1,0 +1,24 @@
+dashboard/src/index.css
+  c1facde6608ba415 17-20,63-64,79-80,95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.20",
+  "base_commit_sha": "67bb5bef68aa556396261b7042865e3c6c239e2c",
+  "prompts": {
+    "c1facde6608ba415": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "9bafece9-1b6a-482f-b737-502e5a954646",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 9,
+      "total_deletions": 9,
+      "accepted_lines": 9,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/d2fc02cee3bcc306a2d8ab23a47f4d706f729d2cfb9536763c52a04a92f54ae1"
+    }
+  }
+}

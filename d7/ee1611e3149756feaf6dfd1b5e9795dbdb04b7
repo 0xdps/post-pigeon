@@ -1,0 +1,21 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "d7ee1611e3149756feaf6dfd1b5e9795dbdb04b7",
+  "prompts": {
+    "69c713fec2763a6e": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "7ad87f68-c70e-4fe5-9558-30371e82ffe7",
+        "model": "copilot/claude-sonnet-4.6"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 27,
+      "total_deletions": 0,
+      "accepted_lines": 27,
+      "overriden_lines": 0
+    }
+  }
+}

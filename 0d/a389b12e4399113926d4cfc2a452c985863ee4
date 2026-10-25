@@ -1,0 +1,24 @@
+dashboard/src/components/ThreadBuilder.jsx
+  c1facde6608ba415 1,3,11,13,23,28-31,34-37,41,45,47,51-61,63-73,75-77,79-86,93-102,104-113,115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.20",
+  "base_commit_sha": "0da389b12e4399113926d4cfc2a452c985863ee4",
+  "prompts": {
+    "c1facde6608ba415": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "9bafece9-1b6a-482f-b737-502e5a954646",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 71,
+      "total_deletions": 115,
+      "accepted_lines": 71,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/4fdc68d7132a1690825c64fecadfe82e099a7876e655915d63fc847584e5f1d0"
+    }
+  }
+}

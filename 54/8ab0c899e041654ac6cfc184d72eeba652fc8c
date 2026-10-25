@@ -1,0 +1,24 @@
+dashboard/src/pages/Channels.jsx
+  c1facde6608ba415 2,5-12,15-19,22-26,28,31-36,40-41,43-44,46-60,68-70,73,76-77,80-86,88-100,102-128,131,134-155,179,186,190,193,197,216,219-242
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.20",
+  "base_commit_sha": "548ab0c899e041654ac6cfc184d72eeba652fc8c",
+  "prompts": {
+    "c1facde6608ba415": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "9bafece9-1b6a-482f-b737-502e5a954646",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 152,
+      "total_deletions": 186,
+      "accepted_lines": 152,
+      "overriden_lines": 0,
+      "messages_url": "https://usegitai.com/cas/c80c719bb893c7989a23ee624b927e0e99f9b5307cf67e83583f414f9f92651c"
+    }
+  }
+}

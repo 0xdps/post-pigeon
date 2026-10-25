@@ -1,0 +1,27 @@
+dashboard/src/pages/Bank.jsx
+  2fa06b8fff125246 28-29
+service/http/routes/posts.js
+  2fa06b8fff125246 15,105,112
+service/http/server.js
+  2fa06b8fff125246 81-85,90,92-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "d1cbce62fb067981aabd023a85cdd93c73a43ab0",
+  "prompts": {
+    "2fa06b8fff125246": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "3952b600-914d-4f5e-b241-e4f16a353860",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 15,
+      "total_deletions": 4,
+      "accepted_lines": 15,
+      "overriden_lines": 0
+    }
+  }
+}

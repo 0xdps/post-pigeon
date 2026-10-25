@@ -1,0 +1,47 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "95fd58cdfefb255c031abc8c8dc1b9eb2d45e3ba",
+  "prompts": {
+    "5605121c6c83a49c": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "c83e08da-3d9a-4857-bf52-0c7e923dc30a",
+        "model": "copilot/gpt-5.3-codex"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 0,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    },
+    "7f3f3dccb554b394": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "5fd7a20b-5dcb-440b-8038-aefe896a74b3",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 2372,
+      "total_deletions": 158,
+      "accepted_lines": 2081,
+      "overriden_lines": 24
+    },
+    "bfd4796776b23c42": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "390ac3e3-7668-436f-b8fd-4d9bb3e8e901",
+        "model": "copilot/gpt-5.3-codex"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 335,
+      "total_deletions": 392,
+      "accepted_lines": 246,
+      "overriden_lines": 8
+    }
+  }
+}
