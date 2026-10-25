@@ -59,6 +59,7 @@ const ACCESS_TOKEN_TTL_MS = 110 * 60 * 1000;
 let cachedUserClient = null;
 let accessTokenExpiresAt = 0;
 let refreshInFlight = null;
+let sawAccessToken = process.env.TWITTER_ACCESS_TOKEN || "";
 
 function readTwitterCredentials() {
 	const credentials = {
@@ -128,10 +129,20 @@ async function refreshUserClient(credentials) {
  * X user access tokens last 2 hours; the refresh token lasts about 6 months.
  */
 export async function createClient() {
-	if (cachedUserClient && Date.now() < accessTokenExpiresAt) return cachedUserClient;
 	if (refreshInFlight) return refreshInFlight;
-
 	const credentials = readTwitterCredentials();
+	const tokenChanged = credentials.accessToken !== sawAccessToken;
+	if (tokenChanged) {
+		sawAccessToken = credentials.accessToken;
+		cachedUserClient = null;
+		accessTokenExpiresAt = Date.now() + ACCESS_TOKEN_TTL_MS;
+	}
+	if (cachedUserClient && Date.now() < accessTokenExpiresAt) return cachedUserClient;
+	if (Date.now() < accessTokenExpiresAt) {
+		cachedUserClient = new TwitterApi(credentials.accessToken);
+		return cachedUserClient;
+	}
+
 	refreshInFlight = refreshUserClient(credentials).finally(() => {
 		refreshInFlight = null;
 	});

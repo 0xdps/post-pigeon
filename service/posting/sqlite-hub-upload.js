@@ -13,6 +13,45 @@ function getFilesClient() {
 	return getDb().files;
 }
 
+const LOCAL_PREFIX = "local:";
+const LOCAL_DIR = path.resolve(process.cwd(), process.env.UPLOAD_DIR || "data/uploads");
+
+function isLocalFile(fileId) {
+	return String(fileId || "").startsWith(LOCAL_PREFIX);
+}
+
+async function saveLocalFile(buffer, filename, mimeType) {
+	await fs.mkdir(LOCAL_DIR, { recursive: true });
+	const ext = path.extname(filename);
+	const base = path.basename(filename, ext).replace(/[^\w.-]+/g, "-").slice(0, 64) || "file";
+	const id = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}-${base}${ext}`;
+	await fs.writeFile(path.join(LOCAL_DIR, id), buffer);
+	await fs.writeFile(path.join(LOCAL_DIR, `${id}.meta.json`), JSON.stringify({ filename, mimeType, size: buffer.length }));
+	return { id: `${LOCAL_PREFIX}${id}`, filename, size: buffer.length };
+}
+
+async function readLocalFile(fileId) {
+	const name = path.basename(String(fileId).slice(LOCAL_PREFIX.length));
+	const filePath = path.join(LOCAL_DIR, name);
+	try {
+		const [buffer, metaRaw] = await Promise.all([
+			fs.readFile(filePath),
+			fs.readFile(`${filePath}.meta.json`, "utf8").catch(() => "{}"),
+		]);
+		const meta = JSON.parse(metaRaw);
+		return {
+			file_path: fileId,
+			filename: meta.filename || name,
+			mime_type: meta.mimeType || "application/octet-stream",
+			size: buffer.length,
+			buffer,
+		};
+	} catch (err) {
+		if (err?.code === "ENOENT") return null;
+		throw err;
+	}
+}
+
 /**
  * Build the direct authenticated download URL for a file.
  * Used for backend-to-backend fetches (e.g. reading file content before posting).
@@ -62,8 +101,15 @@ export async function uploadFileToHub(
 		const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}-${base}${ext}`;
 
 		// @mesahub/client accepts Blob or ArrayBuffer.
-		const blob = new Blob([buffer], { type: mimeType });
-		const uploaded = await files.upload(blob, uniqueName, mimeType);
+		let uploaded;
+		try {
+			const blob = new Blob([buffer], { type: mimeType });
+			uploaded = await files.upload(blob, uniqueName, mimeType);
+		} catch (err) {
+			if (!/not found/i.test(err?.message || "")) throw err;
+			console.warn("[mesahub] Files API unavailable, storing upload locally");
+			uploaded = await saveLocalFile(buffer, uniqueName, mimeType);
+		}
 
 		const downloadUrl = buildDirectDownloadUrl(uploaded.id);
 		console.log(`[mesahub] Uploaded file ${filename} → ${uploaded.id}`);
@@ -89,6 +135,12 @@ export async function uploadFileToHub(
  * @returns {Promise<void>}
  */
 export async function deleteFileFromHub(filePath) {
+	if (isLocalFile(filePath)) {
+		const name = path.basename(String(filePath).slice(LOCAL_PREFIX.length));
+		await fs.rm(path.join(LOCAL_DIR, name), { force: true });
+		await fs.rm(path.join(LOCAL_DIR, `${name}.meta.json`), { force: true });
+		return;
+	}
 	const files = getFilesClient();
 
 	try {
@@ -123,6 +175,7 @@ export function getFileUrl(filePath) {
  */
 export async function getFileFromHub(fileId) {
 	if (!fileId) return null;
+	if (isLocalFile(fileId)) return readLocalFile(fileId);
 
 	const files = getFilesClient();
 

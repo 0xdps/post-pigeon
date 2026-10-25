@@ -3,6 +3,7 @@ dashboard/node_modules
 dashboard/dist
 .git
 .env
+.env.*
 .DS_Store
 *.log
 npm-debug.log*
@@ -12,3 +13,4 @@ docs
 landing
 data
 content
+.next

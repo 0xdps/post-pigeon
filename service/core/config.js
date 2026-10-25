@@ -88,7 +88,7 @@ class Config {
 	}
 
 	async getMaxTweetLength() {
-		const value = await this._getCachedValue("max_tweet_length", "MAX_TWEET_LENGTH", 1000);
+		const value = await this._getCachedValue("max_tweet_length", "MAX_TWEET_LENGTH", 280);
 		return Number(value);
 	}
 

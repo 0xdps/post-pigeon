@@ -18,12 +18,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: backend
+          - name: app
             path: .
-            build_cmd: "node --check service/index.js"
-            install_cmd: "npm ci"
-          - name: dashboard
-            path: dashboard
             build_cmd: "npm run build"
             install_cmd: "npm ci"
 
@@ -87,7 +83,5 @@ jobs:
           push: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            MESAHUB_CORE_VERSION=trunk
           cache-from: type=gha
           cache-to: type=gha,mode=max

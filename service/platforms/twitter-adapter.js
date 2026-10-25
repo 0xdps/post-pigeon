@@ -3,7 +3,6 @@
 // Wraps existing twitter-client.js and uses preparePostById for content resolution.
 import { createClient, postStatus, deleteStatus } from "../posting/twitter-client.js";
 import { preparePostById } from "../posting/post-utils.js";
-import config from "../core/config.js";
 
 export class TwitterAdapter {
 	get key() {
@@ -17,15 +16,9 @@ export class TwitterAdapter {
 	 * @param {{ payloadOverrides?: object, dryRun?: boolean }} opts
 	 * @returns {Promise<{ platformPostId: string, url: string|null }>}
 	 */
-	async post(postId, { payloadOverrides = {}, dryRun = false } = {}) {
+	async post(postId, { payloadOverrides = {} } = {}) {
 		const client = await createClient();
 		const { tweets } = await preparePostById(postId, client);
-
-		if (dryRun || (await config.isDryRun())) {
-			const fakeId = `dry-run-${Date.now()}`;
-			console.log(`[twitter-adapter] DRY RUN — postId=${postId}, fakeId=${fakeId}, tweets=${tweets.length}`);
-			return { platformPostId: fakeId, url: null };
-		}
 
 		let firstTweetId = null;
 		let previousTweetId = null;

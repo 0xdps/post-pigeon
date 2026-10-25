@@ -1,6 +1,5 @@
 // service/scheduler.js
 import cron from "node-cron";
-import config from "../core/config.js";
 import { getPublishJobsDue, updatePublishJobStatus, markPublishJobPosted, markPublishJobFailed } from "../store/publish-jobs.js";
 import { getAdapter } from "../platforms/registry.js";
 import { updatePost } from "../store/db-posts.js";
@@ -18,12 +17,6 @@ async function checkPublishJobs() {
 
 		console.log(`[publish-jobs] Found ${dueJobs.length} due job(s), executing...`);
 
-		const paused = await config.isPaused();
-		if (paused) {
-			console.log("[publish-jobs] Posting is paused — skipping all due jobs this tick.");
-			return;
-		}
-
 		for (const job of dueJobs) {
 			console.log(`[publish-jobs] Executing job ${job.id} → ${job.platform_key} for post ${job.post_id}`);
 
@@ -39,8 +32,7 @@ async function checkPublishJobs() {
 
 			try {
 				const payload = job.payload ? JSON.parse(job.payload) : {};
-				const dryRun = await config.isDryRun();
-				const result = await adapter.post(job.post_id, { payloadOverrides: payload, dryRun });
+				const result = await adapter.post(job.post_id, { payloadOverrides: payload });
 				await markPublishJobPosted(job.id, result.platformPostId);
 				await updatePost(job.post_id, { status: "posted" });
 				console.log(`[publish-jobs] Job ${job.id} posted — platformPostId=${result.platformPostId}`);
@@ -55,12 +47,6 @@ async function checkPublishJobs() {
 }
 
 export async function startScheduler() {
-	if (!(await config.isCronEnabled())) {
-		console.log("Scheduler disabled via cron_enabled setting. Cron will not run.");
-		return;
-	}
-
-	// Per-minute tick: check publish_jobs
 	_currentTask = cron.schedule("*/1 * * * *", async () => {
 		await checkPublishJobs();
 	});
