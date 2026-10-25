@@ -6,10 +6,10 @@
 
 | Field | ENV var | Description |
 |-------|---------|-------------|
-| API Key | `TWITTER_API_KEY` | Consumer Key for your app |
-| API Key Secret | `TWITTER_API_KEY_SECRET` | Consumer Secret for your app |
-| Access Token | `TWITTER_ACCESS_TOKEN` | Token for the account that will post |
-| Access Token Secret | `TWITTER_ACCESS_TOKEN_SECRET` | Secret for the access token |
+| Client ID | `TWITTER_CLIENT_ID` | OAuth 2.0 Client ID |
+| Client Secret | `TWITTER_CLIENT_SECRET` | OAuth 2.0 Client Secret |
+| Access Token | `TWITTER_ACCESS_TOKEN` | User access token. Expires in 2 hours; refreshed automatically |
+| Refresh Token | `TWITTER_ACCESS_REFRESH_TOKEN` | User refresh token. Expires in about 6 months |
 
 ---
 
@@ -34,23 +34,23 @@ Go to [developer.twitter.com](https://developer.twitter.com) and sign in with th
 5. Set any placeholder URL for the callback (e.g. `http://localhost`) — PostPigeon doesn't need OAuth callbacks
 6. Save
 
-### 4. Get your API Key and Secret
+### 4. Copy the OAuth 2.0 client credentials
 
-1. Go to **Keys and tokens** tab inside your app
-2. Under **Consumer Keys**, copy:
-   - **API Key** → `TWITTER_API_KEY`
-   - **API Key Secret** → `TWITTER_API_KEY_SECRET`
+1. Go to **Keys and tokens** inside your app
+2. Under **OAuth 2.0 Keys**, copy:
+   - **Client ID** → `TWITTER_CLIENT_ID`
+   - **Client Secret** → `TWITTER_CLIENT_SECRET`
 
-### 5. Generate Access Tokens
+### 5. Generate user tokens
 
-1. Still on the **Keys and tokens** tab
-2. Under **Authentication Tokens**, click **Generate** next to Access Token and Secret
-3. Copy:
+1. Still on **Keys and tokens**, under **OAuth 2.0**, generate an access token and refresh token for the account that will post
+2. Copy both immediately — X shows them only once:
    - **Access Token** → `TWITTER_ACCESS_TOKEN`
-   - **Access Token Secret** → `TWITTER_ACCESS_TOKEN_SECRET`
-4. The access token is tied to the account you're logged in as — this is the account PostPigeon will post from
+   - **Refresh Token** → `TWITTER_ACCESS_REFRESH_TOKEN`
+3. The access token expires in 2 hours. PostPigeon refreshes it automatically and writes the new pair back to the env file
+4. The refresh token expires in about 6 months. Regenerate it in the portal when it does
 
-> **Important:** Access tokens generated this way are permanent (they don't expire). Keep them secret.
+> OAuth 1.0 consumer keys and the app-only Bearer Token are not used.
 
 ### 6. Verify access level
 

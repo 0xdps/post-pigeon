@@ -11,12 +11,12 @@ const PLATFORM_SETUP = [
 		color:    "#000",
 		docsUrl:  null,
 		vars: [
-			{ name: "TWITTER_API_KEY",              desc: "Consumer / API Key" },
-			{ name: "TWITTER_API_KEY_SECRET",        desc: "Consumer / API Key Secret" },
-			{ name: "TWITTER_ACCESS_TOKEN",          desc: "Access Token (for the posting account)" },
-			{ name: "TWITTER_ACCESS_TOKEN_SECRET",   desc: "Access Token Secret" },
+			{ name: "TWITTER_CLIENT_ID",             desc: "OAuth 2.0 Client ID" },
+			{ name: "TWITTER_CLIENT_SECRET",         desc: "OAuth 2.0 Client Secret" },
+			{ name: "TWITTER_ACCESS_TOKEN",          desc: "OAuth 2.0 user access token (expires in 2 hours; refreshed automatically)" },
+			{ name: "TWITTER_ACCESS_REFRESH_TOKEN",  desc: "OAuth 2.0 refresh token (expires in about 6 months)" },
 		],
-		howTo: "developer.twitter.com → your app → Keys and Tokens. App permissions must be Read and Write.",
+		howTo: "developer.x.com → your app → Keys and Tokens → OAuth 2.0. Generate a user access token and refresh token. App permissions must be Read and Write.",
 	},
 	{
 		key:     "linkedin",

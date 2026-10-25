@@ -40,7 +40,7 @@ export function createApp() {
 	// Twitter health check (auth + API availability)
 	api.get("/twitter/health", async (c) => {
 		try {
-			const client = createClient();
+			const client = await createClient();
 			const res = await client.v2.me();
 			return c.json({
 				ok: true,

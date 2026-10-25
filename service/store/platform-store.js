@@ -33,7 +33,7 @@ export async function syncPlatformCredentialsFromEnv() {
 	const now = Date.now();
 
 	const CREDENTIAL_MAP = {
-		twitter:  ["TWITTER_API_KEY", "TWITTER_API_KEY_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_TOKEN_SECRET"],
+		twitter:  ["TWITTER_CLIENT_ID", "TWITTER_CLIENT_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_REFRESH_TOKEN"],
 		linkedin: ["LINKEDIN_CLIENT_ID", "LINKEDIN_CLIENT_SECRET", "LINKEDIN_ACCESS_TOKEN", "LINKEDIN_PERSON_URN"],
 		threads:  ["THREADS_APP_ID", "THREADS_APP_SECRET", "THREADS_ACCESS_TOKEN", "THREADS_USER_ID"],
 		devto:    ["DEVTO_API_KEY"],
@@ -41,7 +41,12 @@ export async function syncPlatformCredentialsFromEnv() {
 	};
 
 	for (const [key, envVars] of Object.entries(CREDENTIAL_MAP)) {
-		const allSet = envVars.every((v) => !!process.env[v]);
+		const allSet = envVars.every((v) => {
+			if (v === "TWITTER_ACCESS_REFRESH_TOKEN") {
+				return !!(process.env.TWITTER_ACCESS_REFRESH_TOKEN || process.env.TWIITER_ACCESS_REFRESH_TOKEN);
+			}
+			return !!process.env[v];
+		});
 		if (!allSet) continue;
 
 		const row = await db.findOne("platforms", { key });

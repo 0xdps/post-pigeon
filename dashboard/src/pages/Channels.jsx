@@ -5,7 +5,7 @@ import { api } from "../api.js";
 const PLATFORM_META = {
 	twitter: {
 		label: "X / Twitter", color: "#000", bg: "#e7e7e7", initial: "𝕏",
-		requiredVars: ["TWITTER_API_KEY", "TWITTER_API_KEY_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_TOKEN_SECRET"],
+		requiredVars: ["TWITTER_CLIENT_ID", "TWITTER_CLIENT_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_REFRESH_TOKEN"],
 	},
 	bluesky: {
 		label: "Bluesky", color: "#0085ff", bg: "#daeeff", initial: "Bk",

@@ -51,7 +51,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	const client = createClient();
+	const client = await createClient();
 
 	try {
 		console.log(`Deleting tweet ${tweetId} for localId ${LOCAL_ID}...`);

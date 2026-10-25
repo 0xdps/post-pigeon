@@ -43,7 +43,7 @@ export async function preparePostById(postId, client = null) {
 	}
 
 	if (!client) {
-		client = createClient();
+		client = await createClient();
 	}
 
 	const maxLength = await config.getMaxTweetLength();
@@ -128,7 +128,7 @@ export async function postTweet(text, mediaIds = [], client = null) {
 
 	// Reuse client if provided, otherwise create new one
 	if (!client) {
-		client = createClient();
+		client = await createClient();
 	}
 
 	const res = await postStatus(client, payload);

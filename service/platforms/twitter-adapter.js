@@ -18,7 +18,7 @@ export class TwitterAdapter {
 	 * @returns {Promise<{ platformPostId: string, url: string|null }>}
 	 */
 	async post(postId, { payloadOverrides = {}, dryRun = false } = {}) {
-		const client = createClient();
+		const client = await createClient();
 		const { tweets } = await preparePostById(postId, client);
 
 		if (dryRun || (await config.isDryRun())) {
@@ -62,7 +62,7 @@ export class TwitterAdapter {
 	 * @param {string} platformPostId - Tweet ID returned from post()
 	 */
 	async delete(platformPostId) {
-		const client = createClient();
+		const client = await createClient();
 		await deleteStatus(client, platformPostId);
 	}
 
@@ -72,7 +72,7 @@ export class TwitterAdapter {
 	 */
 	async healthCheck() {
 		try {
-			const client = createClient();
+			const client = await createClient();
 			const me = await client.v2.me();
 			return { connected: true, username: me.data?.username };
 		} catch (err) {

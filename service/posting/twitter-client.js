@@ -1,3 +1,4 @@
+import { readFileSync, writeFileSync } from "fs";
 import { TwitterApi } from "twitter-api-v2";
 import config from "../core/config.js";
 
@@ -45,26 +46,96 @@ function getRetryDelayMs(attempt, err) {
 	return Math.min(exp + jitter, MAX_BACKOFF_MS);
 }
 
-export function createClient() {
-	const {
-		TWITTER_API_KEY,
-		TWITTER_API_KEY_SECRET,
-		TWITTER_ACCESS_TOKEN,
-		TWITTER_ACCESS_TOKEN_SECRET,
-	} = process.env;
+const REQUIRED_TWITTER_VARS = [
+	"TWITTER_CLIENT_ID",
+	"TWITTER_CLIENT_SECRET",
+	"TWITTER_ACCESS_TOKEN",
+	"TWITTER_ACCESS_REFRESH_TOKEN",
+];
 
-	if (!TWITTER_API_KEY || !TWITTER_API_KEY_SECRET || !TWITTER_ACCESS_TOKEN || !TWITTER_ACCESS_TOKEN_SECRET) {
-		throw new Error(
-			"Missing Twitter credentials. Required: TWITTER_API_KEY, TWITTER_API_KEY_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET"
-		);
+// Refresh a little before the 2-hour X access-token lifetime.
+const ACCESS_TOKEN_TTL_MS = 110 * 60 * 1000;
+
+let cachedUserClient = null;
+let accessTokenExpiresAt = 0;
+let refreshInFlight = null;
+
+function readTwitterCredentials() {
+	const credentials = {
+		clientId: process.env.TWITTER_CLIENT_ID,
+		clientSecret: process.env.TWITTER_CLIENT_SECRET,
+		accessToken: process.env.TWITTER_ACCESS_TOKEN,
+		refreshToken: process.env.TWITTER_ACCESS_REFRESH_TOKEN || process.env.TWIITER_ACCESS_REFRESH_TOKEN,
+	};
+	const missing = REQUIRED_TWITTER_VARS.filter((name) => {
+		if (name === "TWITTER_ACCESS_REFRESH_TOKEN") return !credentials.refreshToken;
+		return !process.env[name];
+	});
+	if (missing.length) {
+		throw new Error(`Missing Twitter credentials. Required: ${missing.join(", ")}`);
+	}
+	return credentials;
+}
+
+function persistRefreshedTokens({ accessToken, refreshToken }) {
+	process.env.TWITTER_ACCESS_TOKEN = accessToken;
+	process.env.TWITTER_ACCESS_REFRESH_TOKEN = refreshToken;
+	delete process.env.TWIITER_ACCESS_REFRESH_TOKEN;
+
+	const envPath = process.env.ENV_FILE || ".env";
+	let contents;
+	try {
+		contents = readFileSync(envPath, "utf8");
+	} catch {
+		console.warn(`[twitter] Refreshed tokens kept in memory only; could not read ${envPath}`);
+		return;
 	}
 
-	return new TwitterApi({
-		appKey: TWITTER_API_KEY,
-		appSecret: TWITTER_API_KEY_SECRET,
-		accessToken: TWITTER_ACCESS_TOKEN,
-		accessSecret: TWITTER_ACCESS_TOKEN_SECRET,
+	const next = upsertEnvLine(
+		upsertEnvLine(contents, "TWITTER_ACCESS_TOKEN", accessToken),
+		"TWITTER_ACCESS_REFRESH_TOKEN",
+		refreshToken
+	).replace(/^TWIITER_ACCESS_REFRESH_TOKEN=.*\n?/m, "");
+
+	writeFileSync(envPath, next.endsWith("\n") ? next : `${next}\n`);
+	console.log("[twitter] Saved refreshed OAuth 2.0 tokens");
+}
+
+function upsertEnvLine(contents, key, value) {
+	const line = `${key}=${value}`;
+	const pattern = new RegExp(`^${key}=.*$`, "m");
+	if (pattern.test(contents)) return contents.replace(pattern, line);
+	return `${contents.replace(/\n?$/, "\n")}${line}\n`;
+}
+
+async function refreshUserClient(credentials) {
+	const appClient = new TwitterApi({
+		clientId: credentials.clientId,
+		clientSecret: credentials.clientSecret,
 	});
+	const { client, accessToken, refreshToken } = await appClient.refreshOAuth2Token(credentials.refreshToken);
+	if (!refreshToken) {
+		throw new Error("X did not return a new refresh token. Regenerate the OAuth 2.0 user tokens.");
+	}
+	persistRefreshedTokens({ accessToken, refreshToken });
+	cachedUserClient = client;
+	accessTokenExpiresAt = Date.now() + ACCESS_TOKEN_TTL_MS;
+	return client;
+}
+
+/**
+ * OAuth 2.0 user client. Refreshes the access token when it is near expiry.
+ * X user access tokens last 2 hours; the refresh token lasts about 6 months.
+ */
+export async function createClient() {
+	if (cachedUserClient && Date.now() < accessTokenExpiresAt) return cachedUserClient;
+	if (refreshInFlight) return refreshInFlight;
+
+	const credentials = readTwitterCredentials();
+	refreshInFlight = refreshUserClient(credentials).finally(() => {
+		refreshInFlight = null;
+	});
+	return refreshInFlight;
 }
 
 /**
@@ -143,14 +214,13 @@ export async function postStatus(client, payload) {
 	throw lastError;
 }
 
-export async function uploadMedia(client, filePath) {
-	const mediaId = await client.v1.uploadMedia(filePath);
-	return mediaId;
+export async function uploadMedia(client, filePath, mimeType = "application/octet-stream") {
+	const buffer = readFileSync(filePath);
+	return uploadMediaBuffer(client, buffer, mimeType);
 }
 
 export async function uploadMediaBuffer(client, buffer, mimeType) {
-	const mediaId = await client.v1.uploadMedia(buffer, { mimeType });
-	return mediaId;
+	return client.v2.uploadMedia(buffer, { media_type: mimeType });
 }
 
 export async function deleteStatus(client, tweetId) {
