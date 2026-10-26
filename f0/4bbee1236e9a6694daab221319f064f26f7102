@@ -1,0 +1,48 @@
+app/lib/images.js
+  s_58014e5b6f6d84::t_248174791d3ff0 142-153
+  s_58014e5b6f6d84::t_179120bfda8b59 92-141
+app/lib/client.js
+  s_58014e5b6f6d84::t_5d5cd83a324c1f 36-41
+  s_58014e5b6f6d84::t_92e9a30918f218 42
+service/store/db-posts.js
+  s_58014e5b6f6d84::t_a67b4c222f4999 282
+  s_58014e5b6f6d84::t_8f58a7f75310f3 272,276,279,289,293-312
+  s_58014e5b6f6d84::t_f23cc0e0cdb18f 313-314
+app/components/Composer.js
+  s_58014e5b6f6d84::t_c2ba9f89aec5f1 54-59,104,106,119
+  s_58014e5b6f6d84::t_486b2647ed39ee 120
+service/posting/sqlite-hub-upload.js
+  s_58014e5b6f6d84::t_b7ab101c4381ea 66-67
+  s_58014e5b6f6d84::t_72678c9e033c5c 110-112
+service/core/db.js
+  s_58014e5b6f6d84::t_95e425a717aa27 77
+app/lib/posts.js
+  s_58014e5b6f6d84::t_89ff069bf1b79a 13,41,44-45
+app/api/uploads/route.js
+  s_58014e5b6f6d84::t_eafa099e74058c 1-8
+service/store/storage/MesahubStorage.js
+  s_58014e5b6f6d84::t_4b7dfa7f5a6c7d 15-31,55-62
+app/api/uploads/[imageId]/route.js
+  s_58014e5b6f6d84::t_59c2b3e9ebd257 1-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f04bbee1236e9a6694daab221319f064f26f7102",
+  "prompts": {},
+  "humans": {
+    "h_95aea6b4aa8772": {
+      "author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_58014e5b6f6d84": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "6c1595ba-dfa8-425a-85f6-d8e23bb969d0",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
