@@ -33,6 +33,12 @@ COPY --from=build --chown=pigeon:pigeon /app/.next/standalone ./
 COPY --from=build --chown=pigeon:pigeon /app/.next/static ./.next/static
 COPY --from=build --chown=pigeon:pigeon /app/public ./public
 COPY --from=build --chown=pigeon:pigeon /app/service ./service
+# instrumentation.js imports service/*.js with webpackIgnore, so Node resolves
+# these from /app/node_modules. Standalone tracing does not include them.
+COPY --from=deps --chown=pigeon:pigeon /app/node_modules/node-cron ./node_modules/node-cron
+COPY --from=deps --chown=pigeon:pigeon /app/node_modules/@mesahub ./node_modules/@mesahub
+COPY --from=deps --chown=pigeon:pigeon /app/node_modules/@pingpong-js ./node_modules/@pingpong-js
+COPY --from=deps --chown=pigeon:pigeon /app/node_modules/twitter-api-v2 ./node_modules/twitter-api-v2
 
 RUN mkdir -p /app/data/uploads && chown -R pigeon:pigeon /app/data
 
