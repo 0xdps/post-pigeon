@@ -1,0 +1,33 @@
+service/posting/twitter-client.js
+  s_58014e5b6f6d84::t_fefe85e062785a 35-39,140-149,157,164
+  s_58014e5b6f6d84::t_8e681033d47505 136-139
+  s_58014e5b6f6d84::t_6ab2f7d6a19a7b 161-163
+instrumentation.js
+  s_58014e5b6f6d84::t_fcfc77fe58a214 10,20-27
+app/lib/bootstrap.js
+  s_58014e5b6f6d84::t_d3f124cdd14803 4,27-34
+service/platforms/twitter-adapter.js
+  s_58014e5b6f6d84::t_ec7707db9bb93b 4,7-11,31,55
+  s_58014e5b6f6d84::t_23abc36e4c445b 25-30,32-34,50-54,56-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ed594da1b2be22d7da899ff1cb6ab5a86bd549cd",
+  "prompts": {},
+  "humans": {
+    "h_95aea6b4aa8772": {
+      "author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_58014e5b6f6d84": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "6c1595ba-dfa8-425a-85f6-d8e23bb969d0",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
