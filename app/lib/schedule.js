@@ -139,7 +139,7 @@ export async function publishNowResponse(id) {
 		await updatePublishJobStatus(job.id, "processing");
 		try {
 			const payload = job.payload ? JSON.parse(job.payload) : {};
-			const result = await adapter.post(job.post_id, { payloadOverrides: payload, dryRun: await config.isDryRun() });
+			const result = await adapter.post(job.post_id, { payloadOverrides: payload });
 			await markPublishJobPosted(job.id, result.platformPostId);
 			await updatePost(job.post_id, { status: "posted" });
 			return json({ success: true, platform_post_id: result.platformPostId, url: result.url });

@@ -177,9 +177,7 @@ export async function postStatus(client, payload) {
 		tweetData.reply = { in_reply_to_tweet_id: tweetId };
 	}
 
-	const configuredRetries = await config.getPostMaxRetries();
-	const maxRetries =
-		Number.isFinite(configuredRetries) && configuredRetries >= 0 ? configuredRetries : DEFAULT_MAX_RETRIES;
+	const maxRetries = DEFAULT_MAX_RETRIES;
 
 	console.log(
 		`Posting to X with retry policy: maxRetries=${maxRetries}, mediaCount=${media_ids ? media_ids.split(",").length : 0}`

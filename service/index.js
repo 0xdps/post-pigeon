@@ -10,8 +10,6 @@ const PORT = Number(process.env.PORT) || 3000;
 async function main() {
 	console.log("Starting postpigeon...");
 	console.log(`  MESAHUB_URL:     ${process.env.MESAHUB_URL ? process.env.MESAHUB_URL.replace(/shs_[^@]+/, 'shs_***') : "(not set)"}`);
-	console.log(`  CRON_ENABLED:    ${process.env.CRON_ENABLED ?? "true (default)"}`);
-	console.log(`  DRY_RUN:         ${process.env.DRY_RUN ?? "false (default)"}`);
 	console.log(`  PORT:            ${PORT}`);
 
 			console.log("Connecting to MesaHub...");

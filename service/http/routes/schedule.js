@@ -233,8 +233,7 @@ export function createScheduleRouter() {
 
 			try {
 				const payload = job.payload ? JSON.parse(job.payload) : {};
-				const dryRun = await config.isDryRun();
-				const result = await adapter.post(job.post_id, { payloadOverrides: payload, dryRun });
+				const result = await adapter.post(job.post_id, { payloadOverrides: payload });
 				await markPublishJobPosted(job.id, result.platformPostId);
 				await updatePost(job.post_id, { status: "posted" });
 				return c.json({ success: true, platform_post_id: result.platformPostId, url: result.url });

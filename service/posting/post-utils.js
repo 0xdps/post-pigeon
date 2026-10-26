@@ -119,13 +119,6 @@ export async function postTweet(text, mediaIds = [], client = null) {
 
 	console.log("Posting tweet (preview):", text.slice(0, 120));
 
-	// Dry-run mode — skip actual posting
-	if (await config.isDryRun()) {
-		const fakeTweetId = `dry-run-${Date.now()}`;
-		console.log(`[DRY_RUN] Would post tweet. Fake ID: ${fakeTweetId}`);
-		return fakeTweetId;
-	}
-
 	// Reuse client if provided, otherwise create new one
 	if (!client) {
 		client = await createClient();
