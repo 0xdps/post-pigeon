@@ -1,0 +1,25 @@
+service/store/storage/MesahubStorage.js
+  s_58014e5b6f6d84::t_d7e02bd3d7e285 16-17,20-27,55-56
+  s_58014e5b6f6d84::t_e2f7724ab88155 15,18-19,28-30,54,57-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "067029210be3486e54b7a1c992a2eea997ac5200",
+  "prompts": {},
+  "humans": {
+    "h_95aea6b4aa8772": {
+      "author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_58014e5b6f6d84": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "6c1595ba-dfa8-425a-85f6-d8e23bb969d0",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
