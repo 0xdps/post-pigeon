@@ -12,6 +12,22 @@ import { MesahubClient, parseMesahubUrl } from "@mesahub/client";
 /** @type {MesahubStorage|null} */
 let _instance = null;
 
+/**
+ * mesahub-cloud serves private-network SQL at /api/{query,exec}/:db.
+ * @mesahub/client 1.0.2 sends those to /api/db/:db/{query,exec}, which 404s.
+ * File routes stay on the client default.
+ */
+class PrivateSqlClient extends MesahubClient {
+	constructor(config) {
+		super(config);
+		this._path = {
+			...this._path,
+			query: (ref) => `/api/query/${ref}`,
+			exec: (ref) => `/api/exec/${ref}`,
+		};
+	}
+}
+
 export class MesahubStorage {
 	/**
 	 * @param {import('@mesahub/client').DatabaseHandle} db
@@ -35,9 +51,14 @@ export class MesahubStorage {
 						"Example: MESAHUB_URL=mh://shs_...@api.mesahub.app/my-db"
 				);
 			}
-			const { apiUrl, apiKey, dbName, routePrefix } = parseMesahubUrl(url);
-			const client = new MesahubClient({ apiKey, apiUrl, routePrefix });
-			_instance = new MesahubStorage(client.db(dbName));
+			const parsed = parseMesahubUrl(url);
+			const Client = parsed.routePrefix === "api" ? PrivateSqlClient : MesahubClient;
+			const client = new Client({
+				apiKey: parsed.apiKey,
+				apiUrl: parsed.apiUrl,
+				routePrefix: parsed.routePrefix,
+			});
+			_instance = new MesahubStorage(client.db(parsed.dbName));
 		}
 		return _instance;
 	}
