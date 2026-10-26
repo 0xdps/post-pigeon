@@ -1,0 +1,30 @@
+service/core/config.js
+  s_58014e5b6f6d84::t_1205dfb5887087 43,47,66-67
+service/posting/twitter-client.js
+  s_58014e5b6f6d84::t_7b88d625472a46 180
+service/http/routes/schedule.js
+  s_58014e5b6f6d84::t_642ee9b9802d93 236
+app/lib/schedule.js
+  s_58014e5b6f6d84::t_51f482de75f39d 142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7fdcfdc671e24e7f8ba49d913483edc7984e32ce",
+  "prompts": {},
+  "humans": {
+    "h_95aea6b4aa8772": {
+      "author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_58014e5b6f6d84": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "6c1595ba-dfa8-425a-85f6-d8e23bb969d0",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
