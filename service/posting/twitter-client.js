@@ -32,6 +32,11 @@ function isRetryableError(err) {
 	return status === 429 || status === 502 || status === 503 || status === 504;
 }
 
+function isInvalidTokenError(err) {
+	const description = `${err?.data?.error_description || ""} ${err?.data?.error || ""} ${err?.message || ""}`;
+	return /token was invalid|invalid_request/i.test(description);
+}
+
 function getRetryDelayMs(attempt, err) {
 	// Honor API-provided reset hint for rate limits when available.
 	if (Number(getErrorStatus(err)) === 429) {
@@ -128,6 +133,20 @@ async function refreshUserClient(credentials) {
  * OAuth 2.0 user client. Refreshes the access token when it is near expiry.
  * X user access tokens last 2 hours; the refresh token lasts about 6 months.
  */
+export async function refreshClient() {
+	return refreshCurrentClient();
+}
+
+async function refreshCurrentClient() {
+	if (refreshInFlight) return refreshInFlight;
+	cachedUserClient = null;
+	accessTokenExpiresAt = 0;
+	refreshInFlight = refreshUserClient(readTwitterCredentials()).finally(() => {
+		refreshInFlight = null;
+	});
+	return refreshInFlight;
+}
+
 export async function createClient() {
 	if (refreshInFlight) return refreshInFlight;
 	const credentials = readTwitterCredentials();
@@ -135,18 +154,14 @@ export async function createClient() {
 	if (tokenChanged) {
 		sawAccessToken = credentials.accessToken;
 		cachedUserClient = null;
-		accessTokenExpiresAt = Date.now() + ACCESS_TOKEN_TTL_MS;
+		accessTokenExpiresAt = 0;
 	}
 	if (cachedUserClient && Date.now() < accessTokenExpiresAt) return cachedUserClient;
-	if (Date.now() < accessTokenExpiresAt) {
-		cachedUserClient = new TwitterApi(credentials.accessToken);
-		return cachedUserClient;
-	}
 
-	refreshInFlight = refreshUserClient(credentials).finally(() => {
-		refreshInFlight = null;
-	});
-	return refreshInFlight;
+	// Railway injects the access token at boot. It expires in 2 hours and is not
+	// rewritten on the service, so refresh before trusting a token this process
+	// has not refreshed itself.
+	return refreshCurrentClient();
 }
 
 /**

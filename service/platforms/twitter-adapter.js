@@ -1,8 +1,13 @@
 // service/platforms/twitter-adapter.js
 // Twitter platform adapter — the reference implementation.
 // Wraps existing twitter-client.js and uses preparePostById for content resolution.
-import { createClient, postStatus, deleteStatus } from "../posting/twitter-client.js";
+import { createClient, refreshClient, postStatus, deleteStatus } from "../posting/twitter-client.js";
 import { preparePostById } from "../posting/post-utils.js";
+
+function isInvalidToken(err) {
+	const description = `${err?.data?.error_description || ""} ${err?.data?.error || ""} ${err?.message || ""}`;
+	return /token was invalid|invalid_request/i.test(description);
+}
 
 export class TwitterAdapter {
 	get key() {
@@ -17,8 +22,16 @@ export class TwitterAdapter {
 	 * @returns {Promise<{ platformPostId: string, url: string|null }>}
 	 */
 	async post(postId, { payloadOverrides = {} } = {}) {
-		const client = await createClient();
-		const { tweets } = await preparePostById(postId, client);
+		let client = await createClient();
+		let prepared;
+		try {
+			prepared = await preparePostById(postId, client);
+		} catch (err) {
+			if (!isInvalidToken(err)) throw err;
+			client = await refreshClient();
+			prepared = await preparePostById(postId, client);
+		}
+		const { tweets } = prepared;
 
 		let firstTweetId = null;
 		let previousTweetId = null;
@@ -34,7 +47,14 @@ export class TwitterAdapter {
 			const replyTarget = previousTweetId ?? reply_to_tweet_id ?? null;
 			if (replyTarget) payload.reply_to_tweet_id = replyTarget;
 
-			const res = await postStatus(client, payload);
+			let res;
+			try {
+				res = await postStatus(client, payload);
+			} catch (err) {
+				if (!isInvalidToken(err)) throw err;
+				client = await refreshClient();
+				res = await postStatus(client, payload);
+			}
 			const tweetId = String(res?.data?.id || res?.id_str || res?.id || "");
 			if (!tweetId) {
 				throw new Error("Twitter API did not return a tweet id: " + JSON.stringify(res));
