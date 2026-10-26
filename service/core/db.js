@@ -74,7 +74,7 @@ export async function initDb() {
 	await db.exec(`
 		CREATE TABLE IF NOT EXISTS post_images (
 			id         TEXT    PRIMARY KEY,
-			post_id    TEXT    NOT NULL,
+			post_id    TEXT,
 			filename   TEXT    NOT NULL,
 			mime_type  TEXT    NOT NULL,
 			size       INTEGER NOT NULL,

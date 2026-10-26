@@ -269,25 +269,47 @@ export async function deletePostContent(contentId) {
 export async function createPostImage(postId, image) {
 	const db = getDb();
 	const { filename, mime_type, size, file_path } = image;
-	
+
 	if (!filename || !mime_type || !size || !file_path) {
 		throw new Error("Image requires filename, mime_type, size, file_path");
 	}
-	
+
 	const imageId = `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 	const now = Date.now();
-	
+
 	await db.insert("post_images", {
 		id: imageId,
-		post_id: postId,
+		post_id: postId || null,
 		filename,
 		mime_type,
 		size,
 		file_path,
 		created_at: now,
 	});
-	
+
 	return imageId;
+}
+
+/**
+ * Attach already-uploaded images to a post.
+ * Images with no post, or already on this post, are attached. Images owned by
+ * another post are left alone.
+ * @param {string} postId
+ * @param {string[]} imageIds
+ * @returns {Promise<string[]>} ids that are now attached
+ */
+export async function attachPostImages(postId, imageIds) {
+	const db = getDb();
+	const attached = [];
+	for (const imageId of imageIds) {
+		const image = await db.findOne("post_images", { id: imageId });
+		if (!image || (image.post_id && image.post_id !== postId)) continue;
+		if (image.post_id !== postId) {
+			await db.update("post_images", { post_id: postId }, { id: imageId });
+		}
+		attached.push(imageId);
+	}
+	return attached;
 }
 
 /**

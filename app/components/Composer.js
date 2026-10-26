@@ -51,7 +51,12 @@ export default function Composer({ initialPost = null, account = null, platforms
 		if (postId) return postId;
 		const id = `post-${Date.now()}`;
 		const title = tweets[0]?.text.slice(0, 100).trim() || "Untitled";
-		const created = await api.createPost({ id, type: tweets.length > 1 ? "thread" : "standalone", title });
+		const created = await api.createPost({
+			id,
+			type: tweets.length > 1 ? "thread" : "standalone",
+			title,
+			image_ids: images.map((image) => image.id),
+		});
 		if (!created?.success) throw new Error(created?.error || "Could not create the post");
 		setPostId(id);
 		window.history.replaceState(null, "", `/compose/${id}`);
@@ -96,11 +101,9 @@ export default function Composer({ initialPost = null, account = null, platforms
 		setBusy(true);
 		setError("");
 		try {
-			const id = await ensurePost();
-			const uploaded = await api.uploadImages(id, files);
+			const uploaded = await api.uploadFiles(files);
 			if (!uploaded?.success) throw new Error(uploaded?.error || "Image upload failed");
-			const listed = await api.listImages(id);
-			setImages(listed?.images || []);
+			setImages((current) => [...current, ...(uploaded.images || [])]);
 			setNote("Image added");
 		} catch (err) {
 			setError(err.message);
@@ -110,11 +113,11 @@ export default function Composer({ initialPost = null, account = null, platforms
 	}
 
 	async function removeImage(imageId) {
-		if (!postId) return;
 		setBusy(true);
 		setError("");
 		try {
-			await api.deleteImage(postId, imageId);
+			if (postId) await api.deleteImage(postId, imageId);
+			else await api.deleteUpload(imageId);
 			setImages(images.filter((image) => image.id !== imageId));
 		} catch (err) {
 			setError(err.message);

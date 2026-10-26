@@ -63,7 +63,8 @@ function buildDirectDownloadUrl(fileId) {
 	if (!url) return null;
 	try {
 		const { apiUrl, dbName, routePrefix } = parseMesahubUrl(url);
-		return `${apiUrl}/${routePrefix}/files/${dbName}/${encodeURIComponent(fileId)}`;
+		const prefix = routePrefix === "api" ? "api/files" : "v1/files";
+		return `${apiUrl}/${prefix}/${dbName}/${encodeURIComponent(fileId)}`;
 	} catch {
 		return null;
 	}
@@ -106,7 +107,9 @@ export async function uploadFileToHub(
 			const blob = new Blob([buffer], { type: mimeType });
 			uploaded = await files.upload(blob, uniqueName, mimeType);
 		} catch (err) {
-			if (!/not found/i.test(err?.message || "")) throw err;
+			const status = err?.statusCode || err?.status;
+			const missing = status === 404 || status === 501 || /not found/i.test(err?.message || "");
+			if (!missing) throw err;
 			console.warn("[mesahub] Files API unavailable, storing upload locally");
 			uploaded = await saveLocalFile(buffer, uniqueName, mimeType);
 		}

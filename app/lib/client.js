@@ -33,6 +33,13 @@ export const api = {
 	updateContent: (id, contentId, content) => req("PUT", `/api/posts/${id}/content/${contentId}`, content),
 	deleteContent: (id, contentId) => req("DELETE", `/api/posts/${id}/content/${contentId}`),
 	listImages: (id) => req("GET", `/api/posts/${id}/images`),
+	uploadFiles: async (files) => {
+		const form = new FormData();
+		for (const file of files) form.append("files", file);
+		const res = await fetch("/api/uploads", { method: "POST", credentials: "include", body: form });
+		return res.json();
+	},
+	deleteUpload: (imageId) => req("DELETE", `/api/uploads/${imageId}`),
 	uploadImages: async (id, files) => {
 		const form = new FormData();
 		for (const file of files) form.append("files", file);

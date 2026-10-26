@@ -10,6 +10,7 @@ import {
 	updatePostContent,
 	deletePostContent,
 	listPostImages,
+	attachPostImages,
 } from "../../service/store/db-posts.js";
 import { json } from "./http.js";
 
@@ -37,10 +38,11 @@ export async function listPostsResponse(request) {
 
 export async function createPostResponse(body) {
 	try {
-		const { id, type, title, metadata } = body || {};
+		const { id, type, title, metadata, image_ids: imageIds = [] } = body || {};
 		if (!id || !title) return json({ success: false, error: "id and title required" }, 400);
 		await createPost({ id, type, title, metadata });
-		return json({ success: true, message: "Post created", id }, 201);
+		const images = Array.isArray(imageIds) && imageIds.length ? await attachPostImages(id, imageIds) : [];
+		return json({ success: true, message: "Post created", id, images }, 201);
 	} catch (err) {
 		console.error("POST /posts error:", err);
 		return json({ success: false, error: err.message }, 500);

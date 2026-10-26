@@ -89,6 +89,68 @@ export async function listImagesResponse(postId) {
 	}
 }
 
+export async function uploadFilesResponse(formData) {
+	try {
+		const files = formData.getAll("files");
+		if (!files?.length) return json({ success: false, error: "No files provided" }, 400);
+
+		const images = [];
+		const errors = [];
+		for (const file of files) {
+			if (!file || typeof file.arrayBuffer !== "function") continue;
+			if (!isValidImageType(file.type)) {
+				errors.push(`${file.name}: Invalid file type. Only PNG, JPEG, GIF, WebP, AVIF allowed.`);
+				continue;
+			}
+			const sizeCheck = validateFile(file);
+			if (!sizeCheck.valid) {
+				errors.push(`${file.name}: ${sizeCheck.error}`);
+				continue;
+			}
+			try {
+				const buffer = Buffer.from(await file.arrayBuffer());
+				const uploadResult = await uploadFileToHub(buffer, "posts", file.name, file.type);
+				const imageId = await createPostImage(null, {
+					filename: file.name,
+					mime_type: file.type,
+					size: buffer.length,
+					file_path: uploadResult.file_path,
+				});
+				images.push({
+					id: imageId,
+					filename: file.name,
+					mime_type: file.type,
+					size: buffer.length,
+					file_path: uploadResult.file_path,
+					url: uploadResult.proxy_url,
+					proxy_url: uploadResult.proxy_url,
+				});
+			} catch (uploadErr) {
+				errors.push(`${file.name}: ${uploadErr.message}`);
+			}
+		}
+
+		if (!images.length) {
+			return json({ success: false, error: "No images were uploaded", errors }, 400);
+		}
+		return json({ success: true, images, errors: errors.length ? errors : undefined }, 201);
+	} catch (err) {
+		return json({ success: false, error: err.message }, 500);
+	}
+}
+
+export async function deleteUploadResponse(imageId) {
+	try {
+		const image = await getPostImage(imageId);
+		if (!image || image.post_id) return json({ success: false, error: "Image not found" }, 404);
+		if (image.file_path) await deleteFileFromHub(image.file_path);
+		await deletePostImage(imageId);
+		return json({ success: true, message: "Image deleted" });
+	} catch (err) {
+		return json({ success: false, error: err.message }, 500);
+	}
+}
+
 export async function uploadImagesResponse(postId, formData) {
 	try {
 		const post = await getPost(postId);
