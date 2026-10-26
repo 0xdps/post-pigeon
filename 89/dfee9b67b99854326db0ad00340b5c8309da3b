@@ -1,0 +1,59 @@
+app/components/Week.js
+  s_58014e5b6f6d84::t_f8e74961e614ea 1-44
+app/compose/[id]/page.js
+  s_58014e5b6f6d84::t_6eae29e6e2ecb9 3,9,13,18
+app/activity/page.js
+  s_58014e5b6f6d84::t_8a7444921477fe 3,17-18,21-22
+app/components/Shell.js
+  s_58014e5b6f6d84::t_4c5cf03827dd39 11
+  s_58014e5b6f6d84::t_5475cb97ed669b 10
+  s_58014e5b6f6d84::t_53f22cd3c66e05 25
+app/components/PostLibrary.js
+  s_58014e5b6f6d84::t_985168aeb908bc 5-6,16,18,20-25,28-35,38-44,66-69
+  s_58014e5b6f6d84::t_a5f5de4e0cce4b 64
+app/layout.js
+  s_58014e5b6f6d84::t_b508507d503e12 15
+app/globals.css
+  s_58014e5b6f6d84::t_1b6e1657113270 98,101-102,187-188,255
+  s_58014e5b6f6d84::t_39b6f80aae1246 115
+  s_58014e5b6f6d84::t_e0d8b92d697728 122-129
+  s_58014e5b6f6d84::t_e138a301022e3b 2-3,5-13,16-19,26-27,30-31,41-42,44,47-49,55-56,59-60,64,66-67,69-71,74-78,83,88,93-94,99,106,116,189-214,219,224-226,236,249,252
+  s_58014e5b6f6d84::t_bc0c6fca995476 38,111,117-118
+app/login/page.js
+  s_58014e5b6f6d84::t_5330082a3a16ac 37
+app/components/Timeline.js
+  s_58014e5b6f6d84::t_d1daf679f241ed 55
+app/platforms/page.js
+  s_58014e5b6f6d84::t_f05eeeb162a90a 21
+app/components/Composer.js
+  s_58014e5b6f6d84::t_21d2b4bfae4e65 27,67,112-125,207-210,214-226
+  s_58014e5b6f6d84::t_937eea93d1255c 236-237,255,257
+  s_58014e5b6f6d84::t_52c5ac002c086f 14-23,31-33,131,133-135,138-141,146,157-169,241,246-251,256
+  s_58014e5b6f6d84::t_2b64462593cc2c 173-185
+  s_58014e5b6f6d84::t_73ec0e20d6f436 254,259
+  s_58014e5b6f6d84::t_d241ae074386e0 253
+  s_58014e5b6f6d84::t_df63e8d874dea8 227
+app/compose/page.js
+  s_58014e5b6f6d84::t_2f06e03a79534d 3,8,12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "89dfee9b67b99854326db0ad00340b5c8309da3b",
+  "prompts": {},
+  "humans": {
+    "h_95aea6b4aa8772": {
+      "author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_58014e5b6f6d84": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "6c1595ba-dfa8-425a-85f6-d8e23bb969d0",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
