@@ -279,7 +279,7 @@ export async function createPostImage(postId, image) {
 
 	await db.insert("post_images", {
 		id: imageId,
-		post_id: postId || null,
+		post_id: postId || "pending",
 		filename,
 		mime_type,
 		size,
@@ -303,7 +303,7 @@ export async function attachPostImages(postId, imageIds) {
 	const attached = [];
 	for (const imageId of imageIds) {
 		const image = await db.findOne("post_images", { id: imageId });
-		if (!image || (image.post_id && image.post_id !== postId)) continue;
+		if (!image || (image.post_id && image.post_id !== "pending" && image.post_id !== postId)) continue;
 		if (image.post_id !== postId) {
 			await db.update("post_images", { post_id: postId }, { id: imageId });
 		}

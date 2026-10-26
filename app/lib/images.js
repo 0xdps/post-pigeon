@@ -142,7 +142,7 @@ export async function uploadFilesResponse(formData) {
 export async function deleteUploadResponse(imageId) {
 	try {
 		const image = await getPostImage(imageId);
-		if (!image || image.post_id) return json({ success: false, error: "Image not found" }, 404);
+		if (!image || image.post_id !== "pending") return json({ success: false, error: "Image not found" }, 404);
 		if (image.file_path) await deleteFileFromHub(image.file_path);
 		await deletePostImage(imageId);
 		return json({ success: true, message: "Image deleted" });
