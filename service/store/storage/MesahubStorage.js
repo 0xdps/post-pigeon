@@ -13,9 +13,9 @@ import { MesahubClient, parseMesahubUrl } from "@mesahub/client";
 let _instance = null;
 
 /**
- * mesahub-cloud serves private-network calls as /api/{exec,query,files}/:db.
- * @mesahub/client 1.0.2 sends those to /api/db/:db/{exec,query,files}, which this
- * host rejects. Public hosts stay on the client's /v1 routes.
+ * mesahub-cloud serves private-network SQL at /api/{query,exec}/:db.
+ * Files are bucket objects at /api/buckets/:slug/files, not /api/db/:db/files.
+ * @mesahub/client 1.0.2 still calls the database file path, which 404s here.
  */
 class PrivateRouteClient extends MesahubClient {
 	constructor(config) {
@@ -23,8 +23,8 @@ class PrivateRouteClient extends MesahubClient {
 		this._path = {
 			query: (ref) => `/api/query/${ref}`,
 			exec: (ref) => `/api/exec/${ref}`,
-			files: (ref) => `/api/files/${ref}`,
-			fileItem: (ref, id) => `/api/files/${ref}/${id}`,
+			files: (ref) => `/api/buckets/${ref}/files`,
+			fileItem: (ref, id) => `/api/buckets/${ref}/files/${id}`,
 		};
 	}
 }

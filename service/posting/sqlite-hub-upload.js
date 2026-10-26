@@ -63,8 +63,9 @@ function buildDirectDownloadUrl(fileId) {
 	if (!url) return null;
 	try {
 		const { apiUrl, dbName, routePrefix } = parseMesahubUrl(url);
-		const prefix = routePrefix === "api" ? "api/files" : "v1/files";
-		return `${apiUrl}/${prefix}/${dbName}/${encodeURIComponent(fileId)}`;
+		const prefix = routePrefix === "api" ? "api/buckets" : "v1/files";
+		const suffix = routePrefix === "api" ? "/files" : "";
+		return `${apiUrl}/${prefix}/${dbName}${suffix}/${encodeURIComponent(fileId)}`;
 	} catch {
 		return null;
 	}
