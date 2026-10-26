@@ -144,8 +144,10 @@ export async function publishNowResponse(id) {
 			await updatePost(job.post_id, { status: "posted" });
 			return json({ success: true, platform_post_id: result.platformPostId, url: result.url });
 		} catch (err) {
-			await markPublishJobFailed(job.id, err.message);
-			return json({ success: false, error: err.message }, 500);
+			const detail = err?.data?.detail || err?.data?.title || err?.message || "Publish failed";
+			console.error(`[publish] Job ${job.id} failed:`, detail, err?.data || "");
+			await markPublishJobFailed(job.id, detail);
+			return json({ success: false, error: detail }, 500);
 		}
 	} catch (err) {
 		return json({ success: false, error: err.message }, 500);
