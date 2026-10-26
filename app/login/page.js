@@ -34,7 +34,7 @@ export default function LoginPage() {
 				<img src="/logo-transparent.png" alt="" width={72} height={72} />
 				<div>
 					<p className="kicker">PostPigeon</p>
-					<h1>Open the loft</h1>
+					<h1>Open the desk</h1>
 				</div>
 				<input
 					type="password"

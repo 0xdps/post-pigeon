@@ -11,14 +11,26 @@ function count(text) {
 	return [...(text || "")].length;
 }
 
-export default function Composer({ initialPost = null, account = null, timezone = "Asia/Kolkata", maxLength = 280 }) {
+const CHANNELS = [
+	{ key: "twitter", label: "X", note: "Posts, threads, images" },
+	{ key: "linkedin", label: "LinkedIn", note: "First post only" },
+	{ key: "threads", label: "Threads", note: "First post only" },
+	{ key: "devto", label: "Dev.to", note: "First post becomes the article" },
+	{ key: "bluesky", label: "Bluesky", note: "Not connected yet" },
+	{ key: "reddit", label: "Reddit", note: "API access is restricted" },
+];
+
+export default function Composer({ initialPost = null, account = null, platforms = [], timezone = "Asia/Kolkata", maxLength = 280 }) {
 	const router = useRouter();
 	const fileRef = useRef(null);
 	const [postId, setPostId] = useState(initialPost?.id || null);
-	const [tweets, setTweets] = useState(initialPost?.content?.length ? initialPost.content.map((item) => ({ key: item.id, id: item.id, text: item.text || "" })) : blank());
+	const [tweets, setTweets] = useState(initialPost?.content?.length ? initialPost.content.map((item) => ({ key: item.id, id: item.id, text: item.text || "", replyTo: item.reply_to_tweet_id || "" })) : blank());
 	const [images, setImages] = useState(initialPost?.images || []);
 	const [when, setWhen] = useState("now");
 	const [scheduledAt, setScheduledAt] = useState("");
+	const [windowStart, setWindowStart] = useState("09:00");
+	const [windowEnd, setWindowEnd] = useState("21:00");
+	const [selected, setSelected] = useState(["twitter"]);
 	const [note, setNote] = useState(initialPost ? "Saved" : "");
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState("");
@@ -52,7 +64,7 @@ export default function Composer({ initialPost = null, account = null, timezone 
 		await api.updatePost(id, { title, type: tweets.length > 1 ? "thread" : "standalone" });
 		for (const [index, tweet] of tweets.entries()) {
 			if (!tweet.text.trim()) continue;
-			const payload = { text: tweet.text, sequence: index + 1, media_ids: [] };
+			const payload = { text: tweet.text, sequence: index + 1, media_ids: [], reply_to_tweet_id: tweet.replyTo || null };
 			const existing = ids.current[tweet.key];
 			if (existing) {
 				await api.updateContent(id, existing, payload);
@@ -97,26 +109,41 @@ export default function Composer({ initialPost = null, account = null, timezone 
 		}
 	}
 
+	async function removeImage(imageId) {
+		if (!postId) return;
+		setBusy(true);
+		setError("");
+		try {
+			await api.deleteImage(postId, imageId);
+			setImages(images.filter((image) => image.id !== imageId));
+		} catch (err) {
+			setError(err.message);
+		} finally {
+			setBusy(false);
+		}
+	}
+
 	async function publish() {
 		setBusy(true);
 		setError("");
 		try {
 			const id = await persist();
+			if (!selected.length) throw new Error("Pick at least one channel");
 			if (when === "later" && !scheduledAt) throw new Error("Pick a time first");
-			const zoned = when === "later" ? zonedTimeToUtc(scheduledAt, timezone) : null;
-			if (when === "later" && !zoned) throw new Error("Pick a valid time");
-			const platform = { key: "twitter", mode: "fixed", scheduled_at: zoned || Date.now() + 60_000 };
-			const scheduled = await api.createSchedule({ post_id: id, platforms: [platform] });
+			const plan = channelPlan();
+			if (plan.some((item) => item.mode === "fixed" && !item.scheduled_at)) throw new Error("Pick a valid time");
+			const scheduled = await api.createSchedule({ post_id: id, platforms: plan });
 			if (!scheduled?.success) throw new Error(scheduled?.error || "Could not schedule the post");
 			if (when === "now") {
-				const jobId = scheduled.jobs?.[0]?.job_id;
-				const posted = await api.publishJob(jobId);
-				if (!posted?.success) throw new Error(posted?.error || "X rejected the post");
+				for (const job of scheduled.jobs || []) {
+					const posted = await api.publishJob(job.job_id);
+					if (!posted?.success) throw new Error(posted?.error || `${job.platform_key} rejected the post`);
+				}
 				setNote("Posted");
 				router.push("/posts");
 				return;
 			}
-			await api.updatePost(id, { status: "scheduled", scheduled_at: platform.scheduled_at });
+			await api.updatePost(id, { status: "scheduled", scheduled_at: plan[0].scheduled_at || null });
 			setNote("Scheduled");
 			router.push("/posts");
 		} catch (err) {
@@ -127,9 +154,35 @@ export default function Composer({ initialPost = null, account = null, timezone 
 	}
 
 	const previewCount = useMemo(() => tweets.filter((tweet) => tweet.text.trim()).length, [tweets]);
+	const byKey = Object.fromEntries(platforms.map((platform) => [platform.key, platform]));
+
+	function toggleChannel(key) {
+		setSelected((current) => current.includes(key) ? current.filter((item) => item !== key) : [...current, key]);
+	}
+
+	function channelPlan() {
+		if (when === "window") {
+			return selected.map((key) => ({ key, mode: "random", window_start: windowStart, window_end: windowEnd }));
+		}
+		const at = when === "later" ? zonedTimeToUtc(scheduledAt, timezone) : Date.now() + 60_000;
+		return selected.map((key) => ({ key, mode: "fixed", scheduled_at: at }));
+	}
 
 	return (
 		<div className="composer">
+			<div className="channel-bar" role="group" aria-label="Channels">
+				{CHANNELS.map((channel) => {
+					const live = byKey[channel.key];
+					const ready = live?.enabled && live.auth_status !== "not_configured" && channel.key !== "reddit";
+					const on = selected.includes(channel.key);
+					return (
+						<button key={channel.key} type="button" className="channel" data-on={on} disabled={!ready} onClick={() => toggleChannel(channel.key)}>
+							<span className="mark">{on ? "✓" : ""}</span>
+							{channel.label}
+						</button>
+					);
+				})}
+			</div>
 			<section className="editor" aria-label="Post editor">
 				{tweets.map((tweet, index) => (
 					<div className="editor-block" key={tweet.key}>
@@ -151,9 +204,26 @@ export default function Composer({ initialPost = null, account = null, timezone 
 						{index === 0 && images.length > 0 ? (
 							<div className="editor-images">
 								{images.map((image) => (
-									<img key={image.id} src={imageSrc(image)} alt={image.filename || ""} />
+									<figure key={image.id}>
+										<img src={imageSrc(image)} alt={image.filename || ""} />
+										<button type="button" onClick={() => removeImage(image.id)} aria-label="Remove image">Remove</button>
+									</figure>
 								))}
 							</div>
+						) : null}
+						{index === 0 ? (
+							<label className="reply-to">
+								Reply to
+								<input
+									value={tweet.replyTo || ""}
+									placeholder="X post link or id"
+									onChange={(event) => {
+										const next = [...tweets];
+										next[index] = { ...tweet, replyTo: event.target.value.trim() };
+										setTweets(next);
+									}}
+								/>
+							</label>
 						) : null}
 						{tweets.length > 1 ? (
 							<button type="button" className="btn-ghost" onClick={() => setTweets(tweets.filter((item) => item.key !== tweet.key))}>
@@ -163,20 +233,30 @@ export default function Composer({ initialPost = null, account = null, timezone 
 					</div>
 				))}
 				<div className="editor-bar">
-					<button type="button" className="btn-ghost" onClick={() => fileRef.current?.click()} disabled={busy}>Add image</button>
-					<button type="button" className="btn-ghost" onClick={() => setTweets([...tweets, { key: `c-${Date.now()}`, text: "" }])}>Add reply</button>
+					<button type="button" className="btn-ghost" onClick={() => fileRef.current?.click()} disabled={busy}>Image</button>
+					<button type="button" className="btn-ghost" onClick={() => setTweets([...tweets, { key: `c-${Date.now()}`, text: "" }])}>Reply</button>
 					<div className="choice">
 						<button type="button" data-on={when === "now"} onClick={() => setWhen("now")}>Now</button>
 						<button type="button" data-on={when === "later"} onClick={() => setWhen("later")}>Later</button>
+						<button type="button" data-on={when === "window"} onClick={() => setWhen("window")}>Window</button>
 					</div>
 					{when === "later" ? (
 						<input type="datetime-local" aria-label={`Send time in ${timezone}`} value={scheduledAt} onChange={(event) => setScheduledAt(event.target.value)} />
 					) : null}
+					{when === "window" ? (
+						<>
+							<input type="time" aria-label="Window start" value={windowStart} onChange={(event) => setWindowStart(event.target.value)} />
+							<input type="time" aria-label="Window end" value={windowEnd} onChange={(event) => setWindowEnd(event.target.value)} />
+						</>
+					) : null}
 					<span className="save-note">{note}</span>
-					<button type="button" className="btn-ghost" onClick={saveDraft} disabled={busy || !hasText}>Save draft</button>
-					<button type="button" className="btn" onClick={publish} disabled={busy || !hasText || over}>
-						{when === "later" ? "Schedule" : "Post"}
+					<span className="bar-gap" />
+					<span className="bar-actions">
+					<button type="button" className="btn-ghost" onClick={saveDraft} disabled={busy || !hasText}>Save</button>
+					<button type="button" className="btn" onClick={publish} disabled={busy || !hasText || over || !selected.length}>
+						{when === "now" ? "Queue" : "Schedule"}
 					</button>
+					</span>
 				</div>
 				{error ? <p style={{ color: "var(--danger)", margin: 0 }}>{error}</p> : null}
 				<input ref={fileRef} type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif" multiple hidden onChange={onFiles} />

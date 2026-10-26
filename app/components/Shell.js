@@ -7,8 +7,8 @@ import { api } from "../lib/client.js";
 const LINKS = [
 	{ href: "/overview", label: "Overview" },
 	{ href: "/posts", label: "Posts" },
-	{ href: "/activity", label: "Timeline" },
-	{ href: "/platforms", label: "Platforms" },
+	{ href: "/activity", label: "Queue" },
+	{ href: "/platforms", label: "Channels" },
 	{ href: "/settings", label: "Settings" },
 	{ href: "/guide", label: "Setup" },
 ];
@@ -22,7 +22,7 @@ export default function Shell({ children }) {
 					<img src="/logo-transparent.png" alt="" />
 					<div>
 						<strong>PostPigeon</strong>
-						<span>for X</span>
+						<span>schedule once</span>
 					</div>
 				</Link>
 				<nav>

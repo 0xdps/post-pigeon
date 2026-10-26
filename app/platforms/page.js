@@ -18,7 +18,7 @@ export default async function PlatformsPage() {
 			<header className="page-head">
 				<div>
 					<p className="kicker">Channels</p>
-					<h1>Platforms</h1>
+					<h1>Channels</h1>
 					<p className="sub">X is the live channel. The others stay listed so the loft is ready for them.</p>
 				</div>
 			</header>

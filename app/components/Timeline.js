@@ -52,6 +52,7 @@ export default function Timeline({ jobs, titles }) {
 								<span>{job.platform_key}</span>
 								<span className="save-note">{new Date(job.posted_at || job.scheduled_at || job.created_at).toLocaleString()}</span>
 								{job.status === "pending" ? <button type="button" className="btn-ghost" onClick={() => act(api.cancelJob, job.id)}>Cancel</button> : null}
+								{job.error ? <span className="save-note">{job.error}</span> : null}
 								{job.status === "failed" ? <button type="button" className="btn-ghost" onClick={() => act(api.publishJob, job.id)}>Retry</button> : null}
 								{job.status === "posted" && job.platform_post_id ? <a className="save-note" href={`https://x.com/i/web/status/${job.platform_post_id}`} target="_blank" rel="noreferrer">View</a> : null}
 							</div>
