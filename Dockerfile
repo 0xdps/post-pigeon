@@ -35,7 +35,6 @@ COPY --from=build --chown=pigeon:pigeon /app/public ./public
 COPY --from=build --chown=pigeon:pigeon /app/service ./service
 
 RUN mkdir -p /app/data/uploads && chown -R pigeon:pigeon /app/data
-VOLUME ["/app/data"]
 
 USER pigeon
 EXPOSE 3000
